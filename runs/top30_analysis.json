@@ -1,0 +1,230 @@
+{
+  "matched": [
+    {
+      "ticker": "NVDA",
+      "name": "엔비디아 코퍼레이션",
+      "rank": 1,
+      "price": 225.32,
+      "rsi": 67.56330187103306,
+      "score": 0.7729431130972314,
+      "web_signal": "실적 발표 임박",
+      "strength": 5
+    },
+    {
+      "ticker": "ENPH",
+      "name": "인페이즈 에너지",
+      "rank": 2,
+      "price": 52.89,
+      "rsi": 79.90726631409643,
+      "score": 0.5616627996921749,
+      "web_signal": "상업용 제품 확대",
+      "strength": 4
+    },
+    {
+      "ticker": "MSFT",
+      "name": "마이크로소프트",
+      "rank": 3,
+      "price": 421.92,
+      "rsi": 61.6802862488528,
+      "score": 0.5572673590170316,
+      "web_signal": "AI 통합",
+      "strength": 4
+    }
+  ],
+  "new_discoveries": [
+    {
+      "ticker": "SLNO",
+      "name": "Soleno Therapeutics Inc",
+      "price": 53.01,
+      "rsi": 97.7595417327372,
+      "score": 0.6858291623699931
+    },
+    {
+      "ticker": "HUM",
+      "name": "휴매너",
+      "price": 305.12,
+      "rsi": 87.97170144026009,
+      "score": 0.6192814797101451
+    },
+    {
+      "ticker": "FTNT",
+      "name": "포티넷",
+      "price": 122.78,
+      "rsi": 85.33166849113786,
+      "score": 0.6022443825523665
+    },
+    {
+      "ticker": "GBTG",
+      "name": "Global Business Travel Group Inc",
+      "price": 9.34,
+      "rsi": 84.87838132335324,
+      "score": 0.5943838663540804
+    },
+    {
+      "ticker": "UNH",
+      "name": "Unitedhealth Group",
+      "price": 393.85,
+      "rsi": 81.3919486048299,
+      "score": 0.5939759014523883
+    },
+    {
+      "ticker": "NL",
+      "name": "NL Industries Inc",
+      "price": 7.61,
+      "rsi": 81.66255785637391,
+      "score": 0.5716379049946173
+    },
+    {
+      "ticker": "ASND",
+      "name": "Ascendis Pharma AS",
+      "price": 240.5,
+      "rsi": 78.22962307650405,
+      "score": 0.5490613231539612
+    },
+    {
+      "ticker": "ELV",
+      "name": "Elevance Health Inc",
+      "price": 392.68,
+      "rsi": 77.33834591689445,
+      "score": 0.5470448491068379
+    },
+    {
+      "ticker": "WKC",
+      "name": "World Fuel Services",
+      "price": 28.45,
+      "rsi": 77.77792921477379,
+      "score": 0.544636618287187
+    },
+    {
+      "ticker": "TBLA",
+      "name": "Taboola",
+      "price": 4.99,
+      "rsi": 77.31466339071073,
+      "score": 0.5412802024118417
+    },
+    {
+      "ticker": "CVS",
+      "name": "CVS헬스",
+      "price": 95.89,
+      "rsi": 76.16439627959518,
+      "score": 0.539065320186125
+    },
+    {
+      "ticker": "AIZ",
+      "name": "어슈어런트",
+      "price": 254.61,
+      "rsi": 75.83252869458428,
+      "score": 0.5316653615558808
+    },
+    {
+      "ticker": "NSIT",
+      "name": "Insight Enterpris",
+      "price": 88.9,
+      "rsi": 75.08476331357517,
+      "score": 0.5259353168382683
+    },
+    {
+      "ticker": "CNO",
+      "name": "CNO Financial Group Inc",
+      "price": 46.82,
+      "rsi": 74.85037854762213,
+      "score": 0.5242239038295182
+    },
+    {
+      "ticker": "NBIX",
+      "name": "뉴로크린 바이오사이언시스",
+      "price": 158.42,
+      "rsi": 74.57086699320652,
+      "score": 0.5234144405194013
+    },
+    {
+      "ticker": "WMG",
+      "name": "Warner Music Group",
+      "price": 33.43,
+      "rsi": 74.6708330616389,
+      "score": 0.5233191682953222
+    },
+    {
+      "ticker": "DVA",
+      "name": "다비타",
+      "price": 199.74,
+      "rsi": 74.29512475321789,
+      "score": 0.5213391261655308
+    },
+    {
+      "ticker": "GEN",
+      "name": "Gen Digital Inc",
+      "price": 23.45,
+      "rsi": 74.26137094744475,
+      "score": 0.5212191418483115
+    },
+    {
+      "ticker": "UFCS",
+      "name": "United Fire & Cas",
+      "price": 48.06,
+      "rsi": 74.10930332457842,
+      "score": 0.5188061926839963
+    },
+    {
+      "ticker": "KALV",
+      "name": "Kalvista Pharmaceuticals Inc",
+      "price": 26.73,
+      "rsi": 73.40273420809369,
+      "score": 0.5144582543382483
+    },
+    {
+      "ticker": "ZBRA",
+      "name": "Zebra Tech",
+      "price": 259.35,
+      "rsi": 72.52800489361472,
+      "score": 0.5094259812296388
+    },
+    {
+      "ticker": "SDRL",
+      "name": "Seadrill Ltd",
+      "price": 52.7,
+      "rsi": 72.6345747592446,
+      "score": 0.5087615288034858
+    },
+    {
+      "ticker": "PGNY",
+      "name": "Progyny Inc",
+      "price": 23.25,
+      "rsi": 72.50598452942523,
+      "score": 0.5078157869115418
+    },
+    {
+      "ticker": "FLOC",
+      "name": "Flowco Holdings Inc",
+      "price": 27.31,
+      "rsi": 72.07753405861399,
+      "score": 0.5046936502755985
+    },
+    {
+      "ticker": "SHLS",
+      "name": "쇼알스 테크놀로지",
+      "price": 10.33,
+      "rsi": 72.02438917168922,
+      "score": 0.5045602868059966
+    },
+    {
+      "ticker": "CHE",
+      "name": "Chemed Corp",
+      "price": 434.53,
+      "rsi": 71.51951257132221,
+      "score": 0.5016449481606593
+    },
+    {
+      "ticker": "ASTH",
+      "name": "Astrana Health Inc",
+      "price": 38.26,
+      "rsi": 71.21898647161775,
+      "score": 0.4986592428239862
+    }
+  ],
+  "summary": {
+    "total_top30": 30,
+    "web_signal_matched": 3,
+    "new_discoveries": 27
+  }
+}

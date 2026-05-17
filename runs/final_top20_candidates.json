@@ -1,0 +1,107 @@
+{
+  "web_signals": [
+    {
+      "ticker": "NVDA",
+      "name": "엔비디아 코퍼레이션",
+      "rank": 1,
+      "price": 225.32,
+      "rsi": 67.56330187103306,
+      "score": 0.7729431130972314,
+      "web_signal": "실적 발표 임박",
+      "strength": 5
+    },
+    {
+      "ticker": "ENPH",
+      "name": "인페이즈 에너지",
+      "rank": 2,
+      "price": 52.89,
+      "rsi": 79.90726631409643,
+      "score": 0.5616627996921749,
+      "web_signal": "상업용 제품 확대",
+      "strength": 4
+    },
+    {
+      "ticker": "MSFT",
+      "name": "마이크로소프트",
+      "rank": 3,
+      "price": 421.92,
+      "rsi": 61.6802862488528,
+      "score": 0.5572673590170316,
+      "web_signal": "AI 통합",
+      "strength": 4
+    }
+  ],
+  "new_discoveries": [
+    {
+      "ticker": "SLNO",
+      "name": "Soleno Therapeutics Inc",
+      "price": 53.01,
+      "rsi": 97.7595417327372,
+      "score": 0.6858291623699931
+    },
+    {
+      "ticker": "HUM",
+      "name": "휴매너",
+      "price": 305.12,
+      "rsi": 87.97170144026009,
+      "score": 0.6192814797101451
+    },
+    {
+      "ticker": "FTNT",
+      "name": "포티넷",
+      "price": 122.78,
+      "rsi": 85.33166849113786,
+      "score": 0.6022443825523665
+    },
+    {
+      "ticker": "GBTG",
+      "name": "Global Business Travel Group Inc",
+      "price": 9.34,
+      "rsi": 84.87838132335324,
+      "score": 0.5943838663540804
+    },
+    {
+      "ticker": "NL",
+      "name": "NL Industries Inc",
+      "price": 7.61,
+      "rsi": 81.66255785637391,
+      "score": 0.5716379049946173
+    },
+    {
+      "ticker": "UNH",
+      "name": "Unitedhealth Group",
+      "price": 393.85,
+      "rsi": 81.3919486048299,
+      "score": 0.5939759014523883
+    },
+    {
+      "ticker": "ASND",
+      "name": "Ascendis Pharma AS",
+      "price": 240.5,
+      "rsi": 78.22962307650405,
+      "score": 0.5490613231539612
+    },
+    {
+      "ticker": "WKC",
+      "name": "World Fuel Services",
+      "price": 28.45,
+      "rsi": 77.77792921477379,
+      "score": 0.544636618287187
+    },
+    {
+      "ticker": "ELV",
+      "name": "Elevance Health Inc",
+      "price": 392.68,
+      "rsi": 77.33834591689445,
+      "score": 0.5470448491068379
+    },
+    {
+      "ticker": "TBLA",
+      "name": "Taboola",
+      "price": 4.99,
+      "rsi": 77.31466339071073,
+      "score": 0.5412802024118417
+    }
+  ],
+  "total": 13
+}
