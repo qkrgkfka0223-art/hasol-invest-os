@@ -1,0 +1,265 @@
+{
+  "loop_id": "LOOP_20260518",
+  "loop_date": "2026-05-18",
+  "loop_time": "12:19 PM EDT",
+  "status": "루프종료 기록 완료",
+  "market_signal": "GO",
+  "market_conditions": {
+    "index_trend": "상방 (Nasdaq 신고점)",
+    "vix_level": "안정 (20 이하)",
+    "volume": "높음 (오후 중반)",
+    "sector_leaders": ["반도체", "AI", "에너지"],
+    "earnings_beat_rate": "84% (S&P 500)"
+  },
+  "top20": [
+    {
+      "rank": 1,
+      "ticker": "NVDA",
+      "signal_strength": "5/5",
+      "upside_probability": 0.95,
+      "entry_price": 223.70,
+      "target_price": 245,
+      "stop_loss": 215,
+      "reason": "반도체 강세 + 실적 깜짝 + 5월 20일 발표"
+    },
+    {
+      "rank": 2,
+      "ticker": "RAMP",
+      "signal_strength": "5/5",
+      "upside_probability": 0.92,
+      "entry_price": 28.50,
+      "target_price": 36,
+      "stop_loss": 24,
+      "reason": "AI 인프라 +26% + Publicis 계약"
+    },
+    {
+      "rank": 3,
+      "ticker": "MU",
+      "signal_strength": "5/5",
+      "upside_probability": 0.90,
+      "entry_price": 95.20,
+      "target_price": 110,
+      "stop_loss": 88,
+      "reason": "반도체 강세 + AI 칩 수요"
+    },
+    {
+      "rank": 4,
+      "ticker": "ASML",
+      "signal_strength": "5/5",
+      "upside_probability": 0.88,
+      "entry_price": 845.30,
+      "target_price": 920,
+      "stop_loss": 810,
+      "reason": "반도체 장비 + 9% 상승"
+    },
+    {
+      "rank": 5,
+      "ticker": "LRCX",
+      "signal_strength": "5/5",
+      "upside_probability": 0.87,
+      "entry_price": 178.45,
+      "target_price": 195,
+      "stop_loss": 165,
+      "reason": "반도체 장비 + 2.73% pre-market"
+    },
+    {
+      "rank": 6,
+      "ticker": "GOOG",
+      "signal_strength": "4/5",
+      "upside_probability": 0.85,
+      "entry_price": 195.80,
+      "target_price": 215,
+      "stop_loss": 185,
+      "reason": "실적 +90% beat + Capex $725B"
+    },
+    {
+      "rank": 7,
+      "ticker": "AMZN",
+      "signal_strength": "4/5",
+      "upside_probability": 0.84,
+      "entry_price": 215.60,
+      "target_price": 235,
+      "stop_loss": 205,
+      "reason": "실적 +70% beat + AI 인프라"
+    },
+    {
+      "rank": 8,
+      "ticker": "META",
+      "signal_strength": "4/5",
+      "upside_probability": 0.83,
+      "entry_price": 610.69,
+      "target_price": 650,
+      "stop_loss": 590,
+      "reason": "실적 +56% beat + AI 투자"
+    },
+    {
+      "rank": 9,
+      "ticker": "MSFT",
+      "signal_strength": "4/5",
+      "upside_probability": 0.82,
+      "entry_price": 425.30,
+      "target_price": 460,
+      "stop_loss": 410,
+      "reason": "Capex 증가 + AI 리더"
+    },
+    {
+      "rank": 10,
+      "ticker": "OXY",
+      "signal_strength": "4/5",
+      "upside_probability": 0.80,
+      "entry_price": 68.45,
+      "target_price": 78,
+      "stop_loss": 62,
+      "reason": "에너지 강세 + 유가 $110+"
+    },
+    {
+      "rank": 11,
+      "ticker": "CHE",
+      "signal_strength": "4/5",
+      "upside_probability": 0.78,
+      "entry_price": 42.10,
+      "target_price": 50,
+      "stop_loss": 38,
+      "reason": "LNG 시장 + 에너지 강세"
+    },
+    {
+      "rank": 12,
+      "ticker": "BIDU",
+      "signal_strength": "4/5",
+      "upside_probability": 0.77,
+      "entry_price": 145.80,
+      "target_price": 165,
+      "stop_loss": 135,
+      "reason": "Pre-market +3.95% + AI"
+    },
+    {
+      "rank": 13,
+      "ticker": "NOW",
+      "signal_strength": "4/5",
+      "upside_probability": 0.76,
+      "entry_price": 285.40,
+      "target_price": 310,
+      "stop_loss": 270,
+      "reason": "Pre-market +3.19% + 소프트웨어"
+    },
+    {
+      "rank": 14,
+      "ticker": "AVGO",
+      "signal_strength": "4/5",
+      "upside_probability": 0.75,
+      "entry_price": 198.60,
+      "target_price": 220,
+      "stop_loss": 185,
+      "reason": "반도체 + 광대역"
+    },
+    {
+      "rank": 15,
+      "ticker": "SNPS",
+      "signal_strength": "4/5",
+      "upside_probability": 0.74,
+      "entry_price": 128.90,
+      "target_price": 145,
+      "stop_loss": 118,
+      "reason": "반도체 설계 도구"
+    },
+    {
+      "rank": 16,
+      "ticker": "KLAC",
+      "signal_strength": "4/5",
+      "upside_probability": 0.73,
+      "entry_price": 156.30,
+      "target_price": 175,
+      "stop_loss": 145,
+      "reason": "반도체 장비"
+    },
+    {
+      "rank": 17,
+      "ticker": "JPM",
+      "signal_strength": "3/5",
+      "upside_probability": 0.72,
+      "entry_price": 225.40,
+      "target_price": 245,
+      "stop_loss": 215,
+      "reason": "금융 강세 + NII 증가"
+    },
+    {
+      "rank": 18,
+      "ticker": "XOM",
+      "signal_strength": "3/5",
+      "upside_probability": 0.70,
+      "entry_price": 118.50,
+      "target_price": 135,
+      "stop_loss": 110,
+      "reason": "에너지 + 유가 상승"
+    },
+    {
+      "rank": 19,
+      "ticker": "TMUS",
+      "signal_strength": "3/5",
+      "upside_probability": 0.68,
+      "entry_price": 198.20,
+      "target_price": 215,
+      "stop_loss": 185,
+      "reason": "AI 인프라 + 텔레콤"
+    },
+    {
+      "rank": 20,
+      "ticker": "QCOM",
+      "signal_strength": "3/5",
+      "upside_probability": 0.65,
+      "entry_price": 145.60,
+      "target_price": 160,
+      "stop_loss": 135,
+      "reason": "반도체 (약세 -11% but 기술력)"
+    }
+  ],
+  "execution_candidates": [
+    {
+      "rank": 1,
+      "ticker": "NVDA",
+      "upside_probability": 0.95,
+      "entry_price": 223.70,
+      "target_price": 245,
+      "stop_loss": 215
+    },
+    {
+      "rank": 2,
+      "ticker": "RAMP",
+      "upside_probability": 0.92,
+      "entry_price": 28.50,
+      "target_price": 36,
+      "stop_loss": 24
+    },
+    {
+      "rank": 3,
+      "ticker": "MU",
+      "upside_probability": 0.90,
+      "entry_price": 95.20,
+      "target_price": 110,
+      "stop_loss": 88
+    },
+    {
+      "rank": 4,
+      "ticker": "ASML",
+      "upside_probability": 0.88,
+      "entry_price": 845.30,
+      "target_price": 920,
+      "stop_loss": 810
+    },
+    {
+      "rank": 5,
+      "ticker": "LRCX",
+      "upside_probability": 0.87,
+      "entry_price": 178.45,
+      "target_price": 195,
+      "stop_loss": 165
+    }
+  ],
+  "top20_count": 20,
+  "execution_candidates_count": 5,
+  "applied_growth_rules": [
+    "Rule 20260514-01: 시장 판정 기준 (GO)",
+    "Rule 20260514-03~10: 뉴스 선정 및 점수 시스템",
+    "Rule 20260514-11~16: 가격 검증 기준 (R-Value ≥ 1.0)"
+  ]
+}

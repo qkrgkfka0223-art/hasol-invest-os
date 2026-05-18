@@ -1,1 +1,9 @@
-{"current_loop": "LOOP_20260517_COMPLETE", "last_update": "2026-05-17T12:00:00Z", "status": "루프종료 기록 완료", "market_signal": "SOFT_GO", "strategy_version": "1.0", "strategy_status": "완벽한 전체 전략 수립", "github_structure": "fixed", "top20_count": 13, "execution_candidates": 10, "next_action": "하람 지시 대기"}
+{
+  "current_loop": "LOOP_20260518_COMPLETE",
+  "status": "루프종료 기록 완료",
+  "market_signal": "GO",
+  "top20_count": 20,
+  "execution_candidates": 5,
+  "next_action": "하람 지시 대기",
+  "last_update": "2026-05-18T12:21:00Z"
+}
