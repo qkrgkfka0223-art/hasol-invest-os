@@ -1,0 +1,42 @@
+{
+  "FTNT": {
+    "price": 126.5,
+    "change": "+3.03%",
+    "volume_multiple": 0.9,
+    "news_signal": 4,
+    "technical": "\uc0c1\uc2b9",
+    "pe_ratio": 49.03,
+    "verdict": "\uc774\ubbf8 \uc0c1\uc2b9, \uace0\ud3c9\uac00",
+    "recommendation": "NO"
+  },
+  "GEN": {
+    "price": 24.34,
+    "change": "+3.80%",
+    "volume_multiple": 1.04,
+    "news_signal": 4,
+    "technical": "\uc0c1\uc2b9",
+    "pe_ratio": 14.94,
+    "verdict": "\uc800\ud3c9\uac00, \uac70\ub798\ub7c9 \uc815\uc0c1",
+    "recommendation": "YES"
+  },
+  "AVAH": {
+    "price": 7.7,
+    "change": "-0.26%",
+    "volume_multiple": 1.8,
+    "news_signal": 4,
+    "technical": "\uc0c1\uc2b9",
+    "pe_ratio": 6.36,
+    "verdict": "\ub9e4\uc6b0 \uc800\ud3c9\uac00, \uac70\ub798\ub7c9 \ud3ed\uc99d",
+    "recommendation": "CONDITIONAL"
+  },
+  "CHE": {
+    "price": 441.62,
+    "change": "+1.63%",
+    "volume_multiple": 0.62,
+    "news_signal": 4,
+    "technical": "\uc0c1\uc2b9",
+    "pe_ratio": 24.09,
+    "verdict": "\uc774\ubbf8 \uc0c1\uc2b9, \uac70\ub798\ub7c9 \uc57d\ud568",
+    "recommendation": "NO"
+  }
+}
