@@ -1,0 +1,103 @@
+{
+  "loop_id": "LOOP_20260519_01",
+  "loop_date": "2026-05-19",
+  "execution_time": "2026-05-19T09:05:04.663902Z",
+  "market_judgment": "SOFT_GO",
+  "market_judgment_reason": "Futures 소폭 하락, AI 파트너십 뉴스 있으나 기술주 약세 → 필터 강화",
+  "top20_count": 20,
+  "top20_tickers": [
+    "GOOGL",
+    "MSFT",
+    "META",
+    "AMZN",
+    "ASML",
+    "LRCX",
+    "KLAC",
+    "DDOG",
+    "HD",
+    "KEYS",
+    "TOL",
+    "CRM",
+    "NOW",
+    "AMD",
+    "AVGO",
+    "SNPS",
+    "SNOW",
+    "BEKE",
+    "ZTO",
+    "CAVA"
+  ],
+  "top3": [
+    {
+      "rank": 1,
+      "ticker": "DDOG",
+      "company": "Datadog",
+      "signal_strength": "4/5 (강함)",
+      "upside_probability": 75,
+      "news_signal": "Q1 실적 강세 (+32.2% YoY), AI 에이전트",
+      "technical_signal": "+20점 (기술적 강세)",
+      "upside_scenario": "AI 모니터링 수요 증가, 클라우드 인프라 성장",
+      "downside_scenario": "경쟁 심화 (Dynatrace, New Relic), 성장률 둔화",
+      "rebuttal": "AI 에이전트 시장 선도, 기관 투자자 관심 높음"
+    },
+    {
+      "rank": 2,
+      "ticker": "ASML",
+      "company": "ASML Holding",
+      "signal_strength": "4/5 (강함)",
+      "upside_probability": 70,
+      "news_signal": "반도체 장비, AI 칩 수요 증가",
+      "technical_signal": "+15점 (기술적 중간)",
+      "upside_scenario": "AI 칩 생산 가속, 반도체 장비 수요 급증",
+      "downside_scenario": "반도체 사이클 약화, 지정학적 리스크 (중국)",
+      "rebuttal": "NVIDIA, TSMC 수요 강세, 기술 독점 지위"
+    },
+    {
+      "rank": 3,
+      "ticker": "GOOGL",
+      "company": "Google (Alphabet)",
+      "signal_strength": "4/5 (강함)",
+      "upside_probability": 85,
+      "news_signal": "Blackstone 파트너십, AI 인프라 투자",
+      "technical_signal": "+25점 (52주 고가 근처, 프리마켓 강세)",
+      "upside_scenario": "AI 인프라 시장 선도, 클라우드 성장 가속",
+      "downside_scenario": "규제 리스크, 광고 시장 부진, AI 경쟁 심화",
+      "rebuttal": "Blackstone 파트너십 신호, 기관 매수 강세"
+    }
+  ],
+  "execution_candidates": [
+    {
+      "rank": 1,
+      "ticker": "DDOG",
+      "entry_price": null,
+      "target_price": null,
+      "stop_loss": null,
+      "r_value": null,
+      "status": "감지가 확인 대기"
+    },
+    {
+      "rank": 2,
+      "ticker": "ASML",
+      "entry_price": null,
+      "target_price": null,
+      "stop_loss": null,
+      "r_value": null,
+      "status": "감지가 확인 대기"
+    },
+    {
+      "rank": 3,
+      "ticker": "GOOGL",
+      "entry_price": null,
+      "target_price": null,
+      "stop_loss": null,
+      "r_value": null,
+      "status": "감지가 확인 대기"
+    }
+  ],
+  "applied_growth_rules": [
+    "Rule 20260514-01 (시장 판정: SOFT_GO)",
+    "Rule 20260514-03 (뉴스 신호 선정)",
+    "Rule 20260514-10 (실적 발표 72시간 제외: NVDA)",
+    "Rule 20260514-11 (Hard Filter: 부정 신호 제외)"
+  ]
+}
