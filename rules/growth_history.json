@@ -1,0 +1,11 @@
+{
+  "LOOP_20260519_01": {
+    "date": "2026-05-19",
+    "rules_applied": [
+      "Rule 20260514-01: \uc2dc\uc7a5 \ud310\uc815 (GO)",
+      "Rule 20260514-02: \uc0c1\uc2b9\ud655\ub960 \uae30\ubc18 Top20",
+      "Rule 20260514-03: \uc2e0\ub8b0\ub3c4 + \uc0c1\uc2b9\ud655\ub960 \uae30\ubc18 Top3"
+    ],
+    "new_rules_generated": []
+  }
+}

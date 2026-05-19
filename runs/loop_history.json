@@ -1,0 +1,17 @@
+{
+  "LOOP_20260519_01": {
+    "date": "2026-05-19",
+    "market_judgment": "GO",
+    "top20_count": 20,
+    "top3": [
+      "GEN",
+      "AVAH",
+      "CHE"
+    ],
+    "final_selection": "GEN",
+    "entry_price": 24.34,
+    "target_price": 32.22,
+    "stop_loss": 23.12,
+    "status": "completed"
+  }
+}
