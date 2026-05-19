@@ -1,9 +1,22 @@
 {
-  "current_loop": "LOOP_20260518_COMPLETE",
-  "status": "루프종료 기록 완료",
-  "market_signal": "GO",
-  "top20_count": 20,
-  "execution_candidates": 5,
-  "next_action": "하람 지시 대기",
-  "last_update": "2026-05-18T12:21:00Z"
+  "current_loop_id": "LOOP_20260519_01",
+  "current_loop_status": "루프준비 완료",
+  "market_judgment": "PENDING",
+  "market_judgment_time": null,
+  "top20_count": 0,
+  "top3_count": 0,
+  "execution_candidates": 0,
+  "last_update": "2026-05-19T21:45:00Z",
+  "next_action": "루프시작",
+  "applied_growth_rules": [
+    "Rule 20260514-01~21 (프로토콜 v2.0)",
+    "Rule 20260512-01~05 (초기 성장룰)",
+    "Rule 20260518-01~02"
+  ],
+  "external_brain": {
+    "storage": "GitHub",
+    "repository": "qkrgkfka0223-art/hasol-invest-os",
+    "last_commit": "3ca8f2e",
+    "last_commit_message": "[CLEANUP] 불필요한 오래된 기록 삭제"
+  }
 }
