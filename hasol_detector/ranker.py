@@ -8,8 +8,8 @@ CAP_BONUS = {
     "large_cap": -1,
     "mid_cap": 4,
     "small_cap": 7,
-    "micro_cap": 3,
-    "nano_cap": -12,
+    "micro_cap": 5,
+    "nano_cap": -2,
     "unknown": -15,
 }
 
@@ -17,6 +17,9 @@ def _event_score(tags: str) -> float:
     if not tags:
         return 0
     return max(EVENT_WEIGHTS.get(t, 0) for t in str(tags).split(";"))
+
+def _has_tag(tags: pd.Series, pattern: str) -> pd.Series:
+    return tags.astype(str).str.contains(pattern, regex=True, na=False)
 
 def score_candidates(df: pd.DataFrame, market_code: str = "SOFT_GO", config: HasolConfig | None = None) -> pd.DataFrame:
     config = config or HasolConfig()
@@ -37,6 +40,16 @@ def score_candidates(df: pd.DataFrame, market_code: str = "SOFT_GO", config: Has
     out.loc[strong_event & out["change_pct"].between(18, 35), "underreaction_score"] += 4
     out.loc[strong_event & (out["change_pct"] > 50), "underreaction_score"] -= 10
 
+    event_tags = out["event_tags"].astype(str)
+    out["sec_cluster_score"] = _has_tag(event_tags, "SEC_CLUSTER|OWNERSHIP_CHANGE|COMPLIANCE_RECOVERY").astype(int) * 9
+    out["famous_partner_score"] = (out.get("famous_partner_hits", "").astype(str).str.len() > 0).astype(int) * 6
+    out["biotech_expansion_score"] = _has_tag(event_tags, "CLINICAL_SUCCESS|BLA_ACCEPTED|BIOTECH_LICENSE").astype(int) * 8
+
+    out["micro_nano_detect_bonus"] = 0
+    micro_nano = out["cap_bucket"].isin(["micro_cap", "nano_cap"])
+    out.loc[micro_nano & (out["event_score"] >= 12) & (out["relative_volume"].fillna(0) >= 2), "micro_nano_detect_bonus"] += 8
+    out.loc[micro_nano & _has_tag(event_tags, "SEC_CLUSTER|COMPLIANCE_RECOVERY|FAMOUS_PARTNER|AI_INFRA|SPACE"), "micro_nano_detect_bonus"] += 5
+
     out["cap_bucket_bonus"] = out["cap_bucket"].map(CAP_BONUS).fillna(-10)
     out["market_score"] = {"GO": 8, "SOFT_GO": 3, "NO_TRADE": -25}.get(market_code, 0)
 
@@ -45,13 +58,17 @@ def score_candidates(df: pd.DataFrame, market_code: str = "SOFT_GO", config: Has
         (out["climax_volume_flag"].fillna(False).astype(bool) & (out["change_pct"] > 20)).astype(int) * 10 +
         out["long_upper_wick_flag"].fillna(False).astype(bool).astype(int) * 6 +
         (out["change_pct"] > 60).astype(int) * 16 +
-        (out["cap_bucket"].isin(["nano_cap"]) & (out["change_pct"] > 25)).astype(int) * 10
+        (out["post_spike_stage"].astype(str).isin(["day3_parabolic", "post_climax_fade"])).astype(int) * 10
     )
     out["overheat_penalty"] = overheat
 
     txt = out.get("headline", pd.Series([""] * len(out))).fillna("").str.lower()
     out["dilution_penalty"] = txt.str.contains("offering|registered direct|warrant|atm", regex=True).astype(int) * 15
-    out["bad_news_penalty"] = txt.str.contains("investigation|delisting|bankruptcy|going concern", regex=True).astype(int) * 20
+    out["bad_news_penalty"] = txt.str.contains("investigation|delisting|bankruptcy|going concern|halt|probe", regex=True).astype(int) * 20
+    out["stale_news_penalty"] = 0
+    if "headline_age_days" in out.columns:
+        out.loc[(pd.to_numeric(out["headline_age_days"], errors="coerce") > config.stale_news_days) & (out["change_pct"] > 20), "stale_news_penalty"] += 10
+
     out["data_quality_penalty"] = 0
     if "data_quality_status" in out.columns:
         out.loc[out["data_quality_status"].astype(str).str.contains("MISSING_MARKET_CAP|MISSING_PRICE", regex=True), "data_quality_penalty"] += 20
@@ -60,9 +77,14 @@ def score_candidates(df: pd.DataFrame, market_code: str = "SOFT_GO", config: Has
 
     out["total_score"] = (
         out["market_score"] + out["event_score"] + out["rs_score"] + out["volume_score"] +
-        out["price_score"] + out["underreaction_score"] + out["cap_bucket_bonus"] -
-        out["overheat_penalty"] - out["dilution_penalty"] - out["bad_news_penalty"] - out["data_quality_penalty"]
+        out["price_score"] + out["underreaction_score"] + out["cap_bucket_bonus"] +
+        out["sec_cluster_score"] + out["famous_partner_score"] + out["biotech_expansion_score"] + out["micro_nano_detect_bonus"] -
+        out["overheat_penalty"] - out["dilution_penalty"] - out["bad_news_penalty"] - out["stale_news_penalty"] - out["data_quality_penalty"]
     ).round(2)
+
+    out["detect_only_reason"] = ""
+    out.loc[out["cap_bucket"].isin(["micro_cap", "nano_cap"]), "detect_only_reason"] = "MICRO_NANO_DETECT_ONLY"
+    out.loc[out["post_spike_stage"].isin(["day2_continuation", "day3_parabolic", "post_climax_fade"]), "detect_only_reason"] = out["detect_only_reason"].mask(out["detect_only_reason"].eq(""), "POST_SPIKE_REVIEW_ONLY")
     return out.sort_values("total_score", ascending=False)
 
 def select_top5(top20: pd.DataFrame) -> pd.DataFrame:
@@ -83,12 +105,14 @@ def select_execution_candidates(top5: pd.DataFrame, market_code: str = "SOFT_GO"
         (top5["relative_volume"] < 8) &
         (~top5["parabolic_3d_flag"].fillna(False)) &
         (~top5["climax_volume_flag"].fillna(False)) &
+        (~top5["is_chase_risk"].fillna(False)) &
+        (~top5["cap_bucket"].isin(["micro_cap", "nano_cap", "unknown"])) &
         (top5["above_ma20"].fillna(False)) &
-        (top5["market_cap"].fillna(0) >= 50_000_000) &
+        (top5["market_cap"].fillna(0) >= 300_000_000) &
         (~top5.get("missing_price", False)) &
         (~top5.get("missing_market_cap", False))
     )
     out = top5[ok].copy()
-    out["execution_reason"] = "event+RS 유지, 과열 플래그 없음, 무효선 계산 가능, live mode manual unlock"
-    out["execution_lock_reason"] = "UNLOCKED_BY_FLAG_REQUIRES_HARAM_APPROVAL"
+    out["execution_reason"] = "live mode, web review still required, no chase flags, non-micro/nano, trend support maintained"
+    out["execution_lock_reason"] = "MANUAL_REVIEW_REQUIRED"
     return out
