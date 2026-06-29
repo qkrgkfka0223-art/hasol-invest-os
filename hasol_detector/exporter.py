@@ -59,7 +59,7 @@ def build_prediction_row(top20: pd.DataFrame, top5: pd.DataFrame, execution: pd.
         "execution_candidates": ";".join(execution["ticker"].astype(str).tolist()) if not execution.empty else "",
         "validation_status": validation_status,
         "data_source": f"{data_mode} + yfinance live-ready + edgartools optional hooks",
-        "thesis": "1차 감지 엔진: 이벤트+상대강도+시총버킷 분산으로 Top20 압축. 웹 정밀검증 전에는 매수 판단 아님.",
+        "thesis": "v1.3 감지 엔진: SEC cluster, biotech expansion, famous partner, post-spike stage를 반영해 Top20 압축. 웹 정밀검증 전에는 매수 판단 아님.",
         "confidence": confidence,
         "memo": f"HASOL_DETECTOR_V{VERSION} run; execution locked unless live+manual flag+web validation.",
     }
@@ -74,27 +74,60 @@ def build_prediction_row(top20: pd.DataFrame, top5: pd.DataFrame, execution: pd.
     return pd.DataFrame([row])
 
 def build_web_validation_checklist(top20: pd.DataFrame) -> pd.DataFrame:
+    cols = [
+        "rank", "ticker", "company", "detect_price", "cap_bucket", "market_cap", "change_pct", "relative_volume",
+        "event_tags", "axis_tags", "primary_event", "primary_axis", "famous_partner_hits", "biotech_event_hits", "sec_cluster_flag",
+        "post_spike_stage", "review_lock_reason", "detect_only_reason", "total_score",
+        "web_query", "sec_query", "price_query", "must_verify", "risk_flags_to_check", "decision_after_web", "decision_reason"
+    ]
     if top20 is None or top20.empty:
-        return pd.DataFrame(columns=["rank", "ticker", "company", "event_tags", "axis_tags", "detect_price", "cap_bucket", "web_query", "verify_news", "verify_price", "verify_risk", "decision_after_web"])
+        return pd.DataFrame(columns=cols)
     rows = []
     for _, r in top20.sort_values("top20_rank").iterrows():
         ticker = str(r.get("ticker", ""))
         company = str(r.get("company", ticker))
+        event_tags = str(r.get("event_tags", ""))
+        cap_bucket = str(r.get("cap_bucket", ""))
+        must_verify = []
+        if "SEC_CLUSTER" in event_tags or str(r.get("sec_cluster_flag", "")).lower() == "true":
+            must_verify.append("최근 5거래일 Form 3/4/13D/13G/8-K cluster 원문 확인")
+        if "BIOTECH_LICENSE" in event_tags or "CLINICAL_SUCCESS" in event_tags or "BLA_ACCEPTED" in event_tags:
+            must_verify.append("임상/FDA/BLA/license 원문과 발표 시간 확인")
+        if str(r.get("famous_partner_hits", "")):
+            must_verify.append("유명 파트너명이 실제 계약/수주인지 단순 언급인지 확인")
+        if cap_bucket in ["micro_cap", "nano_cap"]:
+            must_verify.append("초저시총 detect-only: offering/dilution/reverse split/delisting 확인")
+        if str(r.get("post_spike_stage", "")) in ["day2_continuation", "day3_parabolic", "post_climax_fade"]:
+            must_verify.append("post-spike stage: 추격 금지/복기 전환 여부 확인")
         rows.append({
             "rank": int(r.get("top20_rank", 0)),
             "ticker": ticker,
             "company": company,
-            "event_tags": str(r.get("event_tags", "")),
-            "axis_tags": str(r.get("axis_tags", "")),
             "detect_price": r.get("price", ""),
-            "cap_bucket": r.get("cap_bucket", ""),
-            "web_query": f"{ticker} {company} latest news SEC filing stock catalyst offering dilution",
-            "verify_news": "원문 뉴스/공시 시간, 이벤트 품질, 후행뉴스 여부 확인",
-            "verify_price": "현재가, detect_price 대비, 고점/저점, 윗꼬리, 거래량 지속 확인",
-            "verify_risk": "offering/dilution, delisting, 초저시총 펌핑, 3일 포물선 확인",
-            "decision_after_web": "KEEP / WATCH / REJECT / EXECUTION_CANDIDATE",
+            "cap_bucket": cap_bucket,
+            "market_cap": r.get("market_cap", ""),
+            "change_pct": r.get("change_pct", ""),
+            "relative_volume": r.get("relative_volume", ""),
+            "event_tags": event_tags,
+            "axis_tags": str(r.get("axis_tags", "")),
+            "primary_event": str(r.get("primary_event", "")),
+            "primary_axis": str(r.get("primary_axis", "")),
+            "famous_partner_hits": str(r.get("famous_partner_hits", "")),
+            "biotech_event_hits": str(r.get("biotech_event_hits", "")),
+            "sec_cluster_flag": r.get("sec_cluster_flag", ""),
+            "post_spike_stage": str(r.get("post_spike_stage", "")),
+            "review_lock_reason": str(r.get("review_lock_reason", "")),
+            "detect_only_reason": str(r.get("detect_only_reason", "")),
+            "total_score": r.get("total_score", ""),
+            "web_query": f"{ticker} {company} latest news catalyst stock offering dilution delisting",
+            "sec_query": f"{ticker} SEC filings Form 4 13D 13G 8-K latest",
+            "price_query": f"{ticker} stock price intraday high volume premarket afterhours",
+            "must_verify": " | ".join(must_verify) if must_verify else "뉴스 원문/현재가/거래량/후행뉴스 여부 확인",
+            "risk_flags_to_check": "offering; dilution; warrant; reverse split; delisting; halt; investigation; 3-day parabolic; long upper wick",
+            "decision_after_web": "KEEP / WATCH / REJECT / READY_FOR_MANUAL_REVIEW",
+            "decision_reason": "",
         })
-    return pd.DataFrame(rows)
+    return pd.DataFrame(rows)[cols]
 
 def _top_values(df: pd.DataFrame, col: str, n: int) -> list[str]:
     if df.empty or col not in df.columns:
