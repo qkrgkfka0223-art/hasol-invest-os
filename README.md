@@ -8,8 +8,8 @@ HASOL Invest OS는 미국주식 이벤트 기반 1차 감지 엔진이다.
 ## 현재 버전
 
 ```text
-HASOL_DETECTOR_V1.2
-상태: baseline detector
+HASOL_DETECTOR_V1.3
+상태: baseline detector + Top20 review helper
 실행후보: 기본 잠금
 웹검증: 필수
 시트기록: 아직 자동연동 금지
@@ -22,27 +22,45 @@ GitHub / code = 감지 엔진
 Web = 뉴스·공시·현재가 정밀검증
 HASOL = 시장 → 이벤트 → 축 → Top20/Top5 판단
 Sheet = 01_PREDICTION / 02_RESULT / 03_MISSED / 04_LEARNING 외부뇌
-Haram = 최종 승인
+User = 최종 승인
 ```
 
-## v1.2 핵심 변화
+## v1.3 핵심 변화
 
-1. `sample/live` 모드 분리
-2. sample 결과는 `SAMPLE_ONLY_DO_NOT_TRADE`로 잠금
-3. execution_candidates 기본 잠금
-4. live 모드도 웹 검증 전 실행 판단 금지
-5. `data_quality_status` 추가
-6. `run_metadata.json` 생성
-7. yfinance live-ready fetcher 추가
-8. SPY/QQQ 5일 상대강도 계산 개선
-9. market_cap / cap_bucket 기반 Top20 분산 유지
+최근 30일 급등 사례 복기에서 나온 실패 구조를 코드에 반영했다.
+
+1. `SEC_CLUSTER` 감지 추가
+   - Form 3 / Form 4 / 13D / 13G / 8-K 묶음 감지
+2. micro/nano 감지전용 분리
+   - 초저시총도 Top20 감지는 허용
+   - execution_candidates는 기본 잠금
+3. 바이오 이벤트 확장
+   - BLA accepted
+   - resubmitted BLA
+   - late-stage trial
+   - met primary endpoint
+   - exclusive rights / licensing deal
+4. 유명 파트너 키워드 추가
+   - Starlink / SpaceX / NASA / AMD / NVIDIA / DoD / FDA 등
+5. post-spike stage 분류 추가
+   - day1_spike
+   - day2_continuation
+   - day3_parabolic
+   - post_climax_fade
+   - base_or_quiet_rs
+6. `web_validation_checklist.csv` 강화
+   - 왜 감지됐는지
+   - 왜 잠겨야 하는지
+   - 웹에서 무엇을 확인해야 하는지
+7. `web_review_helper.py` 추가
+   - 검증 후 validated/rejected 파일 생성
 
 ## 실행
 
 샘플 구조 테스트:
 
 ```bash
-python main.py --mode sample --output-dir output_v12_sample
+python main.py --mode sample --output-dir output_v13_sample
 ```
 
 라이브 감지 테스트:
@@ -51,13 +69,21 @@ python main.py --mode sample --output-dir output_v12_sample
 python main.py --mode live --universe-csv universe_seed.csv --output-dir output_live --max-tickers 200
 ```
 
+웹검증 후 파일 분리:
+
+```bash
+python -m hasol_detector.web_review_helper \
+  --review-csv output_live/web_validation_checklist.csv \
+  --output-dir output_reviewed
+```
+
 실행후보 잠금 해제는 기본 금지다. 꼭 필요할 때만:
 
 ```bash
 python main.py --mode live --universe-csv universe_seed.csv --allow-execution-candidates
 ```
 
-그래도 최종 실행은 웹 검증과 하람 승인 후에만 한다.
+그래도 최종 실행은 웹 검증과 사용자 승인 후에만 한다.
 
 ## 산출물
 
@@ -74,6 +100,14 @@ prediction_row.csv
 run_metadata.json
 ```
 
+웹검증 후:
+
+```text
+validated_top20.csv
+validated_top5.csv
+rejected_after_web.csv
+```
+
 ## 원칙
 
 ```text
@@ -87,9 +121,9 @@ Top5와 execution_candidates는 같지 않다.
 ## 다음 개발 순서
 
 ```text
-v1.2 = baseline detector 고정
-v1.3 = Top20 웹검증 보조 강화
+v1.3 = Top20 웹검증 보조 강화 완료
 v1.4 = SEC live scanner 확장
+v1.5 = market judgment module
 v2.0 = Sheet 기록 연동 검토
 ```
 
@@ -99,5 +133,6 @@ v2.0 = Sheet 기록 연동 검토
 자동매매 금지
 sample 결과 매수판단 금지
 웹 검증 전 execution_candidate 확정 금지
+micro/nano 실행후보 자동확정 금지
 시트 자동기록 조기연동 금지
 ```
