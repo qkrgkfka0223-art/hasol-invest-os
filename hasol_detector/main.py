@@ -7,6 +7,7 @@ from .feature_builder import build_features
 from .sec_scanner import scan_sec_events
 from .catalyst_tagger import tag_catalysts
 from .cap_bucket import add_cap_bucket, select_top20_by_cap_bucket
+from .stage_classifier import add_post_spike_stage
 from .data_quality import add_data_quality_flags, build_run_metadata
 from .ranker import score_candidates, select_top5, select_execution_candidates
 from .validator import apply_kill_rules
@@ -41,7 +42,8 @@ def run(
     sec_events = scan_sec_events(tickers, sample=(mode == "sample"))
     tagged = tag_catalysts(quality, sec_events)
     bucketed = add_cap_bucket(tagged, config)
-    scored = score_candidates(bucketed, market_code=market_code, config=config)
+    staged = add_post_spike_stage(bucketed)
+    scored = score_candidates(staged, market_code=market_code, config=config)
     filtered, rejected = apply_kill_rules(scored, market_code=market_code, config=config)
     top20 = select_top20_by_cap_bucket(filtered, config)
     top5 = select_top5(top20)
@@ -53,7 +55,7 @@ def run(
     )
 
     metadata = build_run_metadata(
-        raw=bucketed,
+        raw=staged,
         scored=scored,
         top20=top20,
         top5=top5,
@@ -66,7 +68,7 @@ def run(
 
     paths = export_results(
         output_dir=output_dir,
-        raw=bucketed,
+        raw=staged,
         scored=scored,
         filtered=filtered,
         rejected=rejected,
@@ -96,7 +98,7 @@ def main():
     result = run(mode=mode, universe_csv=args.universe_csv, output_dir=args.output_dir, market_code=args.market_code, market_reason=args.market_reason, allow_execution_candidates=args.allow_execution_candidates, max_tickers=args.max_tickers)
     print(f"HASOL_DETECTOR_V{VERSION} | mode={mode} | market={args.market_code}")
     print("Top5")
-    top5_cols = [c for c in ["ticker", "company", "cap_bucket", "event_tags", "axis_tags", "change_pct", "relative_volume", "total_score", "data_quality_status"] if c in result["top5"].columns]
+    top5_cols = [c for c in ["ticker", "company", "cap_bucket", "event_tags", "axis_tags", "post_spike_stage", "review_lock_reason", "change_pct", "relative_volume", "total_score", "data_quality_status"] if c in result["top5"].columns]
     print(result["top5"][top5_cols].to_string(index=False))
     print("\nExecution candidates")
     if result["execution"].empty:
