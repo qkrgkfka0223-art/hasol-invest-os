@@ -3,6 +3,7 @@ name: HASOL Detector Run
 on:
   push:
     branches:
+      - main
       - ops/live-run-action
   workflow_dispatch:
 
