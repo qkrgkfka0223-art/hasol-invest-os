@@ -1,0 +1,54 @@
+name: HASOL Detector Run
+
+on:
+  push:
+    branches:
+      - main
+      - ops/live-run-action
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  detector-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run sample mode
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p output_v13_sample
+          python main.py --mode sample --output-dir output_v13_sample 2>&1 | tee output_v13_sample/run.log
+
+      - name: Run detector mode
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p output_live
+          python main.py --mode live --universe-csv universe_seed.csv --output-dir output_live --max-tickers 500 --market-code SOFT_GO 2>&1 | tee output_live/run.log
+
+      - name: Upload outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hasol-detector-output
+          path: |
+            output_v13_sample/**
+            output_live/**
+          if-no-files-found: warn
