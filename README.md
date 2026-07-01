@@ -8,65 +8,84 @@ HASOL Invest OS는 미국주식 이벤트 기반 1차 감지 엔진이다.
 ## 현재 버전
 
 ```text
-HASOL_DETECTOR_V1.3
-상태: baseline detector + Top20 review helper
+HASOL_DETECTOR_V1.4
+상태: candidate-builder first detector
 실행후보: 기본 잠금
 웹검증: 필수
-시트기록: 아직 자동연동 금지
+시트기록: GitHub output schema 확정 전 자동연동 금지
 ```
 
 ## 역할 분리
 
 ```text
-GitHub / code = 감지 엔진
+GitHub / code = 후보수집·감지 엔진
 Web = 뉴스·공시·현재가 정밀검증
 HASOL = 시장 → 이벤트 → 축 → Top20/Top5 판단
 Sheet = 01_PREDICTION / 02_RESULT / 03_MISSED / 04_LEARNING 외부뇌
 User = 최종 승인
 ```
 
-## v1.3 핵심 변화
+## v1.4 핵심 변화
 
-최근 30일 급등 사례 복기에서 나온 실패 구조를 코드에 반영했다.
+v1.3은 가격/거래량 구조는 잡았지만 후보풀이 좁고 `event_tags = NONE`이 많았다.
 
-1. `SEC_CLUSTER` 감지 추가
-   - Form 3 / Form 4 / 13D / 13G / 8-K 묶음 감지
-2. micro/nano 감지전용 분리
-   - 초저시총도 Top20 감지는 허용
-   - execution_candidates는 기본 잠금
-3. 바이오 이벤트 확장
-   - BLA accepted
-   - resubmitted BLA
-   - late-stage trial
-   - met primary endpoint
-   - exclusive rights / licensing deal
-4. 유명 파트너 키워드 추가
-   - Starlink / SpaceX / NASA / AMD / NVIDIA / DoD / FDA 등
-5. post-spike stage 분류 추가
-   - day1_spike
-   - day2_continuation
-   - day3_parabolic
-   - post_climax_fade
-   - base_or_quiet_rs
-6. `web_validation_checklist.csv` 강화
-   - 왜 감지됐는지
-   - 왜 잠겨야 하는지
-   - 웹에서 무엇을 확인해야 하는지
-7. `web_review_helper.py` 추가
-   - 검증 후 validated/rejected 파일 생성
+v1.4는 먼저 후보수집 구조를 코드 안에 넣는다.
+
+1. `candidate_builder.py` 추가
+   - universe seed + source별 discovery candidates 통합
+   - source_count / candidate_source / source_confidence 기록
+2. source layer 추가
+   - `source_price_movers.py`
+   - `source_news_catalysts.py`
+   - `source_earnings.py`
+   - `source_biotech_fda.py`
+3. discovery-only 원칙
+   - 새 source 후보는 매수후보가 아니다
+   - 웹검증 전 실행 금지
+4. event-first scoring 강화
+   - event_score
+   - source_count_score
+   - underreaction_score
+   - bad_event_penalty
+5. `web_validation_checklist.csv` 강화
+   - candidate_source
+   - source_confidence
+   - candidate_reason
+   - bad_event_hits
+   - must_verify
+6. execution 후보 조건 강화
+   - event_tags 없는 후보 실행 제외
+   - bad_event_flag 후보 실행 제외
 
 ## 실행
 
 샘플 구조 테스트:
 
 ```bash
-python main.py --mode sample --output-dir output_v13_sample
+python main.py --mode sample --output-dir output_v14_sample
 ```
 
 라이브 감지 테스트:
 
 ```bash
 python main.py --mode live --universe-csv universe_seed.csv --output-dir output_live --max-tickers 200
+```
+
+외부 후보 CSV를 추가해 실행:
+
+```bash
+python main.py \
+  --mode live \
+  --universe-csv universe_seed.csv \
+  --external-candidates-csv external_candidates.csv \
+  --output-dir output_live \
+  --max-tickers 300
+```
+
+seed source 없이 입력 CSV만 테스트:
+
+```bash
+python main.py --mode live --universe-csv universe_seed.csv --no-seed-sources
 ```
 
 웹검증 후 파일 분리:
@@ -89,6 +108,7 @@ python main.py --mode live --universe-csv universe_seed.csv --allow-execution-ca
 
 ```text
 raw_candidates.csv
+tagged_candidates.csv
 scored_candidates.csv
 filtered_candidates.csv
 rejected_candidates.csv
@@ -111,28 +131,12 @@ rejected_after_web.csv
 ## 원칙
 
 ```text
-Top20 = 예측 후보
-Top5 = 강한 시나리오 후보
+raw_candidates = 수집 후보
+Top20 = 볼 만한 후보
+Top5 = 강한 예측 후보
 execution_candidates = 실제 실행 가능 후보
 ```
 
 Top5와 execution_candidates는 같지 않다.
 
-## 다음 개발 순서
-
-```text
-v1.3 = Top20 웹검증 보조 강화 완료
-v1.4 = SEC live scanner 확장
-v1.5 = market judgment module
-v2.0 = Sheet 기록 연동 검토
-```
-
-## 금지
-
-```text
-자동매매 금지
-sample 결과 매수판단 금지
-웹 검증 전 execution_candidate 확정 금지
-micro/nano 실행후보 자동확정 금지
-시트 자동기록 조기연동 금지
-```
+`DISCOVERY_ONLY` 후보는 원문 검증 전 매수후보가 아니다.
