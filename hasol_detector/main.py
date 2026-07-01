@@ -1,7 +1,7 @@
 from __future__ import annotations
 import argparse
 from .config import HasolConfig, VERSION
-from .universe import load_universe
+from .candidate_builder import build_candidate_pool, attach_candidate_context
 from .price_fetcher import fetch_sample_prices, fetch_yfinance_prices
 from .feature_builder import build_features
 from .sec_scanner import scan_sec_events
@@ -22,13 +22,19 @@ def run(
     market_reason: str = "selective risk-on; web validation required",
     allow_execution_candidates: bool = False,
     max_tickers: int | None = None,
+    external_candidates_csv: str | None = None,
+    include_seed_sources: bool = True,
 ):
     config = HasolConfig()
     if mode not in {"sample", "live"}:
         raise ValueError("mode must be 'sample' or 'live'")
 
-    universe = load_universe(universe_csv)
-    tickers = universe["ticker"].tolist()
+    candidate_pool = build_candidate_pool(
+        universe_csv=universe_csv,
+        external_candidates_csv=external_candidates_csv,
+        include_seed_sources=include_seed_sources,
+    )
+    tickers = candidate_pool["ticker"].tolist()
     if max_tickers is None:
         max_tickers = config.max_live_tickers
 
@@ -37,6 +43,7 @@ def run(
     else:
         profile_df, history_df = fetch_yfinance_prices(tickers, include_benchmarks=True, max_tickers=max_tickers)
 
+    profile_df = attach_candidate_context(profile_df, candidate_pool)
     features = build_features(profile_df, history_df)
     quality = add_data_quality_flags(features, data_mode=mode, config=config)
     sec_events = scan_sec_events(tickers, sample=(mode == "sample"))
@@ -65,6 +72,12 @@ def run(
     )
     metadata["market_reason"] = market_reason
     metadata["universe_csv"] = universe_csv or "built_in_sample_universe"
+    metadata["external_candidates_csv"] = external_candidates_csv or "none"
+    metadata["candidate_pool_count"] = int(len(candidate_pool))
+    metadata["candidate_sources"] = sorted(set(";".join(candidate_pool.get("candidate_source", [] ).astype(str).tolist()).split(";"))) if not candidate_pool.empty else []
+    metadata["event_tagged_count"] = int((scored.get("event_tags", "NONE").astype(str) != "NONE").sum()) if not scored.empty else 0
+    metadata["event_tag_none_count"] = int((scored.get("event_tags", "NONE").astype(str) == "NONE").sum()) if not scored.empty else 0
+    metadata["execution_policy"] = "LOCKED_UNTIL_WEB_VALIDATION"
 
     paths = export_results(
         output_dir=output_dir,
@@ -84,10 +97,12 @@ def run(
 
 
 def main():
-    parser = argparse.ArgumentParser(description=f"HASOL_DETECTOR_V{VERSION}: event-first US stock detection engine")
+    parser = argparse.ArgumentParser(description=f"HASOL_DETECTOR_V{VERSION}: candidate-builder first US stock detection engine")
     parser.add_argument("--mode", choices=["sample", "live"], default="sample")
     parser.add_argument("--sample", action="store_true")
     parser.add_argument("--universe-csv", default=None)
+    parser.add_argument("--external-candidates-csv", default=None)
+    parser.add_argument("--no-seed-sources", action="store_true", help="Use only universe/external CSV candidates; disable v1.4 seed sources")
     parser.add_argument("--output-dir", default="output")
     parser.add_argument("--market-code", default="SOFT_GO", choices=["GO", "SOFT_GO", "NO_TRADE"])
     parser.add_argument("--market-reason", default="selective risk-on; web validation required")
@@ -95,10 +110,21 @@ def main():
     parser.add_argument("--allow-execution-candidates", action="store_true")
     args = parser.parse_args()
     mode = "sample" if args.sample else args.mode
-    result = run(mode=mode, universe_csv=args.universe_csv, output_dir=args.output_dir, market_code=args.market_code, market_reason=args.market_reason, allow_execution_candidates=args.allow_execution_candidates, max_tickers=args.max_tickers)
+    result = run(
+        mode=mode,
+        universe_csv=args.universe_csv,
+        output_dir=args.output_dir,
+        market_code=args.market_code,
+        market_reason=args.market_reason,
+        allow_execution_candidates=args.allow_execution_candidates,
+        max_tickers=args.max_tickers,
+        external_candidates_csv=args.external_candidates_csv,
+        include_seed_sources=not args.no_seed_sources,
+    )
     print(f"HASOL_DETECTOR_V{VERSION} | mode={mode} | market={args.market_code}")
+    print(f"Candidate pool: {result['metadata'].get('candidate_pool_count')} | event-tagged: {result['metadata'].get('event_tagged_count')}")
     print("Top5")
-    top5_cols = [c for c in ["ticker", "company", "cap_bucket", "event_tags", "axis_tags", "post_spike_stage", "review_lock_reason", "change_pct", "relative_volume", "total_score", "data_quality_status"] if c in result["top5"].columns]
+    top5_cols = [c for c in ["ticker", "company", "cap_bucket", "candidate_source", "source_count", "event_tags", "axis_tags", "post_spike_stage", "review_lock_reason", "change_pct", "relative_volume", "total_score", "data_quality_status"] if c in result["top5"].columns]
     print(result["top5"][top5_cols].to_string(index=False))
     print("\nExecution candidates")
     if result["execution"].empty:
