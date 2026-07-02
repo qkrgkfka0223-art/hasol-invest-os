@@ -12,6 +12,8 @@ from .data_quality import add_data_quality_flags, build_run_metadata
 from .ranker import score_candidates, select_top5, select_execution_candidates
 from .validator import apply_kill_rules
 from .exporter import export_results
+from .daily_movers import MoverConfig, build_daily_movers, write_daily_mover_outputs
+from .capture_analyzer import analyze_capture
 
 
 def run(
@@ -24,6 +26,8 @@ def run(
     max_tickers: int | None = None,
     external_candidates_csv: str | None = None,
     include_seed_sources: bool = True,
+    build_movers: bool = False,
+    mover_lookback_days: int = 14,
 ):
     config = HasolConfig()
     if mode not in {"sample", "live"}:
@@ -93,6 +97,17 @@ def run(
         data_mode=mode,
         run_metadata=metadata,
     )
+
+    if build_movers:
+        mover_cfg = MoverConfig(lookback_days=mover_lookback_days, top_n=20)
+        raw_movers, tradable_movers = build_daily_movers(history_df, mover_cfg)
+        mover_paths = write_daily_mover_outputs(raw_movers, tradable_movers, output_dir)
+        paths.update(mover_paths)
+        capture_paths = analyze_capture(mover_paths["daily_top20_gainers_14d.csv"], output_dir, output_dir)
+        paths.update(capture_paths)
+        metadata["daily_mover_rows"] = int(len(raw_movers))
+        metadata["daily_mover_date_count"] = int(raw_movers["date"].nunique()) if not raw_movers.empty else 0
+
     return {"paths": paths, "top20": top20, "top5": top5, "execution": execution, "rejected": rejected, "metadata": metadata}
 
 
@@ -108,6 +123,8 @@ def main():
     parser.add_argument("--market-reason", default="selective risk-on; web validation required")
     parser.add_argument("--max-tickers", type=int, default=None)
     parser.add_argument("--allow-execution-candidates", action="store_true")
+    parser.add_argument("--build-movers", action="store_true", help="Build daily Top20 mover files and capture report from fetched history")
+    parser.add_argument("--mover-lookback-days", type=int, default=14)
     args = parser.parse_args()
     mode = "sample" if args.sample else args.mode
     result = run(
@@ -120,9 +137,13 @@ def main():
         max_tickers=args.max_tickers,
         external_candidates_csv=args.external_candidates_csv,
         include_seed_sources=not args.no_seed_sources,
+        build_movers=args.build_movers,
+        mover_lookback_days=args.mover_lookback_days,
     )
     print(f"HASOL_DETECTOR_V{VERSION} | mode={mode} | market={args.market_code}")
     print(f"Candidate pool: {result['metadata'].get('candidate_pool_count')} | event-tagged: {result['metadata'].get('event_tagged_count')}")
+    if args.build_movers:
+        print(f"Daily movers: rows={result['metadata'].get('daily_mover_rows')} | dates={result['metadata'].get('daily_mover_date_count')}")
     print("Top5")
     top5_cols = [c for c in ["ticker", "company", "cap_bucket", "candidate_source", "source_count", "event_tags", "axis_tags", "post_spike_stage", "review_lock_reason", "change_pct", "relative_volume", "total_score", "data_quality_status"] if c in result["top5"].columns]
     print(result["top5"][top5_cols].to_string(index=False))
