@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from io import StringIO
 import pandas as pd
 
 NASDAQ_LISTED_URL = "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
@@ -15,11 +14,11 @@ def _read_pipe_file(url: str) -> pd.DataFrame:
     return df
 
 
-def load_us_listed_universe(include_etfs: bool = False, limit: int | None = None) -> pd.DataFrame:
+def load_us_listed_universe(include_etfs: bool = False, limit: int | None = None, sample: bool = False, seed: int = 42) -> pd.DataFrame:
     """Load US listed tickers from Nasdaq Trader symbol directories.
 
-    This is for mover generation, not execution approval.
-    It intentionally keeps a broad universe before execution filters.
+    Use sample=True for smoke runs so the list is not biased toward A-tickers.
+    Use limit=None for full-universe mover generation.
     """
     frames = []
     try:
@@ -48,5 +47,8 @@ def load_us_listed_universe(include_etfs: bool = False, limit: int | None = None
         df = df[df["etf"].ne("Y")]
     df = df.drop_duplicates("ticker").sort_values("ticker").reset_index(drop=True)
     if limit:
-        df = df.head(limit)
+        if sample:
+            df = df.sample(n=min(limit, len(df)), random_state=seed).sort_values("ticker").reset_index(drop=True)
+        else:
+            df = df.head(limit)
     return df
