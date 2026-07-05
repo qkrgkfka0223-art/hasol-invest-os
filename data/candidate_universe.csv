@@ -1,0 +1,49 @@
+ticker,group,axis,event_type,watch_reason,liquidity_bucket,risk_bucket,execution_allowed
+ANET,A,ai_infra,earnings_contract,AI networking/datacenter relative strength,liquid,normal,yes
+VRT,A,ai_infra,earnings_backlog,AI datacenter power/cooling,liquid,normal,yes
+DELL,A,ai_infra,earnings_backlog,AI server demand and enterprise refresh,liquid,normal,yes
+SMCI,A,ai_infra,earnings_recovery,AI server volatility watch,liquid,high,conditional
+MRVL,A,semiconductor,earnings_guidance,AI custom silicon/networking recovery,liquid,normal,yes
+AVGO,A,semiconductor,earnings_ai,AI infrastructure bellwether,liquid,normal,yes
+AMD,A,semiconductor,product_cycle,AI accelerator follow-through,liquid,normal,yes
+CLS,A,ai_infra,earnings_backlog,AI hardware manufacturing strength,liquid,normal,yes
+ETN,A,power_grid,earnings_backlog,electrical infrastructure demand,liquid,normal,yes
+PWR,A,power_grid,contract_backlog,grid construction and utility capex,liquid,normal,yes
+VST,A,power_energy,power_demand,datacenter power demand,liquid,normal,yes
+CEG,A,nuclear_power,power_contract,nuclear power demand,liquid,normal,yes
+SMR,A,nuclear_power,policy_contract,small modular reactor policy/event watch,medium,high,conditional
+OKLO,A,nuclear_power,policy_contract,advanced nuclear event watch,medium,high,conditional
+NNE,A,nuclear_power,policy_contract,nuclear microcap watch,medium,extreme,no
+RKLB,A,space_defense,contract_launch,space/defense contract and launch cadence,liquid,normal,yes
+LUNR,A,space_defense,contract_mission,lunar/space mission catalyst,medium,high,conditional
+ASTS,A,space_telecom,launch_network,satellite-to-phone execution,liquid,high,conditional
+AXON,A,defense_public_safety,earnings_contract,public safety tech strength,liquid,normal,yes
+KTOS,A,defense,contract,defense drone and systems contract flow,medium,normal,yes
+PL,A,space_data,contract,space imaging/data contract watch,medium,high,conditional
+BKSY,A,space_data,contract,space intelligence contract watch,medium,high,conditional
+APP,A,software_ai,earnings_guidance,AI ad software earnings strength,liquid,normal,yes
+ELF,A,consumer_growth,earnings_guidance,consumer growth earnings surprise,liquid,normal,yes
+CELH,A,consumer_growth,earnings_distribution,beverage distribution/earnings rebound,liquid,normal,yes
+WING,A,consumer_growth,earnings,restaurant growth strength,liquid,normal,yes
+CROX,A,consumer_growth,earnings_turnaround,consumer turnaround watch,liquid,normal,yes
+ANF,A,consumer_growth,earnings_momentum,retail earnings momentum,liquid,normal,yes
+SRPT,B,biotech,FDA_clinical,binary FDA/clinical event,liquid,high,conditional
+MRNA,B,biotech,clinical_earnings,vaccine/clinical reset event,liquid,high,conditional
+KURA,B,biotech,clinical,FDA/clinical catalyst watch,medium,high,conditional
+EDIT,B,biotech,clinical_gene_editing,gene editing clinical catalyst,medium,high,conditional
+RXRX,B,biotech_ai,clinical_partner,AI drug discovery catalyst,liquid,high,conditional
+SDGR,B,biotech_ai,clinical_partner,AI drug discovery platform catalyst,medium,high,conditional
+CRVO,B,biotech,clinical_sec,clinical/SEC cluster watch,medium,high,conditional
+PRTA,B,biotech,clinical,neuro biotech event watch,medium,high,conditional
+ABVX,B,biotech,clinical,biotech momentum/event validation,liquid,high,conditional
+APGE,B,biotech,clinical,biotech clinical event validation,medium,high,conditional
+ABSI,B,biotech_ai,partnership,AI biotech partnership/momentum,medium,high,conditional
+ARQQ,C,review,mover,recurring mover review only,medium,high,no
+AHMA,C,review,mover,recurring mover review only,medium,extreme,no
+AIIO,C,review,mover,recurring mover review only,medium,extreme,no
+ASST,C,review,mover,recurring mover review only,medium,extreme,no
+AKTS,D,execution_ban,dilution_distress,distressed/penny risk,poor,extreme,no
+LHAI,D,execution_ban,extreme_mover,extreme post-spike/review only,poor,extreme,no
+ALIT,D,execution_ban,data_anomaly,possible corporate-action data anomaly,medium,extreme,no
+AIRT,D,execution_ban,low_volume,low-volume mover risk,poor,extreme,no
+AACPR,D,execution_ban,preferred_warrant,preferred/warrant-like security risk,poor,extreme,no
