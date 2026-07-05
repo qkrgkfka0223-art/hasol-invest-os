@@ -47,6 +47,13 @@ def score_candidates(df: pd.DataFrame, market_code: str = "SOFT_GO", config: Has
     out["biotech_expansion_score"] = _has_tag(event_tags, "CLINICAL_SUCCESS|BLA_ACCEPTED|BIOTECH_LICENSE").astype(int) * 8
     out["earnings_quality_score"] = _has_tag(event_tags, "EARNINGS|GUIDANCE_RAISE|BACKLOG_INCREASE").astype(int) * 6
 
+    out["watchlist_group_score"] = 0
+    group = out.get("watchlist_group", "").astype(str)
+    out.loc[group.str.contains("A", na=False), "watchlist_group_score"] += 8
+    out.loc[group.str.contains("B", na=False), "watchlist_group_score"] += 5
+    out.loc[group.str.contains("C", na=False), "watchlist_group_score"] -= 8
+    out.loc[group.str.contains("D", na=False), "watchlist_group_score"] -= 25
+
     out["micro_nano_detect_bonus"] = 0
     micro_nano = out["cap_bucket"].isin(["micro_cap", "nano_cap"])
     out.loc[micro_nano & (out["event_score"] >= 12) & (out["relative_volume"].fillna(0) >= 2), "micro_nano_detect_bonus"] += 8
@@ -80,7 +87,7 @@ def score_candidates(df: pd.DataFrame, market_code: str = "SOFT_GO", config: Has
 
     out["total_score"] = (
         out["market_score"] + out["event_score"] + out["source_count_score"] + out["rs_score"] + out["volume_score"] +
-        out["price_score"] + out["underreaction_score"] + out["cap_bucket_bonus"] +
+        out["price_score"] + out["underreaction_score"] + out["cap_bucket_bonus"] + out["watchlist_group_score"] +
         out["sec_cluster_score"] + out["famous_partner_score"] + out["biotech_expansion_score"] + out["earnings_quality_score"] + out["micro_nano_detect_bonus"] -
         out["overheat_penalty"] - out["dilution_penalty"] - out["bad_news_penalty"] - out["bad_event_penalty"] - out["stale_news_penalty"] - out["data_quality_penalty"]
     ).round(2)
@@ -90,6 +97,8 @@ def score_candidates(df: pd.DataFrame, market_code: str = "SOFT_GO", config: Has
     out.loc[out["post_spike_stage"].isin(["day2_continuation", "day3_parabolic", "post_climax_fade"]), "detect_only_reason"] = out["detect_only_reason"].mask(out["detect_only_reason"].eq(""), "POST_SPIKE_REVIEW_ONLY")
     out.loc[out.get("source_confidence", "").astype(str).str.contains("BIOTECH_LOCKED", regex=False, na=False), "detect_only_reason"] = out["detect_only_reason"].mask(out["detect_only_reason"].eq(""), "BIOTECH_WEB_VALIDATION_LOCK")
     out.loc[out.get("bad_event_flag", False).fillna(False).astype(bool), "detect_only_reason"] = out["detect_only_reason"].mask(out["detect_only_reason"].eq(""), "BAD_EVENT_REVIEW_LOCK")
+    out.loc[group.str.contains("C", na=False), "detect_only_reason"] = out["detect_only_reason"].mask(out["detect_only_reason"].eq(""), "C_GROUP_REVIEW_ONLY")
+    out.loc[group.str.contains("D", na=False), "detect_only_reason"] = out["detect_only_reason"].mask(out["detect_only_reason"].eq(""), "D_GROUP_EXECUTION_BAN")
     return out.sort_values("total_score", ascending=False)
 
 def select_top5(top20: pd.DataFrame) -> pd.DataFrame:
@@ -105,8 +114,12 @@ def select_execution_candidates(top5: pd.DataFrame, market_code: str = "SOFT_GO"
         return pd.DataFrame(columns=cols)
     if market_code == "NO_TRADE":
         return pd.DataFrame(columns=cols)
+    group = top5.get("watchlist_group", "").astype(str)
+    allowed = top5.get("execution_allowed", "").astype(str).str.lower()
     event_ok = top5["event_tags"].astype(str).ne("NONE")
+    watchlist_ok = group.str.contains("A|B", regex=True, na=False) & allowed.isin(["yes", "conditional"])
     ok = (
+        watchlist_ok &
         event_ok &
         (top5["change_pct"] < 25) &
         (top5["relative_volume"] < 8) &
@@ -121,6 +134,6 @@ def select_execution_candidates(top5: pd.DataFrame, market_code: str = "SOFT_GO"
         (~top5.get("missing_market_cap", False))
     )
     out = top5[ok].copy()
-    out["execution_reason"] = "live mode, event-tagged, web review still required, no chase flags, non-micro/nano, trend support maintained"
+    out["execution_reason"] = "live mode, A/B watchlist, event-tagged, web review still required, no chase flags, non-micro/nano, trend support maintained"
     out["execution_lock_reason"] = "MANUAL_REVIEW_REQUIRED"
     return out
