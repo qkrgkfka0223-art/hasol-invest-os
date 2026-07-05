@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import json
 import pandas as pd
+from .mover_quality import add_mover_quality_flags, add_pre_move_signals
 
 
 @dataclass
@@ -34,6 +35,8 @@ def build_daily_movers(history: pd.DataFrame, cfg: MoverConfig | None = None) ->
     h["gap_pct"] = (h["open"] / h["prev_close"] - 1.0) * 100.0
     h["intraday_return_pct"] = (h["close"] / h["open"] - 1.0) * 100.0
     h["dollar_volume"] = h["close"] * h["volume"]
+    h = add_pre_move_signals(h)
+    h = add_mover_quality_flags(h)
     h = h.dropna(subset=["return_1d", "prev_close"])
     dates = sorted(h["date"].unique())[-cfg.lookback_days:]
     h = h[h["date"].isin(dates)]
@@ -43,7 +46,7 @@ def build_daily_movers(history: pd.DataFrame, cfg: MoverConfig | None = None) ->
         day = h[h["date"] == d].copy().sort_values("return_1d", ascending=False)
         day["rank"] = range(1, len(day) + 1)
         raw.append(day.head(cfg.top_n))
-        ok = day[(day["close"] >= cfg.min_close) & (day["volume"] >= cfg.min_volume) & (day["dollar_volume"] >= cfg.min_dollar_volume)].copy()
+        ok = day[(day["close"] >= cfg.min_close) & (day["volume"] >= cfg.min_volume) & (day["dollar_volume"] >= cfg.min_dollar_volume) & (~day["is_anomaly"])].copy()
         ok["rank"] = range(1, len(ok) + 1)
         tradable.append(ok.head(cfg.top_n))
     return pd.concat(raw, ignore_index=True) if raw else pd.DataFrame(), pd.concat(tradable, ignore_index=True) if tradable else pd.DataFrame()
@@ -54,12 +57,16 @@ def write_daily_mover_outputs(raw: pd.DataFrame, tradable: pd.DataFrame, output_
     out.mkdir(parents=True, exist_ok=True)
     raw_path = out / "daily_top20_gainers_14d.csv"
     tradable_path = out / "daily_top20_tradable_gainers_14d.csv"
+    anomaly_path = out / "mover_anomalies.csv"
     meta_path = out / "daily_mover_metadata.json"
     raw.to_csv(raw_path, index=False)
     tradable.to_csv(tradable_path, index=False)
+    anomalies = raw[raw["is_anomaly"].astype(bool)] if not raw.empty and "is_anomaly" in raw.columns else pd.DataFrame()
+    anomalies.to_csv(anomaly_path, index=False)
     meta = {
         "raw_rows": int(len(raw)),
         "tradable_rows": int(len(tradable)),
+        "anomaly_rows": int(len(anomalies)),
         "date_count": int(raw["date"].nunique()) if not raw.empty else 0,
         "top_n": 20,
     }
@@ -67,5 +74,6 @@ def write_daily_mover_outputs(raw: pd.DataFrame, tradable: pd.DataFrame, output_
     return {
         "daily_top20_gainers_14d.csv": str(raw_path),
         "daily_top20_tradable_gainers_14d.csv": str(tradable_path),
+        "mover_anomalies.csv": str(anomaly_path),
         "daily_mover_metadata.json": str(meta_path),
     }
