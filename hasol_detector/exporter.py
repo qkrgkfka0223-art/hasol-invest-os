@@ -7,6 +7,7 @@ from .config import VERSION
 
 KST = timezone(timedelta(hours=9))
 
+
 def export_results(output_dir: str, raw: pd.DataFrame, scored: pd.DataFrame, filtered: pd.DataFrame, rejected: pd.DataFrame, top20: pd.DataFrame, top5: pd.DataFrame, execution: pd.DataFrame, market_code: str, market_reason: str, data_mode: str = "sample", run_metadata: dict | None = None) -> dict[str, str]:
     outdir = Path(output_dir)
     outdir.mkdir(parents=True, exist_ok=True)
@@ -36,6 +37,7 @@ def export_results(output_dir: str, raw: pd.DataFrame, scored: pd.DataFrame, fil
         paths["run_metadata.json"] = str(meta_path)
     return paths
 
+
 def build_prediction_row(top20: pd.DataFrame, top5: pd.DataFrame, execution: pd.DataFrame, market_code: str, market_reason: str, data_mode: str = "sample") -> pd.DataFrame:
     now = datetime.now(KST)
     events = _top_values(top20, "primary_event", 3)
@@ -59,7 +61,7 @@ def build_prediction_row(top20: pd.DataFrame, top5: pd.DataFrame, execution: pd.
         "execution_candidates": ";".join(execution["ticker"].astype(str).tolist()) if not execution.empty else "",
         "validation_status": validation_status,
         "data_source": f"{data_mode} + yfinance live-ready + edgartools optional hooks",
-        "thesis": "v1.3 감지 엔진: SEC cluster, biotech expansion, famous partner, post-spike stage를 반영해 Top20 압축. 웹 정밀검증 전에는 매수 판단 아님.",
+        "thesis": f"v{VERSION} 감지 엔진: 이벤트/시총분산/이동단계(move_phase)를 반영해 Top20 압축. 웹 정밀검증 전에는 매수 판단 아님.",
         "confidence": confidence,
         "memo": f"HASOL_DETECTOR_V{VERSION} run; execution locked unless live+manual flag+web validation.",
     }
@@ -73,9 +75,11 @@ def build_prediction_row(top20: pd.DataFrame, top5: pd.DataFrame, execution: pd.
             row[f"top{i+1}_detect_price"] = ""
     return pd.DataFrame([row])
 
+
 def build_web_validation_checklist(top20: pd.DataFrame) -> pd.DataFrame:
     cols = [
         "rank", "ticker", "company", "detect_price", "cap_bucket", "market_cap", "change_pct", "relative_volume",
+        "move_phase", "move_phase_reason", "execution_phase_ok",
         "event_tags", "axis_tags", "primary_event", "primary_axis", "famous_partner_hits", "biotech_event_hits", "sec_cluster_flag",
         "post_spike_stage", "review_lock_reason", "detect_only_reason", "total_score",
         "web_query", "sec_query", "price_query", "must_verify", "risk_flags_to_check", "decision_after_web", "decision_reason"
@@ -88,6 +92,7 @@ def build_web_validation_checklist(top20: pd.DataFrame) -> pd.DataFrame:
         company = str(r.get("company", ticker))
         event_tags = str(r.get("event_tags", ""))
         cap_bucket = str(r.get("cap_bucket", ""))
+        move_phase = str(r.get("move_phase", ""))
         must_verify = []
         if "SEC_CLUSTER" in event_tags or str(r.get("sec_cluster_flag", "")).lower() == "true":
             must_verify.append("최근 5거래일 Form 3/4/13D/13G/8-K cluster 원문 확인")
@@ -99,6 +104,8 @@ def build_web_validation_checklist(top20: pd.DataFrame) -> pd.DataFrame:
             must_verify.append("초저시총 detect-only: offering/dilution/reverse split/delisting 확인")
         if str(r.get("post_spike_stage", "")) in ["day2_continuation", "day3_parabolic", "post_climax_fade"]:
             must_verify.append("post-spike stage: 추격 금지/복기 전환 여부 확인")
+        if move_phase in ["HOT_SIGNAL_WATCH_ONLY", "CLIMAX_REVIEW_ONLY", "POST_CLIMAX_FADE"]:
+            must_verify.append("move_phase 잠금: 눌림/재돌파/무효선 없으면 실행후보 금지")
         rows.append({
             "rank": int(r.get("top20_rank", 0)),
             "ticker": ticker,
@@ -108,6 +115,9 @@ def build_web_validation_checklist(top20: pd.DataFrame) -> pd.DataFrame:
             "market_cap": r.get("market_cap", ""),
             "change_pct": r.get("change_pct", ""),
             "relative_volume": r.get("relative_volume", ""),
+            "move_phase": move_phase,
+            "move_phase_reason": str(r.get("move_phase_reason", "")),
+            "execution_phase_ok": r.get("execution_phase_ok", ""),
             "event_tags": event_tags,
             "axis_tags": str(r.get("axis_tags", "")),
             "primary_event": str(r.get("primary_event", "")),
@@ -123,11 +133,12 @@ def build_web_validation_checklist(top20: pd.DataFrame) -> pd.DataFrame:
             "sec_query": f"{ticker} SEC filings Form 4 13D 13G 8-K latest",
             "price_query": f"{ticker} stock price intraday high volume premarket afterhours",
             "must_verify": " | ".join(must_verify) if must_verify else "뉴스 원문/현재가/거래량/후행뉴스 여부 확인",
-            "risk_flags_to_check": "offering; dilution; warrant; reverse split; delisting; halt; investigation; 3-day parabolic; long upper wick",
+            "risk_flags_to_check": "offering; dilution; warrant; reverse split; delisting; halt; investigation; 3-day parabolic; long upper wick; VWAP lost; no invalidation line",
             "decision_after_web": "KEEP / WATCH / REJECT / READY_FOR_MANUAL_REVIEW",
             "decision_reason": "",
         })
     return pd.DataFrame(rows)[cols]
+
 
 def _top_values(df: pd.DataFrame, col: str, n: int) -> list[str]:
     if df.empty or col not in df.columns:
