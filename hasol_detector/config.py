@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-VERSION = "1.3"
+VERSION = "1.4"
 
 @dataclass(frozen=True)
 class CapBucketRule:
@@ -17,6 +17,8 @@ class HasolConfig:
     rel_volume_floor: float = 1.2
     min_history_bars: int = 50
     max_live_tickers: int = 500
+    target_raw_candidates_min: int = 100
+    target_raw_candidates_next: int = 300
     benchmark_tickers: tuple[str, str] = ("SPY", "QQQ")
     require_web_validation_for_execution: bool = True
     micro_nano_execution_locked: bool = True
@@ -42,6 +44,8 @@ class HasolConfig:
 
 EVENT_WEIGHTS = {
     "EARNINGS": 18,
+    "GUIDANCE_RAISE": 18,
+    "BACKLOG_INCREASE": 15,
     "FDA": 18,
     "CLINICAL_SUCCESS": 19,
     "BLA_ACCEPTED": 18,
@@ -67,20 +71,27 @@ EVENT_WEIGHTS = {
 }
 
 AXIS_KEYWORDS = {
-    "AI_INFRA": ["AI", "compute", "GPU", "data center", "AMD", "NVIDIA", "infrastructure", "Starlink"],
-    "DEFENSE": ["defense", "drone", "military", "DoD", "Army", "Navy", "contract"],
-    "BIOTECH": ["FDA", "Phase", "trial", "clinical", "biotech", "drug", "BLA", "endpoint"],
-    "ENERGY": ["battery", "solar", "energy", "storage", "grid"],
+    "AI_INFRA": ["AI", "compute", "GPU", "data center", "AMD", "NVIDIA", "infrastructure", "Starlink", "server", "optical", "cloud"],
+    "DEFENSE": ["defense", "drone", "military", "DoD", "Army", "Navy", "contract", "public safety"],
+    "BIOTECH": ["FDA", "Phase", "trial", "clinical", "biotech", "drug", "BLA", "endpoint", "NDA", "PDUFA"],
+    "ENERGY": ["battery", "solar", "energy", "storage", "grid", "uranium", "nuclear", "lithium", "rare earth"],
     "SPACE": ["space", "lunar", "satellite", "launch", "NASA", "SpaceX", "Artemis", "Starlink"],
     "SEC_FLOW": ["Form 3", "Form 4", "13D", "13G", "insider", "activist", "large holder"],
+    "EARNINGS_QUALITY": ["earnings", "guidance", "margin", "backlog", "revenue", "EPS"],
 }
 
 FAMOUS_PARTNER_KEYWORDS = [
     "Starlink", "SpaceX", "NASA", "Artemis", "AMD", "NVIDIA", "Microsoft", "Amazon", "Google",
-    "DoD", "Army", "Navy", "Air Force", "FDA"
+    "DoD", "Army", "Navy", "Air Force", "FDA", "AWS", "Google Cloud", "Oracle"
 ]
 
 BIOTECH_EXPANSION_KEYWORDS = [
     "BLA accepted", "resubmitted BLA", "late-stage trial", "met primary endpoint", "primary endpoint met",
-    "exclusive rights", "licensing deal", "license agreement", "Phase 3", "Type C meeting", "appeal win"
+    "exclusive rights", "licensing deal", "license agreement", "Phase 3", "Type C meeting", "appeal win",
+    "NDA", "PDUFA", "orphan drug", "fast track", "breakthrough therapy"
+]
+
+BAD_EVENT_KEYWORDS = [
+    "offering", "registered direct", "S-1 resale", "ATM program", "warrant", "reverse split",
+    "delisting", "Nasdaq notice", "going concern", "bankruptcy", "halt", "investigation"
 ]
