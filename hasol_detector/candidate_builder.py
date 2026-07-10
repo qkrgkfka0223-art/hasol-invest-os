@@ -5,6 +5,7 @@ from typing import Iterable
 import pandas as pd
 
 from .universe import load_universe
+from .us_universe import load_us_listed_universe
 from .watchlist_universe import watchlist_as_candidates, WATCHLIST_COLUMNS
 from .source_price_movers import load_price_mover_seed_candidates
 from .source_news_catalysts import load_news_catalyst_seed_candidates
@@ -69,6 +70,35 @@ def _seed_universe_frame(path: str | None) -> pd.DataFrame:
     return _ensure_columns(base, "universe_seed")
 
 
+def _broad_market_frame(limit: int, seed: int = 42) -> pd.DataFrame:
+    """Add a deterministic cross-market common-stock sample for broad discovery.
+
+    This source only widens coverage. It receives no event credibility by itself and
+    must earn rank through price/volume/relative-strength evidence or another source.
+    """
+    if limit <= 0:
+        return pd.DataFrame(columns=REQUIRED_COLUMNS + OPTIONAL_CONTEXT_COLUMNS)
+    try:
+        base = load_us_listed_universe(
+            include_etfs=False,
+            limit=limit,
+            sample=True,
+            seed=seed,
+            common_only=True,
+        )
+    except Exception:
+        # A network failure must not break the whole official run; the metadata and
+        # candidate count will expose degraded coverage.
+        return pd.DataFrame(columns=REQUIRED_COLUMNS + OPTIONAL_CONTEXT_COLUMNS)
+
+    base["candidate_source"] = "broad_us_universe"
+    base["source_reason"] = "broad US common-stock discovery; event and price validation required"
+    base["headline"] = ""
+    base["source_confidence"] = "BROAD_SCREEN_ONLY"
+    base["requires_web_validation"] = True
+    return _ensure_columns(base, "broad_us_universe")
+
+
 def _external_candidates_frame(path: str | None) -> pd.DataFrame:
     if not path:
         return pd.DataFrame(columns=REQUIRED_COLUMNS + OPTIONAL_CONTEXT_COLUMNS)
@@ -105,13 +135,20 @@ def build_candidate_pool(
     universe_csv: str | None = None,
     external_candidates_csv: str | None = None,
     include_seed_sources: bool = True,
+    broad_universe_limit: int = 350,
+    broad_universe_seed: int = 42,
 ) -> pd.DataFrame:
     """Build the broad discovery universe before price/event scoring.
 
     A/B watchlist names can become execution candidates after validation.
-    C names are review-only. D names are execution banned.
+    C names are review-only. D names are execution banned. Broad-market names are
+    discovery-only until event/price evidence and HASOL web validation confirm them.
     """
-    frames = [_watchlist_frame(), _seed_universe_frame(universe_csv)]
+    frames = [
+        _watchlist_frame(),
+        _seed_universe_frame(universe_csv),
+        _broad_market_frame(broad_universe_limit, broad_universe_seed),
+    ]
     ext = _external_candidates_frame(external_candidates_csv)
     if not ext.empty:
         frames.append(ext)
@@ -152,7 +189,20 @@ def build_candidate_pool(
     grouped["candidate_reason"] = grouped["source_reason"]
     grouped["web_validation_required"] = grouped["requires_web_validation"].astype(bool)
     grouped["discovery_status"] = "RAW_DISCOVERY_NOT_VALIDATED"
-    return grouped.sort_values(["source_count", "ticker"], ascending=[False, True]).reset_index(drop=True)
+
+    # Multi-source/event/watchlist candidates are fetched first; broad discovery
+    # fills the remaining market-coverage budget without displacing stronger leads.
+    grouped["priority_source"] = grouped["candidate_source"].str.contains(
+        r"watchlist_universe|price_mover|news_catalyst|earnings|biotech_fda|external_web",
+        case=False,
+        regex=True,
+        na=False,
+    ).astype(int)
+    grouped = grouped.sort_values(
+        ["priority_source", "source_count", "ticker"],
+        ascending=[False, False, True],
+    ).drop(columns=["priority_source"])
+    return grouped.reset_index(drop=True)
 
 
 def attach_candidate_context(profile_df: pd.DataFrame, candidate_pool: pd.DataFrame) -> pd.DataFrame:
