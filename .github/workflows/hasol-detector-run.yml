@@ -16,7 +16,7 @@ permissions:
 jobs:
   detector-run:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
@@ -32,6 +32,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Build broad live universe
+        run: |
+          python scripts/build_live_universe.py
+          test "$(($(wc -l < universe_live.csv) - 1))" -ge 300
+
       - name: Run sample mode
         shell: bash
         run: |
@@ -44,7 +49,15 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p output_live
-          python main.py --mode live --universe-csv universe_seed.csv --output-dir output_live --max-tickers 500 --market-code SOFT_GO 2>&1 | tee output_live/run.log
+          python main.py --mode live --universe-csv universe_live.csv --output-dir output_live --max-tickers 300 --market-code SOFT_GO 2>&1 | tee output_live/run.log
+
+      - name: Verify official outputs
+        shell: bash
+        run: |
+          set -e
+          for file in top20_candidates.csv top5_candidates.csv web_validation_checklist.csv execution_candidates.csv run_metadata.json; do
+            test -f "output_live/$file"
+          done
 
       - name: Upload outputs
         if: always()
@@ -52,6 +65,7 @@ jobs:
         with:
           name: hasol-detector-output
           path: |
+            universe_live.csv
             output_v13_sample/**
             output_live/**
           if-no-files-found: warn
