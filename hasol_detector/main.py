@@ -6,6 +6,7 @@ from .price_fetcher import fetch_sample_prices, fetch_yfinance_prices
 from .feature_builder import build_features
 from .sec_scanner import scan_sec_events
 from .catalyst_tagger import tag_catalysts
+from .forward_signal import add_forward_signals
 from .cap_bucket import add_cap_bucket, select_top20_by_cap_bucket
 from .stage_classifier import add_post_spike_stage
 from .data_quality import add_data_quality_flags, build_run_metadata
@@ -41,8 +42,9 @@ def run(
     quality = add_data_quality_flags(features, data_mode=mode, config=config)
     sec_events = scan_sec_events(tickers, sample=(mode == "sample"))
     tagged = tag_catalysts(quality, sec_events)
-    bucketed = add_cap_bucket(tagged, config)
-    staged = add_post_spike_stage(bucketed)
+    forward_tagged = add_forward_signals(tagged)
+    bucketed = add_cap_bucket(forward_tagged, config)
+    staged = add_post_spike_stage(bucketed, config=config)
     scored = score_candidates(staged, market_code=market_code, config=config)
     filtered, rejected = apply_kill_rules(scored, market_code=market_code, config=config)
     top20 = select_top20_by_cap_bucket(filtered, config)
@@ -52,6 +54,7 @@ def run(
         market_code=market_code,
         data_mode=mode,
         allow_execution=allow_execution_candidates,
+        config=config,
     )
 
     metadata = build_run_metadata(
@@ -65,6 +68,7 @@ def run(
     )
     metadata["market_reason"] = market_reason
     metadata["universe_csv"] = universe_csv or "built_in_sample_universe"
+    metadata["forward_candidate_count"] = int(staged.get("forward_candidate", False).sum()) if "forward_candidate" in staged.columns else 0
 
     paths = export_results(
         output_dir=output_dir,
@@ -84,7 +88,7 @@ def run(
 
 
 def main():
-    parser = argparse.ArgumentParser(description=f"HASOL_DETECTOR_V{VERSION}: event-first US stock detection engine")
+    parser = argparse.ArgumentParser(description=f"HASOL_DETECTOR_V{VERSION}: forward event-first US stock detection engine")
     parser.add_argument("--mode", choices=["sample", "live"], default="sample")
     parser.add_argument("--sample", action="store_true")
     parser.add_argument("--universe-csv", default=None)
@@ -98,7 +102,7 @@ def main():
     result = run(mode=mode, universe_csv=args.universe_csv, output_dir=args.output_dir, market_code=args.market_code, market_reason=args.market_reason, allow_execution_candidates=args.allow_execution_candidates, max_tickers=args.max_tickers)
     print(f"HASOL_DETECTOR_V{VERSION} | mode={mode} | market={args.market_code}")
     print("Top5")
-    top5_cols = [c for c in ["ticker", "company", "cap_bucket", "event_tags", "axis_tags", "post_spike_stage", "review_lock_reason", "change_pct", "relative_volume", "total_score", "data_quality_status"] if c in result["top5"].columns]
+    top5_cols = [c for c in ["ticker", "company", "cap_bucket", "event_tags", "future_event_tags", "fresh_catalyst_tags", "forward_reason", "move_phase", "review_lock_reason", "change_pct", "relative_volume", "total_score", "data_quality_status"] if c in result["top5"].columns]
     print(result["top5"][top5_cols].to_string(index=False))
     print("\nExecution candidates")
     if result["execution"].empty:
