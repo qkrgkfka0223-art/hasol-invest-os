@@ -25,6 +25,7 @@ def score_candidates(df: pd.DataFrame, market_code: str = "SOFT_GO", config: Has
     config = config or HasolConfig()
     out = df.copy()
     out["event_score"] = out["event_tags"].apply(_event_score)
+    out["source_count_score"] = np.log1p(pd.to_numeric(out.get("source_count", 1), errors="coerce").fillna(1)).clip(0, 2.2) * 4
     out["rs_score"] = out[["spy_relative_5d", "qqq_relative_5d"]].mean(axis=1).clip(-20, 25) * 0.8
     out["volume_score"] = np.log1p(out["relative_volume"].fillna(0)).clip(0, 3) * 6
     out["price_score"] = 0
@@ -44,6 +45,14 @@ def score_candidates(df: pd.DataFrame, market_code: str = "SOFT_GO", config: Has
     out["sec_cluster_score"] = _has_tag(event_tags, "SEC_CLUSTER|OWNERSHIP_CHANGE|COMPLIANCE_RECOVERY").astype(int) * 9
     out["famous_partner_score"] = (out.get("famous_partner_hits", "").astype(str).str.len() > 0).astype(int) * 6
     out["biotech_expansion_score"] = _has_tag(event_tags, "CLINICAL_SUCCESS|BLA_ACCEPTED|BIOTECH_LICENSE").astype(int) * 8
+    out["earnings_quality_score"] = _has_tag(event_tags, "EARNINGS|GUIDANCE_RAISE|BACKLOG_INCREASE").astype(int) * 6
+
+    out["watchlist_group_score"] = 0
+    group = out.get("watchlist_group", "").astype(str)
+    out.loc[group.str.contains("A", na=False), "watchlist_group_score"] += 8
+    out.loc[group.str.contains("B", na=False), "watchlist_group_score"] += 5
+    out.loc[group.str.contains("C", na=False), "watchlist_group_score"] -= 8
+    out.loc[group.str.contains("D", na=False), "watchlist_group_score"] -= 25
 
     out["micro_nano_detect_bonus"] = 0
     micro_nano = out["cap_bucket"].isin(["micro_cap", "nano_cap"])
@@ -65,6 +74,7 @@ def score_candidates(df: pd.DataFrame, market_code: str = "SOFT_GO", config: Has
     txt = out.get("headline", pd.Series([""] * len(out))).fillna("").str.lower()
     out["dilution_penalty"] = txt.str.contains("offering|registered direct|warrant|atm", regex=True).astype(int) * 15
     out["bad_news_penalty"] = txt.str.contains("investigation|delisting|bankruptcy|going concern|halt|probe", regex=True).astype(int) * 20
+    out["bad_event_penalty"] = out.get("bad_event_flag", False).fillna(False).astype(bool).astype(int) * 25
     out["stale_news_penalty"] = 0
     if "headline_age_days" in out.columns:
         out.loc[(pd.to_numeric(out["headline_age_days"], errors="coerce") > config.stale_news_days) & (out["change_pct"] > 20), "stale_news_penalty"] += 10
@@ -76,15 +86,19 @@ def score_candidates(df: pd.DataFrame, market_code: str = "SOFT_GO", config: Has
         out.loc[out["data_quality_status"].astype(str).str.contains("SAMPLE_MODE", regex=True), "data_quality_penalty"] += 0
 
     out["total_score"] = (
-        out["market_score"] + out["event_score"] + out["rs_score"] + out["volume_score"] +
-        out["price_score"] + out["underreaction_score"] + out["cap_bucket_bonus"] +
-        out["sec_cluster_score"] + out["famous_partner_score"] + out["biotech_expansion_score"] + out["micro_nano_detect_bonus"] -
-        out["overheat_penalty"] - out["dilution_penalty"] - out["bad_news_penalty"] - out["stale_news_penalty"] - out["data_quality_penalty"]
+        out["market_score"] + out["event_score"] + out["source_count_score"] + out["rs_score"] + out["volume_score"] +
+        out["price_score"] + out["underreaction_score"] + out["cap_bucket_bonus"] + out["watchlist_group_score"] +
+        out["sec_cluster_score"] + out["famous_partner_score"] + out["biotech_expansion_score"] + out["earnings_quality_score"] + out["micro_nano_detect_bonus"] -
+        out["overheat_penalty"] - out["dilution_penalty"] - out["bad_news_penalty"] - out["bad_event_penalty"] - out["stale_news_penalty"] - out["data_quality_penalty"]
     ).round(2)
 
     out["detect_only_reason"] = ""
     out.loc[out["cap_bucket"].isin(["micro_cap", "nano_cap"]), "detect_only_reason"] = "MICRO_NANO_DETECT_ONLY"
     out.loc[out["post_spike_stage"].isin(["day2_continuation", "day3_parabolic", "post_climax_fade"]), "detect_only_reason"] = out["detect_only_reason"].mask(out["detect_only_reason"].eq(""), "POST_SPIKE_REVIEW_ONLY")
+    out.loc[out.get("source_confidence", "").astype(str).str.contains("BIOTECH_LOCKED", regex=False, na=False), "detect_only_reason"] = out["detect_only_reason"].mask(out["detect_only_reason"].eq(""), "BIOTECH_WEB_VALIDATION_LOCK")
+    out.loc[out.get("bad_event_flag", False).fillna(False).astype(bool), "detect_only_reason"] = out["detect_only_reason"].mask(out["detect_only_reason"].eq(""), "BAD_EVENT_REVIEW_LOCK")
+    out.loc[group.str.contains("C", na=False), "detect_only_reason"] = out["detect_only_reason"].mask(out["detect_only_reason"].eq(""), "C_GROUP_REVIEW_ONLY")
+    out.loc[group.str.contains("D", na=False), "detect_only_reason"] = out["detect_only_reason"].mask(out["detect_only_reason"].eq(""), "D_GROUP_EXECUTION_BAN")
     return out.sort_values("total_score", ascending=False)
 
 def select_top5(top20: pd.DataFrame) -> pd.DataFrame:
@@ -100,19 +114,26 @@ def select_execution_candidates(top5: pd.DataFrame, market_code: str = "SOFT_GO"
         return pd.DataFrame(columns=cols)
     if market_code == "NO_TRADE":
         return pd.DataFrame(columns=cols)
+    group = top5.get("watchlist_group", "").astype(str)
+    allowed = top5.get("execution_allowed", "").astype(str).str.lower()
+    event_ok = top5["event_tags"].astype(str).ne("NONE")
+    watchlist_ok = group.str.contains("A|B", regex=True, na=False) & allowed.isin(["yes", "conditional"])
     ok = (
+        watchlist_ok &
+        event_ok &
         (top5["change_pct"] < 25) &
         (top5["relative_volume"] < 8) &
         (~top5["parabolic_3d_flag"].fillna(False)) &
         (~top5["climax_volume_flag"].fillna(False)) &
         (~top5["is_chase_risk"].fillna(False)) &
         (~top5["cap_bucket"].isin(["micro_cap", "nano_cap", "unknown"])) &
+        (~top5.get("bad_event_flag", False).fillna(False)) &
         (top5["above_ma20"].fillna(False)) &
         (top5["market_cap"].fillna(0) >= 300_000_000) &
         (~top5.get("missing_price", False)) &
         (~top5.get("missing_market_cap", False))
     )
     out = top5[ok].copy()
-    out["execution_reason"] = "live mode, web review still required, no chase flags, non-micro/nano, trend support maintained"
+    out["execution_reason"] = "live mode, A/B watchlist, event-tagged, web review still required, no chase flags, non-micro/nano, trend support maintained"
     out["execution_lock_reason"] = "MANUAL_REVIEW_REQUIRED"
     return out

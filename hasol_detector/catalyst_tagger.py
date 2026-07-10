@@ -1,28 +1,30 @@
 from __future__ import annotations
 import pandas as pd
-from .config import AXIS_KEYWORDS, FAMOUS_PARTNER_KEYWORDS, BIOTECH_EXPANSION_KEYWORDS
+from .config import AXIS_KEYWORDS, FAMOUS_PARTNER_KEYWORDS, BIOTECH_EXPANSION_KEYWORDS, BAD_EVENT_KEYWORDS
 
 EVENT_KEYWORDS = {
-    "EARNINGS": ["earnings", "guidance", "revenue", "profit", "EPS"],
-    "FDA": ["FDA", "clinical", "trial", "Phase", "approval", "clearance"],
-    "CLINICAL_SUCCESS": ["late-stage trial", "met primary endpoint", "primary endpoint met", "Phase 3", "reduced symptoms"],
+    "EARNINGS": ["earnings", "guidance", "revenue", "profit", "EPS", "margin", "backlog"],
+    "GUIDANCE_RAISE": ["guidance raise", "raised guidance", "raises outlook", "outlook raised"],
+    "BACKLOG_INCREASE": ["backlog", "record backlog", "bookings", "order growth"],
+    "FDA": ["FDA", "clinical", "trial", "Phase", "approval", "clearance", "NDA", "PDUFA"],
+    "CLINICAL_SUCCESS": ["late-stage trial", "met primary endpoint", "primary endpoint met", "Phase 3", "reduced symptoms", "statistically significant"],
     "BLA_ACCEPTED": ["BLA accepted", "resubmitted BLA", "BLA resubmission", "accepted BLA"],
     "BIOTECH_LICENSE": ["exclusive rights", "licensing deal", "license agreement", "pipeline expansion"],
-    "M&A": ["acquire", "merger", "takeover", "buyout"],
+    "M&A": ["acquire", "merger", "takeover", "buyout", "strategic alternatives"],
     "IPO": ["IPO", "S-1", "newly public"],
     "POLICY": ["policy", "tariff", "subsidy", "regulation", "government"],
-    "DEFENSE": ["defense", "drone", "military", "DoD", "Army", "Navy"],
+    "DEFENSE": ["defense", "drone", "military", "DoD", "Army", "Navy", "public safety"],
     "SPACE": ["space", "lunar", "satellite", "launch", "NASA", "SpaceX", "Artemis", "Starlink"],
-    "PRODUCT": ["launch", "product", "platform", "upgrade"],
+    "PRODUCT": ["launch", "product", "platform", "upgrade", "certification"],
     "CAPEX": ["capex", "capacity", "factory", "facility", "expansion"],
-    "SUPPLY_SHORTAGE": ["shortage", "supply", "constraint"],
-    "INSIDER_BUY": ["Form 4", "insider", "large holder"],
+    "SUPPLY_SHORTAGE": ["shortage", "supply", "constraint", "supply-chain", "supply chain"],
+    "INSIDER_BUY": ["Form 4", "insider buy", "insider purchase", "open market purchase"],
     "SEC_CLUSTER": ["Form 3", "Form 4", "13D", "13G", "8-K cluster", "ownership cluster"],
     "OWNERSHIP_CHANGE": ["13D", "13G", "ownership", "stake", "large holder", "activist"],
     "COMPLIANCE_RECOVERY": ["Nasdaq compliance", "compliance regained", "listing compliance"],
     "GOV_CONTRACT": ["contract", "award", "government", "federal"],
-    "AI_INFRA": ["AI", "compute", "GPU", "data center", "AMD", "NVIDIA"],
-    "DATA_CENTER": ["data center", "30MW", "power", "compute"],
+    "AI_INFRA": ["AI", "compute", "GPU", "data center", "AMD", "NVIDIA", "server", "optical", "cloud"],
+    "DATA_CENTER": ["data center", "30MW", "power", "compute", "cooling", "hosting"],
     "FAMOUS_PARTNER": FAMOUS_PARTNER_KEYWORDS,
     "SHORT_SQUEEZE": ["short interest", "squeeze"],
 }
@@ -53,6 +55,9 @@ def _sec_cluster_tag(sec_forms: str, sec_note: str) -> bool:
 def _biotech_expansion_tag(text: str) -> bool:
     return any(_contains_term(text, k) for k in BIOTECH_EXPANSION_KEYWORDS)
 
+def _bad_event_tags(text: str) -> list[str]:
+    return [k for k in BAD_EVENT_KEYWORDS if _contains_term(text, k)]
+
 def tag_catalysts(df: pd.DataFrame, sec_events: pd.DataFrame | None = None) -> pd.DataFrame:
     out = df.copy()
     if sec_events is not None and not sec_events.empty:
@@ -69,6 +74,8 @@ def tag_catalysts(df: pd.DataFrame, sec_events: pd.DataFrame | None = None) -> p
 
     combined = (
         out.get("headline", "").fillna("") + " " +
+        out.get("candidate_reason", "").fillna("") + " " +
+        out.get("candidate_source", "").fillna("") + " " +
         out.get("sec_event", "").fillna("") + " " +
         out.get("sec_form", "").fillna("") + " " +
         out.get("sec_note", "").fillna("")
@@ -79,6 +86,7 @@ def tag_catalysts(df: pd.DataFrame, sec_events: pd.DataFrame | None = None) -> p
     famous_partner_hits = []
     biotech_hits = []
     sec_cluster_flags = []
+    bad_event_hits = []
     for idx, text in combined.items():
         tags = _match_tags(text, EVENT_KEYWORDS)
         sec_cluster = _sec_cluster_tag(out.loc[idx].get("sec_form", ""), out.loc[idx].get("sec_note", ""))
@@ -90,17 +98,21 @@ def tag_catalysts(df: pd.DataFrame, sec_events: pd.DataFrame | None = None) -> p
         ax = _match_tags(text, AXIS_KEYWORDS)
         partners = [k for k in FAMOUS_PARTNER_KEYWORDS if _contains_term(text, k)]
         bios = [k for k in BIOTECH_EXPANSION_KEYWORDS if _contains_term(text, k)]
+        bads = _bad_event_tags(text)
         event_tags.append(";".join(tags) or "NONE")
         axis_tags.append(";".join(ax) or "NONE")
         famous_partner_hits.append(";".join(partners))
         biotech_hits.append(";".join(bios))
         sec_cluster_flags.append(bool(sec_cluster))
+        bad_event_hits.append(";".join(bads))
 
     out["event_tags"] = event_tags
     out["axis_tags"] = axis_tags
     out["famous_partner_hits"] = famous_partner_hits
     out["biotech_event_hits"] = biotech_hits
     out["sec_cluster_flag"] = sec_cluster_flags
+    out["bad_event_hits"] = bad_event_hits
+    out["bad_event_flag"] = out["bad_event_hits"].astype(str).str.len() > 0
     out["primary_event"] = out["event_tags"].apply(lambda s: s.split(";")[0] if s else "NONE")
     out["primary_axis"] = out["axis_tags"].apply(lambda s: s.split(";")[0] if s else "NONE")
     return out

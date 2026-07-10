@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Iterable
-from datetime import datetime, timedelta
+from datetime import datetime
 import random
 import pandas as pd
 
@@ -37,10 +37,15 @@ SAMPLE_PROFILES = {
     "SOUN": {"company":"SoundHound AI", "price":11.20, "prev_close":10.20, "market_cap":4_100_000_000, "sector":"Technology", "industry":"Software", "headline":"Voice AI product expansion"},
 }
 
+
+def _recent_business_days(n: int = 70) -> list[pd.Timestamp]:
+    end = pd.Timestamp(datetime.utcnow().date())
+    return list(pd.bdate_range(end=end, periods=n))
+
+
 def _make_history(ticker: str, price: float, prev_close: float, seed: int) -> pd.DataFrame:
     rng = random.Random(seed)
-    end = datetime.utcnow().date()
-    dates = [end - timedelta(days=i) for i in range(70)][::-1]
+    dates = _recent_business_days(70)
     start = max(0.5, prev_close * rng.uniform(0.75, 1.05))
     vals = []
     cur = start
@@ -52,13 +57,14 @@ def _make_history(ticker: str, price: float, prev_close: float, seed: int) -> pd
         low = cur * rng.uniform(0.945, 0.995)
         open_ = cur * rng.uniform(0.975, 1.025)
         vol = rng.randint(150_000, 2_500_000)
-        vals.append({"date": d, "ticker": ticker, "open": open_, "high": high, "low": low, "close": cur, "volume": vol})
+        vals.append({"date": d.date(), "ticker": ticker, "open": open_, "high": high, "low": low, "close": cur, "volume": vol})
     vals[-1]["open"] = prev_close * rng.uniform(0.98, 1.08)
     vals[-1]["close"] = price
     vals[-1]["high"] = max(price, vals[-1]["open"]) * rng.uniform(1.01, 1.12)
     vals[-1]["low"] = min(price, vals[-1]["open"]) * rng.uniform(0.90, 0.99)
     vals[-1]["volume"] = rng.randint(900_000, 35_000_000)
     return pd.DataFrame(vals)
+
 
 def fetch_sample_prices(tickers: Iterable[str]) -> tuple[pd.DataFrame, pd.DataFrame]:
     profiles = []
@@ -73,6 +79,7 @@ def fetch_sample_prices(tickers: Iterable[str]) -> tuple[pd.DataFrame, pd.DataFr
         histories.append(_make_history(t, p["price"], p["prev_close"], idx + 17))
     return pd.DataFrame(profiles), pd.concat(histories, ignore_index=True)
 
+
 def _safe_info(obj) -> dict:
     try:
         return obj.get_info() or {}
@@ -82,12 +89,14 @@ def _safe_info(obj) -> dict:
         except Exception:
             return {}
 
+
 def _fast_value(obj, key: str, default=None):
     try:
         fast = getattr(obj, "fast_info", {}) or {}
         return fast.get(key, default)
     except Exception:
         return default
+
 
 def _normalise_history(hist: pd.DataFrame, ticker: str) -> pd.DataFrame:
     if hist is None or hist.empty:
@@ -99,6 +108,7 @@ def _normalise_history(hist: pd.DataFrame, ticker: str) -> pd.DataFrame:
     for c in ["open", "high", "low", "close", "volume"]:
         h[c] = pd.to_numeric(h[c], errors="coerce")
     return h[["date", "ticker", "open", "high", "low", "close", "volume"]].dropna(subset=["close"])
+
 
 def fetch_yfinance_prices(tickers: Iterable[str], include_benchmarks: bool = True, max_tickers: int | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
     try:
@@ -149,3 +159,39 @@ def fetch_yfinance_prices(tickers: Iterable[str], include_benchmarks: bool = Tru
     if errors:
         profile.attrs["fetch_errors"] = errors
     return profile, history
+
+
+def fetch_yfinance_history_only(tickers: Iterable[str], period: str = "1mo", max_tickers: int | None = None, chunk_size: int = 80) -> pd.DataFrame:
+    try:
+        import yfinance as yf
+    except Exception as exc:
+        raise RuntimeError("yfinance is not installed. Run `pip install -r requirements.txt`.") from exc
+    unique = []
+    for t in tickers:
+        s = str(t).upper().strip().replace(".", "-")
+        if s and s not in unique:
+            unique.append(s)
+    if max_tickers:
+        unique = unique[:max_tickers]
+    histories = []
+    for i in range(0, len(unique), chunk_size):
+        chunk = unique[i:i + chunk_size]
+        try:
+            data = yf.download(" ".join(chunk), period=period, interval="1d", group_by="ticker", auto_adjust=False, threads=True, progress=False)
+        except Exception:
+            data = pd.DataFrame()
+        if data is None or data.empty:
+            continue
+        if len(chunk) == 1:
+            histories.append(_normalise_history(data, chunk[0]))
+            continue
+        for t in chunk:
+            try:
+                if t in data.columns.get_level_values(0):
+                    h = data[t]
+                    nh = _normalise_history(h, t)
+                    if not nh.empty:
+                        histories.append(nh)
+            except Exception:
+                continue
+    return pd.concat(histories, ignore_index=True) if histories else pd.DataFrame(columns=["date", "ticker", "open", "high", "low", "close", "volume"])
