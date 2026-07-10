@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-VERSION = "1.3"
+VERSION = "1.4"
 
 @dataclass(frozen=True)
 class CapBucketRule:
@@ -22,6 +22,17 @@ class HasolConfig:
     micro_nano_execution_locked: bool = True
     stale_news_days: int = 10
     sec_cluster_min_forms: int = 2
+
+    # v1.4: code detects phases; HASOL interprets whether the phase is actionable.
+    early_signal_min_change: float = 8.0
+    early_signal_max_change: float = 35.0
+    hot_signal_max_change: float = 80.0
+    climax_change: float = 80.0
+    early_relvol_min: float = 1.8
+    early_relvol_max_for_execution: float = 8.0
+    max_execution_change_pct: float = 25.0
+    max_execution_relvol: float = 8.0
+
     top20_quotas: Dict[str, int] = field(default_factory=lambda: {
         "mega_cap": 2,
         "large_cap": 3,

@@ -20,10 +20,17 @@ def apply_kill_rules(df: pd.DataFrame, market_code: str = "SOFT_GO", config: Has
         if r.get("cap_bucket") == "unknown":
             rs.append("시총 미확인")
 
+        move_phase = str(r.get("move_phase", ""))
         if r.get("cap_bucket") in ["micro_cap", "nano_cap"]:
             locks.append("MICRO_NANO_EXECUTION_LOCK")
         if r.get("post_spike_stage") in ["day2_continuation", "day3_parabolic", "post_climax_fade"]:
             locks.append("POST_SPIKE_REVIEW_ONLY")
+        if move_phase == "HOT_SIGNAL_WATCH_ONLY":
+            locks.append("HOT_SIGNAL_PULLBACK_REQUIRED")
+        if move_phase == "CLIMAX_REVIEW_ONLY":
+            locks.append("CLIMAX_REVIEW_ONLY")
+        if move_phase == "POST_CLIMAX_FADE":
+            locks.append("POST_CLIMAX_FADE_REJECT_OR_REVIEW")
         if float(r.get("change_pct", 0) or 0) > 70:
             locks.append("당일 급등 과열")
         if bool(r.get("parabolic_3d_flag", False)):
@@ -32,13 +39,14 @@ def apply_kill_rules(df: pd.DataFrame, market_code: str = "SOFT_GO", config: Has
             locks.append("거래량 클라이맥스")
         if bool(r.get("long_upper_wick_flag", False)) and float(r.get("change_pct", 0) or 0) > 15:
             locks.append("긴 윗꼬리")
-        if str(r.get("headline", "")).lower().find("offering") >= 0:
-            locks.append("offering 확인 필요")
-        if str(r.get("headline", "")).lower().find("delisting") >= 0:
+        headline = str(r.get("headline", "")).lower()
+        if headline.find("offering") >= 0 or headline.find("registered direct") >= 0 or headline.find("warrant") >= 0:
+            locks.append("offering/dilution 확인 필요")
+        if headline.find("delisting") >= 0:
             locks.append("delisting 확인 필요")
 
         reasons.append("; ".join(rs))
-        review_locks.append("; ".join(locks))
+        review_locks.append("; ".join(dict.fromkeys(locks)))
 
     out["reject_reason"] = reasons
     out["review_lock_reason"] = review_locks
