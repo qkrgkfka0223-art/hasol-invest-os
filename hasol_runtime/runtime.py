@@ -14,8 +14,9 @@ from .scoring import rank_top20, rank_top5
 class HasolRuntime:
     """Fail-closed deterministic HASOL model loop.
 
-    This runtime never converts missing/broken upstream data into "no candidate".
-    Official output is emitted only when all mandatory gates pass.
+    Whole-universe work is quantitative/structured. Expensive qualitative packages
+    are mandatory only for the frozen Top20, not for every eligible US common stock.
+    Missing or broken upstream data never becomes "no candidate".
     """
 
     def __init__(self, payload: dict[str, Any]):
@@ -95,7 +96,15 @@ class HasolRuntime:
             seen.add(ticker)
             row["ticker"] = ticker
 
-            mandatory = ("exchange", "security_type", "close", "adv20_usd", "completed_sessions", "engine_raw")
+            mandatory = (
+                "exchange",
+                "security_type",
+                "close",
+                "adv20_usd",
+                "completed_sessions",
+                "engine_raw",
+                "price_source",
+            )
             missing = [k for k in mandatory if row.get(k) is None]
             if missing:
                 raise ValueError(f"{ticker}: mandatory universe fields missing: {missing}")
@@ -137,18 +146,14 @@ class HasolRuntime:
             )
 
     @staticmethod
-    def _validate_evidence(row: dict[str, Any], cutoff_et: str) -> None:
-        if not row.get("price_source"):
-            raise ValueError(f"{row['ticker']}: price_source missing")
-        if not row.get("invalidation"):
-            raise ValueError(f"{row['ticker']}: invalidation missing")
-        if not row.get("thesis"):
-            raise ValueError(f"{row['ticker']}: thesis missing")
-        if not row.get("counter_thesis"):
-            raise ValueError(f"{row['ticker']}: counter_thesis missing")
+    def _validate_evidence_items(row: dict[str, Any], cutoff_et: str, *, required: bool) -> None:
         evidence = row.get("evidence")
-        if not isinstance(evidence, list) or not evidence:
-            raise ValueError(f"{row['ticker']}: evidence bundle empty")
+        if not evidence:
+            if required:
+                raise ValueError(f"{row['ticker']}: evidence bundle empty")
+            return
+        if not isinstance(evidence, list):
+            raise ValueError(f"{row['ticker']}: evidence bundle must be an array")
         cutoff = datetime.fromisoformat(cutoff_et)
         for item in evidence:
             for key in ("type", "published_at_utc", "ref", "claim", "freshness"):
@@ -159,6 +164,28 @@ class HasolRuntime:
                 raise ValueError(f"{row['ticker']}: evidence timestamp must include offset")
             if published > cutoff.astimezone(published.tzinfo):
                 raise ValueError(f"{row['ticker']}: future leakage in evidence {item['ref']}")
+
+    @classmethod
+    def _validate_detected_event_evidence(cls, row: dict[str, Any], cutoff_et: str) -> None:
+        """Any non-null event engine score must already have point-in-time evidence."""
+        future_event = row.get("engine_raw", {}).get("future_flow_event")
+        if future_event is not None:
+            cls._validate_evidence_items(row, cutoff_et, required=True)
+        elif row.get("evidence"):
+            cls._validate_evidence_items(row, cutoff_et, required=False)
+
+    @classmethod
+    def _validate_top20_package(cls, row: dict[str, Any], cutoff_et: str) -> None:
+        """Official Top20 has 100% evidence/thesis/counter/invalidation coverage."""
+        cls._validate_evidence_items(row, cutoff_et, required=True)
+        if not row.get("thesis"):
+            raise ValueError(f"{row['ticker']}: Top20 thesis missing")
+        if not row.get("counter_thesis"):
+            raise ValueError(f"{row['ticker']}: Top20 counter_thesis missing")
+        if not row.get("invalidation"):
+            raise ValueError(f"{row['ticker']}: Top20 invalidation missing")
+        if not row.get("compression"):
+            raise ValueError(f"{row['ticker']}: Top20 compression bundle missing")
 
     def run(self) -> dict[str, Any]:
         try:
@@ -185,17 +212,20 @@ class HasolRuntime:
             }
             self.universe_hash = self._sha256(universe_artifact)
 
-            self._transition(RuntimeState.DETECT)
             cutoff = self.payload["run"]["cutoff_et"]
+            self._transition(RuntimeState.DETECT)
             for row in eligible:
-                self._validate_evidence(row, cutoff)
-
-            self._transition(RuntimeState.EVIDENCE)
-            self._transition(RuntimeState.THESIS)
-            self._transition(RuntimeState.CHALLENGE)
+                self._validate_detected_event_evidence(row, cutoff)
 
             self._transition(RuntimeState.RANK)
             top20 = rank_top20(eligible)
+
+            self._transition(RuntimeState.EVIDENCE)
+            for row in top20:
+                self._validate_top20_package(row, cutoff)
+
+            self._transition(RuntimeState.THESIS)
+            self._transition(RuntimeState.CHALLENGE)
 
             self._transition(RuntimeState.COMPRESSION)
             top5 = rank_top5(top20)
@@ -231,7 +261,12 @@ class HasolRuntime:
             }
         except ValueError as exc:
             message = str(exc)
-            outcome = RunOutcome.INVALID_EVIDENCE if "evidence" in message or "leakage" in message else RunOutcome.INVALID_DATA
+            qualitative_tokens = ("evidence", "leakage", "thesis", "counter_thesis", "invalidation", "compression")
+            outcome = (
+                RunOutcome.INVALID_EVIDENCE
+                if any(token in message for token in qualitative_tokens)
+                else RunOutcome.INVALID_DATA
+            )
             return self._invalidate(outcome, message)
 
     @classmethod
