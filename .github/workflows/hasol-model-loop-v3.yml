@@ -27,7 +27,6 @@ jobs:
         run: pytest -q tests/test_model_loop_v3.py tests/test_alpaca_market_adapter_v3.py tests/test_review_loop_v3.py
 
   alpaca-bridge-probe:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
