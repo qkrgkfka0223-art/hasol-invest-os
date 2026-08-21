@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from statistics import median
 from typing import Any
 
@@ -7,14 +8,22 @@ from .contracts import CONTRACT
 
 
 def _percentiles(values: dict[str, float | None]) -> dict[str, float | None]:
-    valid = sorted((float(v), k) for k, v in values.items() if v is not None)
+    valid: list[tuple[float, str]] = []
+    for key, value in values.items():
+        if value is None:
+            continue
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError(f"{key}: engine raw value must be finite or NULL")
+        valid.append((number, key))
+    valid.sort()
+
     out: dict[str, float | None] = {k: None for k in values}
     n = len(valid)
     if n == 0:
         return out
     if n == 1:
-        only_key = valid[0][1]
-        out[only_key] = 100.0
+        out[valid[0][1]] = 100.0
         return out
 
     i = 0
@@ -34,10 +43,7 @@ def _percentiles(values: dict[str, float | None]) -> dict[str, float | None]:
 def build_engine_percentiles(rows: list[dict[str, Any]]) -> None:
     """Mutates rows by adding deterministic frozen-universe engine percentiles."""
     for engine in CONTRACT.positive_engines:
-        raw = {
-            row["ticker"]: row.get("engine_raw", {}).get(engine)
-            for row in rows
-        }
+        raw = {row["ticker"]: row.get("engine_raw", {}).get(engine) for row in rows}
         pcts = _percentiles(raw)
         for row in rows:
             row.setdefault("engine_percentiles", {})[engine] = pcts[row["ticker"]]
@@ -45,17 +51,17 @@ def build_engine_percentiles(rows: list[dict[str, Any]]) -> None:
 
 def aggregate_score(row: dict[str, Any]) -> float | None:
     pcts = row.get("engine_percentiles", {})
-    valid = [
-        float(pcts[e])
-        for e in CONTRACT.positive_engines
-        if pcts.get(e) is not None
-    ]
+    valid = [float(pcts[e]) for e in CONTRACT.positive_engines if pcts.get(e) is not None]
     if len(valid) < CONTRACT.min_valid_positive_engines:
         return None
     penalty = float(row.get("risk_penalty", 0.0))
-    if penalty < 0 or penalty > 30:
-        raise ValueError(f"{row.get('ticker')}: risk_penalty must be 0..30")
+    if not math.isfinite(penalty) or penalty < 0 or penalty > 30:
+        raise ValueError(f"{row.get('ticker')}: risk_penalty must be finite 0..30")
     return round(float(median(valid)) - penalty, 8)
+
+
+def _tie_value(value: float | None) -> float:
+    return -1.0 if value is None else float(value)
 
 
 def rank_top20(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -76,8 +82,8 @@ def rank_top20(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         p = row["engine_percentiles"]
         return (
             -float(row["agg_score"]),
-            -float(p.get("future_flow_event") or -1),
-            -float(p.get("earnings_expectations") or -1),
+            -_tie_value(p.get("future_flow_event")),
+            -_tie_value(p.get("earnings_expectations")),
             -float(row["adv20_usd"]),
             row["ticker"],
         )
