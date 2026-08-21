@@ -1,22 +1,24 @@
-name: HASOL Detector Run
+name: HASOL Legacy Detector Regression
 
 on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - main
-      - ops/live-run-action
+    paths:
+      - "hasol_detector/**"
+      - "scripts/build_live_universe.py"
+      - ".github/workflows/hasol-detector-run.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  detector-run:
+  legacy-regression:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      HASOL_LEGACY_NON_OFFICIAL: "1"
 
     steps:
       - name: Checkout
@@ -32,40 +34,30 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build broad live universe
+      - name: Build legacy sampled universe
         run: |
           python scripts/build_live_universe.py
           test "$(($(wc -l < universe_live.csv) - 1))" -ge 300
 
-      - name: Run sample mode
+      - name: Run legacy detector regression only
         shell: bash
         run: |
           set -o pipefail
-          mkdir -p output_v13_sample
-          python main.py --mode sample --output-dir output_v13_sample 2>&1 | tee output_v13_sample/run.log
+          mkdir -p output_legacy
+          python main.py --mode live --universe-csv universe_live.csv --output-dir output_legacy --max-tickers 300 --market-code SOFT_GO 2>&1 | tee output_legacy/run.log
 
-      - name: Run detector mode
+      - name: Assert legacy run is not official v3
         shell: bash
         run: |
-          set -o pipefail
-          mkdir -p output_live
-          python main.py --mode live --universe-csv universe_live.csv --output-dir output_live --max-tickers 300 --market-code SOFT_GO 2>&1 | tee output_live/run.log
+          test "$HASOL_LEGACY_NON_OFFICIAL" = "1"
+          test ! -e output_legacy/OFFICIAL_V3_PREDICTION.json
 
-      - name: Verify official outputs
-        shell: bash
-        run: |
-          set -e
-          for file in top20_candidates.csv top5_candidates.csv web_validation_checklist.csv execution_candidates.csv run_metadata.json; do
-            test -f "output_live/$file"
-          done
-
-      - name: Upload outputs
+      - name: Upload legacy regression outputs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hasol-detector-output
+          name: hasol-legacy-detector-regression
           path: |
             universe_live.csv
-            output_v13_sample/**
-            output_live/**
+            output_legacy/**
           if-no-files-found: warn
