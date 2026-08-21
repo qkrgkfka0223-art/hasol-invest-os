@@ -195,8 +195,6 @@ class HasolRuntime:
             top5 = rank_top5(top20)
 
             self._transition(RuntimeState.EXECUTION)
-            # Execution is deliberately separate from prediction. The runtime only
-            # preserves an explicit status; it never invents a trade recommendation.
             for row in top20:
                 row.setdefault("execution_status", "NOT_EVALUATED")
 
@@ -214,10 +212,8 @@ class HasolRuntime:
             prediction["prediction_hash"] = self.prediction_hash
 
             self._transition(RuntimeState.WRITE_READY)
-            # WRITE_READY is intentional: persistence must be performed by the
-            # official External Brain writer and then independently read back.
             return {
-                "outcome": RunOutcome.VALID_PREDICTION.value,
+                "outcome": RunOutcome.PREDICTION_WRITE_READY.value,
                 "state": self.state.value,
                 "official_prediction": False,
                 "persistence_required": True,
@@ -243,6 +239,7 @@ class HasolRuntime:
             out["official_prediction"] = False
             out.setdefault("errors", []).append("External Brain readback hash mismatch")
             return out
+        out["outcome"] = RunOutcome.VALID_PREDICTION.value
         out["state"] = RuntimeState.CLOSED.value
         out["official_prediction"] = True
         out["persistence_required"] = False
