@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import copy
-
 from hasol_runtime import HasolRuntime
 
 
@@ -67,6 +65,7 @@ def make_payload(n: int = 25):
 def test_identical_input_produces_identical_hash_and_ranks():
     first = HasolRuntime(make_payload()).run()
     second = HasolRuntime(make_payload()).run()
+    assert first["outcome"] == "PREDICTION_WRITE_READY"
     assert first["state"] == "WRITE_READY"
     assert first["official_prediction"] is False
     assert first["prediction_hash"] == second["prediction_hash"]
@@ -99,6 +98,7 @@ def test_readback_hash_is_required_for_official_close():
     assert bad["official_prediction"] is False
 
     good = HasolRuntime.close_after_readback(result, result["prediction_hash"])
+    assert good["outcome"] == "VALID_PREDICTION"
     assert good["state"] == "CLOSED"
     assert good["official_prediction"] is True
 
