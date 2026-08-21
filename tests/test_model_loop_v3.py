@@ -103,9 +103,24 @@ def test_readback_hash_is_required_for_official_close():
     assert good["official_prediction"] is True
 
 
-def test_missing_thesis_fails_closed():
+def test_missing_top20_thesis_fails_closed():
     payload = make_payload()
-    del payload["universe"][3]["thesis"]
+    del payload["universe"][24]["thesis"]
     result = HasolRuntime(payload).run()
     assert result["official_prediction"] is False
-    assert result["outcome"] == "INVALID_DATA"
+    assert result["outcome"] == "INVALID_EVIDENCE"
+    assert "Top20 thesis missing" in result["errors"][0]
+
+
+def test_non_top20_row_does_not_require_qualitative_package_without_event_score():
+    payload = make_payload()
+    row = payload["universe"][0]
+    row["engine_raw"]["future_flow_event"] = None
+    row.pop("evidence")
+    row.pop("thesis")
+    row.pop("counter_thesis")
+    row.pop("invalidation")
+    row.pop("compression")
+    result = HasolRuntime(payload).run()
+    assert result["outcome"] == "PREDICTION_WRITE_READY"
+    assert "T00" not in {r["ticker"] for r in result["prediction"]["top20"]}
