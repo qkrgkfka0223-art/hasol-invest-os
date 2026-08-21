@@ -34,6 +34,12 @@ class HasolRuntime:
     def _sha256(cls, value: Any) -> str:
         return hashlib.sha256(cls._canonical(value).encode("utf-8")).hexdigest()
 
+    @classmethod
+    def recompute_prediction_hash(cls, prediction: dict[str, Any]) -> str:
+        frozen = copy.deepcopy(prediction)
+        frozen.pop("prediction_hash", None)
+        return cls._sha256(frozen)
+
     def _transition(self, state: RuntimeState, detail: str = "PASS") -> None:
         self.state = state
         self.audit.append({"state": state.value, "detail": detail})
@@ -228,12 +234,33 @@ class HasolRuntime:
             outcome = RunOutcome.INVALID_EVIDENCE if "evidence" in message or "leakage" in message else RunOutcome.INVALID_DATA
             return self._invalidate(outcome, message)
 
-    @staticmethod
-    def close_after_readback(result: dict[str, Any], readback_prediction_hash: str | None) -> dict[str, Any]:
+    @classmethod
+    def close_after_readback(cls, result: dict[str, Any], readback_prediction_hash: str | None) -> dict[str, Any]:
         """Only this transition can mark a prediction official."""
         out = copy.deepcopy(result)
         expected = out.get("prediction_hash")
-        if not expected or readback_prediction_hash != expected:
+        prediction = out.get("prediction")
+        if out.get("state") != RuntimeState.WRITE_READY.value or out.get("outcome") != RunOutcome.PREDICTION_WRITE_READY.value:
+            out["outcome"] = RunOutcome.INVALID_PERSISTENCE.value
+            out["state"] = RuntimeState.INVALID.value
+            out["official_prediction"] = False
+            out.setdefault("errors", []).append("Only WRITE_READY prediction can be closed")
+            return out
+        if not isinstance(prediction, dict) or not expected:
+            out["outcome"] = RunOutcome.INVALID_PERSISTENCE.value
+            out["state"] = RuntimeState.INVALID.value
+            out["official_prediction"] = False
+            out.setdefault("errors", []).append("Frozen prediction payload/hash missing")
+            return out
+        embedded = prediction.get("prediction_hash")
+        recomputed = cls.recompute_prediction_hash(prediction)
+        if embedded != expected or recomputed != expected:
+            out["outcome"] = RunOutcome.INVALID_PERSISTENCE.value
+            out["state"] = RuntimeState.INVALID.value
+            out["official_prediction"] = False
+            out.setdefault("errors", []).append("Frozen prediction mutated after hash")
+            return out
+        if readback_prediction_hash != expected:
             out["outcome"] = RunOutcome.INVALID_PERSISTENCE.value
             out["state"] = RuntimeState.INVALID.value
             out["official_prediction"] = False
