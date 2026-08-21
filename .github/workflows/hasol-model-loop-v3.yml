@@ -22,5 +22,5 @@ jobs:
           python-version: "3.12"
       - name: Install test dependency
         run: python -m pip install --upgrade pip pytest
-      - name: Run fail-closed runtime and learning-loop tests
-        run: pytest -q tests/test_model_loop_v3.py tests/test_review_loop_v3.py
+      - name: Run fail-closed runtime, market adapter, and learning-loop tests
+        run: pytest -q tests/test_model_loop_v3.py tests/test_alpaca_market_adapter_v3.py tests/test_review_loop_v3.py
