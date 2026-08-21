@@ -4,8 +4,11 @@ import hashlib
 import json
 from typing import Any
 
+from .runtime import HasolRuntime
 
-VALID_HORIZONS = {"5D", "10D", "20D"}
+
+VALID_HORIZONS = {"5D": 5, "10D": 10, "20D": 20}
+REQUIRED_RETURN_BASIS = "CORPORATE_ACTION_ADJUSTED_TOTAL_RETURN"
 
 
 def _canonical(value: Any) -> str:
@@ -16,17 +19,27 @@ def _hash12(value: Any) -> str:
     return hashlib.sha256(_canonical(value).encode("utf-8")).hexdigest()[:12]
 
 
-def review_closed_prediction(closed_result: dict[str, Any], outcome: dict[str, Any]) -> dict[str, Any]:
-    """Review one frozen official prediction without altering the past prediction.
-
-    outcome must provide explicit point-in-time review data and an upstream-determined
-    actual_winner_tickers set. This module diagnoses capture/failure stages; it does
-    not invent an "actual winner" definition after seeing results.
-    """
+def _validate_frozen_integrity(closed_result: dict[str, Any]) -> dict[str, Any]:
     if closed_result.get("state") != "CLOSED" or closed_result.get("official_prediction") is not True:
         raise ValueError("review requires CLOSED official prediction")
+    prediction = closed_result.get("prediction")
+    expected = closed_result.get("prediction_hash")
+    if not isinstance(prediction, dict) or not expected:
+        raise ValueError("closed prediction payload/hash missing")
+    embedded = prediction.get("prediction_hash")
+    recomputed = HasolRuntime.recompute_prediction_hash(prediction)
+    if embedded != expected or recomputed != expected:
+        raise ValueError("frozen prediction integrity mismatch")
+    return prediction
 
-    prediction = closed_result.get("prediction") or {}
+
+def review_closed_prediction(closed_result: dict[str, Any], outcome: dict[str, Any]) -> dict[str, Any]:
+    """Review one immutable official prediction and diagnose failure stage.
+
+    The actual-winner definition must be supplied by the versioned review engine.
+    This module never invents the winner set after seeing outcomes.
+    """
+    prediction = _validate_frozen_integrity(closed_result)
     run_id = prediction.get("run", {}).get("run_id")
     if not run_id:
         raise ValueError("prediction run_id missing")
@@ -36,6 +49,19 @@ def review_closed_prediction(closed_result: dict[str, Any], outcome: dict[str, A
         raise ValueError(f"horizon must be one of {sorted(VALID_HORIZONS)}")
     if outcome.get("run_id") != run_id:
         raise ValueError("review run_id mismatch")
+
+    completed_sessions = outcome.get("completed_trading_sessions")
+    if completed_sessions != VALID_HORIZONS[horizon]:
+        raise ValueError(
+            f"review cohort not mature: {horizon} requires exactly "
+            f"{VALID_HORIZONS[horizon]} completed trading sessions"
+        )
+    if outcome.get("return_basis") != REQUIRED_RETURN_BASIS:
+        raise ValueError(f"return_basis must be {REQUIRED_RETURN_BASIS}")
+    if outcome.get("corporate_action_check") != "PASS":
+        raise ValueError("corporate action integrity must PASS")
+    if not outcome.get("source_ref"):
+        raise ValueError("review source_ref missing")
 
     benchmark_return = outcome.get("benchmark_return_pct")
     if benchmark_return is None:
@@ -50,6 +76,8 @@ def review_closed_prediction(closed_result: dict[str, Any], outcome: dict[str, A
     if not isinstance(winners, list) or not winners:
         raise ValueError("actual_winner_tickers must be explicit and non-empty")
     winners = [str(t).upper().strip() for t in winners]
+    if len(set(winners)) != len(winners):
+        raise ValueError("actual_winner_tickers contains duplicates")
 
     top20_rows = prediction.get("top20") or []
     top20 = {str(row["ticker"]).upper(): row for row in top20_rows}
@@ -102,6 +130,8 @@ def review_closed_prediction(closed_result: dict[str, Any], outcome: dict[str, A
     review = {
         "run_id": run_id,
         "horizon": horizon,
+        "completed_trading_sessions": completed_sessions,
+        "return_basis": REQUIRED_RETURN_BASIS,
         "prediction_hash": closed_result.get("prediction_hash"),
         "benchmark_return_pct": benchmark_return,
         "actual_winner_tickers": winners,
@@ -113,20 +143,15 @@ def review_closed_prediction(closed_result: dict[str, Any], outcome: dict[str, A
         "source_ref": outcome.get("source_ref"),
         "corporate_action_check": outcome.get("corporate_action_check"),
     }
-    if not review["source_ref"]:
-        raise ValueError("review source_ref missing")
-    if review["corporate_action_check"] != "PASS":
-        raise ValueError("corporate action integrity must PASS")
-
     review["review_hash"] = hashlib.sha256(_canonical(review).encode("utf-8")).hexdigest()
     return review
 
 
 def learning_governor(reviews: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Emit TESTING-eligible hypotheses only after recurring Forward evidence.
+    """Create TESTING-eligible hypotheses only after recurring independent evidence.
 
-    This never changes an ACTIVE rule. It only creates a versioned proposal when the
-    same failure stage appears in at least three distinct run IDs.
+    This function never changes ACTIVE rules. It only proposes research after the same
+    failure stage appears in at least three distinct run IDs.
     """
     stage_runs: dict[str, set[str]] = {"DETECTION": set(), "COMPRESSION": set()}
     for review in reviews:
