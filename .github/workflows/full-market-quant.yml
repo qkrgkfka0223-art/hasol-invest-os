@@ -1,0 +1,61 @@
+name: HASOL Full-Market Quant v1
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 22 * * 1-5'
+
+permissions:
+  contents: read
+
+jobs:
+  full-market-quant:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+      - name: Unit tests
+        run: pytest -q tests/test_quant_engine.py
+      - name: Check Alpaca secrets
+        shell: bash
+        env:
+          ALPACA_API_KEY_ID: ${{ secrets.ALPACA_API_KEY_ID }}
+          ALPACA_API_SECRET_KEY: ${{ secrets.ALPACA_API_SECRET_KEY }}
+        run: |
+          test -n "$ALPACA_API_KEY_ID"
+          test -n "$ALPACA_API_SECRET_KEY"
+      - name: Run full-market historical SIP Quant
+        env:
+          ALPACA_API_KEY_ID: ${{ secrets.ALPACA_API_KEY_ID }}
+          ALPACA_API_SECRET_KEY: ${{ secrets.ALPACA_API_SECRET_KEY }}
+          HASOL_BATCH_SIZE: '200'
+        run: |
+          rm -rf output_quant
+          python scripts/run_full_market_quant.py --feed sip --lookback-calendar-days 120 --output-dir output_quant
+      - name: Verify official artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in run_manifest.json data_quality.json universe_snapshot.csv features.csv full_rank.csv quant_top50.csv; do
+            test -s "output_quant/$f"
+          done
+          test "$(($(wc -l < output_quant/quant_top50.csv) - 1))" -eq 50
+      - name: Upload Quant artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hasol-full-market-quant-${{ github.run_id }}
+          path: output_quant/**
+          if-no-files-found: warn
+          retention-days: 90
