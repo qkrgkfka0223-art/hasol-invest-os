@@ -60,12 +60,15 @@ def run_full_market_quant(output_dir: Path, feed: str = "sip", lookback_calendar
     returned = bars["ticker"].nunique()
     coverage = returned / requested if requested else 0.0
     missing_symbols = sorted(set(symbols) - set(bars["ticker"].unique()))
+    invalid_symbols = sorted(client.invalid_symbols)
     data_quality = {
         "requested_symbols": requested,
         "returned_symbols": returned,
         "coverage_pct": coverage,
         "missing_symbol_count": len(missing_symbols),
         "missing_symbols": missing_symbols,
+        "invalid_symbol_count": len(invalid_symbols),
+        "invalid_symbols": invalid_symbols,
         "reference_non_etf_count": int(reference["ticker"].nunique()),
         "alpaca_tradable_intersection_count": int(base_universe["ticker"].nunique()),
         "eligible_universe_count": int(len(eligible_set)),
