@@ -120,8 +120,8 @@ class AlpacaClient:
             return self._fetch_batch_pages(batch, start_iso, end_iso, adjustment)
         except AlpacaHTTPError as exc:
             # One malformed/delisted symbol must not kill a 200-name market batch.
-            # Only isolate deterministic client errors; never fan out on rate/server/network failures.
-            if exc.status_code != 400:
+            # Only isolate Alpaca's explicit invalid-symbol client error; all other 4xx/5xx remain hard failures.
+            if exc.status_code != 400 or "invalid symbol" not in exc.body.lower():
                 raise
             if len(batch) == 1:
                 self.invalid_symbols.add(batch[0])
