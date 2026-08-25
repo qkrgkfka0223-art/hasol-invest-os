@@ -3,6 +3,7 @@ name: HASOL Full-Market Quant v1
 on:
   workflow_dispatch:
   schedule:
+    # Post-market preparation. This is not the 09:25 ET prediction freeze.
     - cron: '30 22 * * 1-5'
 
 permissions:
@@ -20,13 +21,15 @@ jobs:
         with:
           python-version: '3.11'
           cache: pip
-      - name: Install dependencies
+          cache-dependency-path: requirements-quant.txt
+      - name: Install Quant dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest
+          pip install -r requirements-quant.txt
       - name: Unit tests
         run: python -m pytest -q tests/test_quant_engine.py
+      - name: CLI smoke test
+        run: python -m scripts.run_full_market_quant --help
       - name: Check Alpaca secrets
         shell: bash
         env:
@@ -42,7 +45,7 @@ jobs:
           HASOL_BATCH_SIZE: '200'
         run: |
           rm -rf output_quant
-          python scripts/run_full_market_quant.py --feed sip --lookback-calendar-days 120 --output-dir output_quant
+          python -m scripts.run_full_market_quant --feed sip --lookback-calendar-days 120 --output-dir output_quant
       - name: Verify official artifacts
         shell: bash
         run: |

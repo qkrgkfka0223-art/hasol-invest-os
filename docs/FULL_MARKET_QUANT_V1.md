@@ -12,6 +12,7 @@ HASOL later fuses Quant candidates with Web events, expectations, and price reac
 
 - Completed-session OHLCV / volume / trade count / VWAP: Alpaca historical SIP.
 - IEX volume must not be used as canonical full-market EOD volume.
+- Before 16:20 ET a manual run excludes the current ET calendar day, so an in-progress session cannot leak into the rank.
 - API failures are errors, never zero values.
 - Every run emits feed/version/commit lineage.
 
@@ -44,5 +45,7 @@ HASOL later fuses Quant candidates with Web events, expectations, and price reac
 Workflow: `HASOL Full-Market Quant v1`.
 
 Required repository secrets: `ALPACA_API_KEY_ID`, `ALPACA_API_SECRET_KEY`.
+
+Manual CLI: `python -m scripts.run_full_market_quant --feed sip --output-dir output_quant`.
 
 Never commit credentials.

@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import numpy as np
 import pandas as pd
 
 from hasol_quant.features import build_features
 from hasol_quant.ranker import rank_universe, top_n
+from hasol_quant.runner import completed_session_end_utc
 from hasol_quant.universe import apply_market_liquidity_gate
 
 
@@ -54,3 +56,16 @@ def test_liquidity_gate():
 def test_top_n_excludes_null_scores():
     df = pd.DataFrame({"ticker": ["A", "B", "C"], "quant_score": [90.0, np.nan, 80.0]})
     assert top_n(df, 2)["ticker"].tolist() == ["A", "C"]
+
+
+def test_completed_session_cutoff_excludes_intraday_current_day():
+    # 2026-08-25 14:00 ET = 18:00 UTC; current regular session must not be included.
+    now = datetime(2026, 8, 25, 18, 0, tzinfo=timezone.utc)
+    end = completed_session_end_utc(now)
+    assert end < datetime(2026, 8, 25, 4, 0, tzinfo=timezone.utc)
+
+
+def test_completed_session_cutoff_allows_postmarket_current_day():
+    # 2026-08-25 18:30 ET = 22:30 UTC; current regular session is complete.
+    now = datetime(2026, 8, 25, 22, 30, tzinfo=timezone.utc)
+    assert completed_session_end_utc(now) == now
