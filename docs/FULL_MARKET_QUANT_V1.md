@@ -1,51 +1,116 @@
 # HASOL Full-Market Quant Engine v1
 
+Status as of 2026-08-25: **BUILT / CI VERIFIED / HISTORICAL SIP SCALE VERIFIED / NOT PRODUCTION**.
+
 ## Role
 
-This engine is not HASOL's investment judgment. It performs deterministic full-market calculation:
+GitHub is the deterministic compute/code/artifact layer. It does not make the final investment judgment.
 
-`Historical SIP -> listed/tradable universe -> features -> liquidity gate -> full rank -> Quant Top50`
+```text
+Alpaca historical SIP -> Full-Market Quant -> full_rank / quant_top50
+Web Event Detector    -> event candidates
+                              |
+                              v
+                         HASOL fusion
+                              |
+                              v
+                     09:25 ET Top20/Top5
+```
 
-HASOL later fuses Quant candidates with Web events, expectations, and price reaction.
+## Locked specs
 
-## Canonical data policy
+- Feature spec: `HASOL-QF-v1.0`
+- Rank spec: `HASOL-QR-v1.0`
+- Completed-session OHLCV / volume / trade_count / VWAP canonical feed: historical consolidated SIP
+- IEX volume is not canonical EOD market volume.
+- Current production state remains `NOT_PRODUCTION`.
 
-- Completed-session OHLCV / volume / trade count / VWAP: Alpaca historical SIP.
-- IEX volume must not be used as canonical full-market EOD volume.
-- Before 16:20 ET a manual run excludes the current ET calendar day, so an in-progress session cannot leak into the rank.
-- API failures are errors, never zero values.
-- Every run emits feed/version/commit lineage.
+## Quant artifacts
 
-## Feature spec
+A successful official run emits:
 
-`HASOL-QF-v1.0`: 1/3/5/10/20/60D returns, 5/20/60D SPY RS, ADV20, volume ratio/z-score, gap, close location, ATR14%, compression, distance to 20D/60D highs, breakout20, EMA20 extension.
+```text
+run_manifest.json
+data_quality.json
+reference_universe.csv
+reference_universe_meta.json
+universe_snapshot.csv
+features.csv
+full_rank.csv
+quant_top50.csv
+```
 
-## Universe gates
+The run is rejected when coverage is below 98% or fewer than 50 valid ranked candidates exist.
 
-- US listed non-test non-ETF reference symbols.
-- Intersect active/tradable Alpaca assets.
-- Obvious preferred/warrant/unit/right/blank-check names excluded.
-- Latest regular close >= $3.
-- ADV20 >= $10M.
-- >= 20 completed sessions.
+## Reference universe verification
 
-## Required outputs
+Latest verified point-in-time broad reference artifact:
 
-`run_manifest.json`, `data_quality.json`, `universe_snapshot.csv`, `features.csv`, `full_rank.csv`, `quant_top50.csv`.
+- symbols: **5,617 unique**
+- blank tickers: **0**
+- duplicates: **0**
+- literal ticker `NA`: preserved
+- special CQS-style `^`, `$`, `/` symbols: excluded
+- SHA256: `732005f9b76d5e3687e3574da194717d48437ebc803c3ecc26d48e49e6e9778d`
 
-## Integrity gates
+This is a broad non-ETF reference universe, not yet the final guaranteed COMMON_STOCK universe. Final eligibility still requires Alpaca tradability, liquidity gates, and deterministic security-type purity.
 
-- market-data coverage >= 98%
-- exactly 50 valid Quant candidates
-- deterministic feature/rank version
-- Git commit SHA and artifact hashes recorded
+## Historical SIP scale test
+
+Completed-session stress test for **2026-08-24**:
+
+- requested: **5,617**
+- symbols returning a SIP daily bar: **5,545**
+- no-bar: **72**
+- coverage: **98.71817696%**
+- scale gate: **PASS**
+
+This proves broad full-market historical SIP daily-bar retrieval scale. It does **not** prove final security-type purity, Web event recall, premarket data freshness, or the full prediction E2E.
+
+## Bugs found and fixed during verification
+
+1. Literal ticker `NA` was interpreted by pandas as a null token.
+   - Fixed with explicit non-NA string parsing.
+   - Regression test added.
+   - Historical SIP bar for `NA` was independently confirmed.
+
+2. Preferred-style symbol `ALL$B` contaminated the broad reference and caused a multi-symbol Alpaca request to return HTTP 400.
+   - `^`, `$`, `/` special-symbol forms are now excluded from the reference layer.
+
+3. A single invalid symbol could kill an entire market batch.
+   - Explicit Alpaca HTTP 400 `invalid symbol` errors are recursively isolated.
+   - Single invalid symbols are recorded in `data_quality.invalid_symbols`.
+   - Auth, entitlement, rate, server, and network failures are **not** hidden by this isolation logic.
 
 ## GitHub Actions
 
-Workflow: `HASOL Full-Market Quant v1`.
+Workflow: `.github/workflows/full-market-quant.yml`
 
-Required repository secrets: `ALPACA_API_KEY_ID`, `ALPACA_API_SECRET_KEY`.
+Verified before the credential gate:
 
-Manual CLI: `python -m scripts.run_full_market_quant --feed sip --output-dir output_quant`.
+- checkout: PASS
+- Python/dependency setup: PASS
+- unit tests: PASS
+- CLI smoke: PASS
+- point-in-time reference artifact: PASS
+- artifact upload: PASS
 
-Never commit credentials.
+Current manual runtime blocker:
+
+```text
+ALPACA_API_KEY_ID
+ALPACA_API_SECRET_KEY
+```
+
+These must be configured as GitHub repository Actions secrets. Credentials must never be committed to source code, artifacts, Sheets, or chat logs.
+
+## Remaining production blockers
+
+1. deterministic security-type purity for the final COMMON_STOCK universe
+2. full-market Web event-first collector / mapping / dedupe E2E
+3. canonical analyst consensus and estimate-revision source
+4. reliable 09:25 ET premarket freshness/coverage gate
+5. HASOL fusion -> Top20/Top5 freeze -> Sheet readback
+6. three clean timed E2E cycles + restore/review gates
+
+Until those pass, this engine is a verified compute component, not a production prediction system.
