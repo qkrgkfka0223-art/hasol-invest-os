@@ -2,6 +2,14 @@ name: HASOL Full-Market Quant v1
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'hasol_quant/**'
+      - 'scripts/run_full_market_quant.py'
+      - 'scripts/__init__.py'
+      - 'requirements-quant.txt'
+      - '.github/workflows/full-market-quant.yml'
   schedule:
     # Post-market preparation. This is not the 09:25 ET prediction freeze.
     - cron: '30 22 * * 1-5'
