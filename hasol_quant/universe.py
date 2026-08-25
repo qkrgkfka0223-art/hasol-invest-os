@@ -52,7 +52,9 @@ def load_reference_universe() -> pd.DataFrame:
     ref["security_name"] = ref["security_name"].astype(str).str.strip()
     ref = ref[ref["ticker"].ne("")]
     ref = ref[~ref["security_name"].str.contains(EXCLUDE_NAME_RE, na=False)]
-    ref = ref[~ref["ticker"].str.contains(r"[\^/]", regex=True, na=False)]
+    # ^ and $ are CQS preferred/special issue delimiters; / is not an Alpaca common-stock symbol form.
+    # Dot-class common shares (e.g. BRK.B) remain valid and are retained.
+    ref = ref[~ref["ticker"].str.contains(r"[\^$/]", regex=True, na=False)]
     return ref.drop_duplicates("ticker").reset_index(drop=True)
 
 
