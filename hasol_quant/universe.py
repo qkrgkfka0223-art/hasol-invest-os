@@ -14,11 +14,16 @@ EXCLUDE_NAME_RE = re.compile(
 )
 
 
+def _parse_pipe_table(text: str) -> pd.DataFrame:
+    lines = [line for line in text.splitlines() if line.strip() and not line.startswith("File Creation Time")]
+    # Exchange symbols such as the valid ticker `NA` must never be interpreted as a null token.
+    return pd.read_csv(StringIO("\n".join(lines)), sep="|", keep_default_na=False, na_filter=False)
+
+
 def _download_pipe_table(url: str, timeout: int = 30) -> pd.DataFrame:
     resp = requests.get(url, timeout=timeout, headers={"User-Agent": "HASOL/1.0"})
     resp.raise_for_status()
-    lines = [line for line in resp.text.splitlines() if line.strip() and not line.startswith("File Creation Time")]
-    return pd.read_csv(StringIO("\n".join(lines)), sep="|")
+    return _parse_pipe_table(resp.text)
 
 
 def _clean_nasdaq(df: pd.DataFrame) -> pd.DataFrame:
@@ -45,6 +50,7 @@ def load_reference_universe() -> pd.DataFrame:
     ref = pd.concat([nasdaq, other], ignore_index=True)
     ref["ticker"] = ref["ticker"].astype(str).str.upper().str.strip()
     ref["security_name"] = ref["security_name"].astype(str).str.strip()
+    ref = ref[ref["ticker"].ne("")]
     ref = ref[~ref["security_name"].str.contains(EXCLUDE_NAME_RE, na=False)]
     ref = ref[~ref["ticker"].str.contains(r"[\^/]", regex=True, na=False)]
     return ref.drop_duplicates("ticker").reset_index(drop=True)
