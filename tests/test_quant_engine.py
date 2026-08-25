@@ -7,7 +7,7 @@ import pandas as pd
 from hasol_quant.features import build_features
 from hasol_quant.ranker import rank_universe, top_n
 from hasol_quant.runner import completed_session_end_utc
-from hasol_quant.universe import apply_market_liquidity_gate
+from hasol_quant.universe import apply_market_liquidity_gate, _parse_pipe_table
 
 
 def make_bars(ticker: str, start: float, daily_drift: float, volume: float, n: int = 75) -> pd.DataFrame:
@@ -69,3 +69,9 @@ def test_completed_session_cutoff_allows_postmarket_current_day():
     # 2026-08-25 18:30 ET = 22:30 UTC; current regular session is complete.
     now = datetime(2026, 8, 25, 22, 30, tzinfo=timezone.utc)
     assert completed_session_end_utc(now) == now
+
+
+def test_exchange_parser_preserves_literal_na_ticker():
+    text = "Symbol|Security Name|Market Category|Test Issue|Financial Status|Round Lot Size|ETF|NextShares\nNA|Nano Labs Ltd - Class A Ordinary Shares|S|N|N|100|N|N\nFile Creation Time: 0825202601:00"
+    parsed = _parse_pipe_table(text)
+    assert parsed.loc[0, "Symbol"] == "NA"
