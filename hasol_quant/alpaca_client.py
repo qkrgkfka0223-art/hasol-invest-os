@@ -9,9 +9,18 @@ import requests
 from .config import Settings
 
 
+class AlpacaHTTPError(RuntimeError):
+    def __init__(self, status_code: int, body: str, url: str):
+        super().__init__(f"Alpaca HTTP {status_code}: {body[:500]} ({url})")
+        self.status_code = status_code
+        self.body = body
+        self.url = url
+
+
 class AlpacaClient:
     def __init__(self, settings: Settings):
         self.settings = settings
+        self.invalid_symbols: set[str] = set()
         self.session = requests.Session()
         self.session.headers.update(
             {
@@ -33,8 +42,11 @@ class AlpacaClient:
                 if 500 <= resp.status_code < 600:
                     time.sleep(min(30, 2 ** attempt))
                     continue
-                resp.raise_for_status()
+                if resp.status_code >= 400:
+                    raise AlpacaHTTPError(resp.status_code, resp.text, url)
                 return resp.json()
+            except AlpacaHTTPError:
+                raise
             except (requests.RequestException, ValueError) as exc:
                 last_error = exc
                 if attempt + 1 >= self.settings.max_retries:
@@ -65,45 +77,67 @@ class AlpacaClient:
             )
         return pd.DataFrame(rows)
 
+    def _fetch_batch_pages(self, batch: list[str], start_iso: str, end_iso: str, adjustment: str) -> list[dict]:
+        rows: list[dict] = []
+        page_token: str | None = None
+        while True:
+            params = {
+                "symbols": ",".join(batch),
+                "timeframe": "1Day",
+                "start": start_iso,
+                "end": end_iso,
+                "adjustment": adjustment,
+                "feed": self.settings.feed,
+                "sort": "asc",
+                "limit": self.settings.request_limit,
+            }
+            if page_token:
+                params["page_token"] = page_token
+            payload = self._request_json(f"{self.settings.data_base_url}/v2/stocks/bars", params=params)
+            bars = payload.get("bars", {}) if isinstance(payload, dict) else {}
+            for ticker, items in bars.items():
+                for bar in items or []:
+                    rows.append(
+                        {
+                            "ticker": ticker.upper(),
+                            "timestamp": bar.get("t"),
+                            "open": bar.get("o"),
+                            "high": bar.get("h"),
+                            "low": bar.get("l"),
+                            "close": bar.get("c"),
+                            "volume": bar.get("v"),
+                            "trade_count": bar.get("n"),
+                            "vwap": bar.get("vw"),
+                        }
+                    )
+            page_token = payload.get("next_page_token") if isinstance(payload, dict) else None
+            if not page_token:
+                break
+        return rows
+
+    def _fetch_batch_resilient(self, batch: list[str], start_iso: str, end_iso: str, adjustment: str) -> list[dict]:
+        try:
+            return self._fetch_batch_pages(batch, start_iso, end_iso, adjustment)
+        except AlpacaHTTPError as exc:
+            # One malformed/delisted symbol must not kill a 200-name market batch.
+            # Only isolate deterministic client errors; never fan out on rate/server/network failures.
+            if exc.status_code != 400:
+                raise
+            if len(batch) == 1:
+                self.invalid_symbols.add(batch[0])
+                return []
+            mid = len(batch) // 2
+            return (
+                self._fetch_batch_resilient(batch[:mid], start_iso, end_iso, adjustment)
+                + self._fetch_batch_resilient(batch[mid:], start_iso, end_iso, adjustment)
+            )
+
     def fetch_daily_bars(self, symbols: Iterable[str], start_iso: str, end_iso: str, adjustment: str = "all") -> pd.DataFrame:
         symbols = [s.upper() for s in symbols if s]
         all_rows: list[dict] = []
         for offset in range(0, len(symbols), self.settings.batch_size):
             batch = symbols[offset : offset + self.settings.batch_size]
-            page_token: str | None = None
-            while True:
-                params = {
-                    "symbols": ",".join(batch),
-                    "timeframe": "1Day",
-                    "start": start_iso,
-                    "end": end_iso,
-                    "adjustment": adjustment,
-                    "feed": self.settings.feed,
-                    "sort": "asc",
-                    "limit": self.settings.request_limit,
-                }
-                if page_token:
-                    params["page_token"] = page_token
-                payload = self._request_json(f"{self.settings.data_base_url}/v2/stocks/bars", params=params)
-                bars = payload.get("bars", {}) if isinstance(payload, dict) else {}
-                for ticker, items in bars.items():
-                    for bar in items or []:
-                        all_rows.append(
-                            {
-                                "ticker": ticker.upper(),
-                                "timestamp": bar.get("t"),
-                                "open": bar.get("o"),
-                                "high": bar.get("h"),
-                                "low": bar.get("l"),
-                                "close": bar.get("c"),
-                                "volume": bar.get("v"),
-                                "trade_count": bar.get("n"),
-                                "vwap": bar.get("vw"),
-                            }
-                        )
-                page_token = payload.get("next_page_token") if isinstance(payload, dict) else None
-                if not page_token:
-                    break
+            all_rows.extend(self._fetch_batch_resilient(batch, start_iso, end_iso, adjustment))
         df = pd.DataFrame(all_rows)
         if not df.empty:
             df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True, errors="coerce")
