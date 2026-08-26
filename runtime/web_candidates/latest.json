@@ -1,0 +1,55 @@
+{
+  "schema_version": "HASOL-WEB-CANDIDATES-v1",
+  "run_type": "SYSTEM_TEST",
+  "eligible_for_prediction": false,
+  "prediction_date_et": "2026-08-26",
+  "as_of_utc": "2026-08-26T00:00:00Z",
+  "cutoff": "09:25:00 America/New_York",
+  "candidates": [
+    {
+      "ticker": "JAZZ",
+      "event_id": "SYS-TEST-JAZZ-20260825",
+      "event_type": "FDA",
+      "axis": "BIOTECH",
+      "event_published_at_utc": "2026-08-25T00:00:00Z",
+      "flow_path": "approval→commercial adoption→revenue expectations",
+      "test_only": true
+    },
+    {
+      "ticker": "ABT",
+      "event_id": "SYS-TEST-ABT-20260825",
+      "event_type": "FDA",
+      "axis": "MEDTECH",
+      "event_published_at_utc": "2026-08-25T00:00:00Z",
+      "flow_path": "product authorization→addressable market expansion",
+      "test_only": true
+    },
+    {
+      "ticker": "NVTS",
+      "event_id": "SYS-TEST-NVTS-20260825",
+      "event_type": "M&A",
+      "axis": "AI_POWER",
+      "event_published_at_utc": "2026-08-25T00:00:00Z",
+      "flow_path": "acquisition→AI power portfolio expansion",
+      "test_only": true
+    },
+    {
+      "ticker": "DKS",
+      "event_id": "SYS-TEST-DKS-20260825",
+      "event_type": "EARNINGS_NEGATIVE",
+      "axis": "CONSUMER",
+      "event_published_at_utc": "2026-08-25T00:00:00Z",
+      "flow_path": "negative-control system test",
+      "test_only": true
+    },
+    {
+      "ticker": "CEG",
+      "event_id": "SYS-TEST-CEG-20260825",
+      "event_type": "POLICY",
+      "axis": "POWER",
+      "event_published_at_utc": "2026-08-25T00:00:00Z",
+      "flow_path": "power policy→capacity value→cash-flow expectations",
+      "test_only": true
+    }
+  ]
+}
