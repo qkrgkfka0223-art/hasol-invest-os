@@ -1,82 +1,86 @@
-name: HASOL Full-Market Quant v1
+name: HASOL Web Candidate Quant v1
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'hasol_quant/**'
+      - 'scripts/run_web_candidate_quant.py'
+      - 'tests/test_quant_engine.py'
+      - 'tests/test_web_candidate_quant.py'
+      - 'runtime/web_candidates/**'
+      - 'requirements-quant.txt'
+      - '.github/workflows/full-market-quant.yml'
   push:
     branches: [main]
     paths:
       - 'hasol_quant/**'
-      - 'scripts/run_full_market_quant.py'
-      - 'scripts/build_reference_universe.py'
-      - 'scripts/__init__.py'
+      - 'scripts/run_web_candidate_quant.py'
+      - 'tests/test_web_candidate_quant.py'
+      - 'runtime/web_candidates/latest.json'
       - 'requirements-quant.txt'
       - '.github/workflows/full-market-quant.yml'
-  schedule:
-    # Post-market preparation. This is not the 09:25 ET prediction freeze.
-    - cron: '30 22 * * 1-5'
 
 permissions:
   contents: read
 
 jobs:
-  full-market-quant:
+  web-candidate-quant:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: pip
           cache-dependency-path: requirements-quant.txt
+
       - name: Install Quant dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-quant.txt
+
       - name: Unit tests
-        run: python -m pytest -q tests/test_quant_engine.py
+        run: |
+          python -m pytest -q tests/test_quant_engine.py tests/test_web_candidate_quant.py
+
       - name: CLI smoke test
+        run: python -m scripts.run_web_candidate_quant --help
+
+      - name: Run Web-candidate Quant
         run: |
-          python -m scripts.run_full_market_quant --help
-          python -m scripts.build_reference_universe --help
-      - name: Build point-in-time reference universe
-        run: |
-          rm -rf output_quant
-          python -m scripts.build_reference_universe --output-dir output_quant
-          test -s output_quant/reference_universe.csv
-          test -s output_quant/reference_universe_meta.json
-      - name: Check Alpaca secrets
-        shell: bash
-        env:
-          ALPACA_API_KEY_ID: ${{ secrets.ALPACA_API_KEY_ID }}
-          ALPACA_API_SECRET_KEY: ${{ secrets.ALPACA_API_SECRET_KEY }}
-        run: |
-          if [ -z "$ALPACA_API_KEY_ID" ] || [ -z "$ALPACA_API_SECRET_KEY" ]; then
-            echo "HASOL_BLOCKER=ALPACA_ACTIONS_SECRETS_MISSING"
-            exit 1
-          fi
-      - name: Run full-market historical SIP Quant
-        env:
-          ALPACA_API_KEY_ID: ${{ secrets.ALPACA_API_KEY_ID }}
-          ALPACA_API_SECRET_KEY: ${{ secrets.ALPACA_API_SECRET_KEY }}
-          HASOL_BATCH_SIZE: '200'
-        run: |
-          python -m scripts.run_full_market_quant --feed sip --lookback-calendar-days 120 --output-dir output_quant
-      - name: Verify official artifacts
+          rm -rf output_web_quant
+          python -m scripts.run_web_candidate_quant \
+            --input runtime/web_candidates/latest.json \
+            --output-dir output_web_quant
+
+      - name: Verify artifacts and source boundary
         shell: bash
         run: |
           set -euo pipefail
-          for f in run_manifest.json data_quality.json universe_snapshot.csv features.csv full_rank.csv quant_top50.csv reference_universe.csv reference_universe_meta.json; do
-            test -s "output_quant/$f"
+          for f in run_manifest.json data_quality.json input_snapshot.json candidate_features.csv web_candidate_quant.csv quant_top50.csv quant_top50.json; do
+            test -s "output_web_quant/$f"
           done
-          test "$(($(wc -l < output_quant/quant_top50.csv) - 1))" -eq 50
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('output_web_quant/run_manifest.json').read_text())
+          assert m['quant_market_source']=='YAHOO_YFINANCE_DETECTION_ONLY'
+          assert m['quant_source_policy']=='DETECTION_ONLY_NOT_CANONICAL'
+          assert m['final_market_validator']=='ALPACA_CONNECTED_APP'
+          print(m['quality'])
+          PY
+
       - name: Upload Quant artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hasol-full-market-quant-${{ github.run_id }}
-          path: output_quant/**
+          name: hasol-web-candidate-quant-${{ github.run_id }}
+          path: output_web_quant/**
           if-no-files-found: warn
           retention-days: 90
