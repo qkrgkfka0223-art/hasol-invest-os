@@ -7,59 +7,59 @@
   "restore_from": "E2E-20260824-GROWTH",
   "candidates": [
     {
-      "ticker": "NYAX",
-      "event_id": "NYAX-20260825-IPS",
-      "event_type": "M&A",
-      "axis": "PAYMENTS_SMART_PARKING",
-      "event_published_at_utc": "2026-08-25T10:00:00Z",
-      "official_source_url": "https://www.nayax.com/news/nayax-enters-into-definitive-agreement-to-acquire-ips-group-a-leading-smart-parking-technology-provider/",
+      "ticker": "VEEV",
+      "event_id": "VEEV-20260825-CRM",
+      "event_type": "CONTRACT",
+      "axis": "LIFE_SCIENCES_SOFTWARE",
+      "event_published_at_utc": "2026-08-25T11:03:00Z",
+      "official_source_url": "https://ir.veeva.com/news/news-details/2026/Veeva-Vault-CRM-Selected-by-Regeneron/default.aspx",
       "official_verified": true,
-      "headline": "Nayax agrees to acquire IPS Group for $350M",
-      "flow_path": "parking platform acquisition→$85B addressable opportunity expansion→cross-sell/synergies→earnings revisions"
+      "headline": "Veeva Vault CRM selected globally by Regeneron",
+      "flow_path": "global enterprise CRM commitment→commercial workflow adoption→recurring software expansion→estimate support"
     },
     {
-      "ticker": "LOT",
-      "event_id": "LOT-20260825-LOTUSUK",
-      "event_type": "M&A",
-      "axis": "EV_LUXURY",
-      "event_published_at_utc": "2026-08-25T11:00:00Z",
-      "official_source_url": "https://www.globenewswire.com/news-release/2026/08/25/3350311/0/en/lotus-tech-completed-acquisition-of-100-equity-interest-of-lotus-advance-technologies-integrating-all-businesses-and-operations-under-one-lotus.html",
-      "official_verified": true,
-      "headline": "Lotus Tech completes acquisition of 100% of Lotus UK",
-      "flow_path": "full integration→governance simplification+brand control→operational synergies→longer-term margin/capital-flow potential"
-    },
-    {
-      "ticker": "AVXL",
-      "event_id": "AVXL-20260825-Q3REG",
+      "ticker": "VIPS",
+      "event_id": "VIPS-20260825-Q2",
       "event_type": "EARNINGS",
-      "axis": "CNS_REGULATORY",
-      "event_published_at_utc": "2026-08-25T10:25:00Z",
-      "official_source_url": "https://www.anavex.com/post/anavex-life-sciences-reports-third-fiscal-quarter-2026-financial-results-and-business-update",
+      "axis": "CHINA_CONSUMER",
+      "event_published_at_utc": "2026-08-25T09:00:00Z",
+      "official_source_url": "https://ir.vip.com/news-releases/news-release-details/vipshop-reports-unaudited-second-quarter-2026-financial-results",
       "official_verified": true,
-      "headline": "Anavex reports Q3 update and regulatory progress across CNS programs",
-      "flow_path": "regulatory submissions→IND/meeting milestones→clinical/regulatory optionality→biotech specialist demand"
+      "headline": "Vipshop reports Q2 results, cash generation and shareholder returns",
+      "flow_path": "earnings+cash return update→expectation reset→fundamental investor repositioning"
     },
     {
-      "ticker": "SUPX",
-      "event_id": "SUPX-20260825-B300",
-      "event_type": "CONTRACT",
-      "axis": "AI_INFRASTRUCTURE",
-      "event_published_at_utc": "2026-08-25T12:00:00Z",
-      "official_source_url": "https://www.prnewswire.com/news-releases/superx-secures-38-8-million-nvidia-b300-server-order-from-woodman-accelerating-expansion-into-japans-ai-infrastructure-market-302858000.html",
+      "ticker": "DKS",
+      "event_id": "DKS-20260825-Q2",
+      "event_type": "EARNINGS_NEGATIVE",
+      "axis": "SPORTING_GOODS_RETAIL",
+      "event_published_at_utc": "2026-08-25T11:00:00Z",
+      "official_source_url": "https://www.prnewswire.com/news-releases/dicks-sporting-goods-inc-reports-second-quarter-results-302859300.html",
       "official_verified": true,
-      "headline": "SuperX secures $38.8M NVIDIA B300 server order",
-      "flow_path": "signed AI server order→revenue backlog→Japan AI infrastructure penetration→follow-on customer demand"
+      "headline": "DICK'S reports Q2 results and revises 2026 outlook lower",
+      "flow_path": "earnings miss+guidance reset→expectation repricing→sector read-through and short-side capital flow"
     },
     {
-      "ticker": "CBAK",
-      "event_id": "CBAK-20260825-96M",
-      "event_type": "CONTRACT",
-      "axis": "BATTERY_EV",
-      "event_published_at_utc": "2026-08-25T13:00:00Z",
-      "official_source_url": "https://www.globenewswire.com/news-release/2026/08/25/3350419/0/en/cbak-energy-secures-approximately-us-96-million-battery-cell-order-from-indian-customer.html",
+      "ticker": "BMO",
+      "event_id": "BMO-20260825-Q3",
+      "event_type": "EARNINGS",
+      "axis": "BANKING",
+      "event_published_at_utc": "2026-08-25T09:30:00Z",
+      "official_source_url": "https://newsroom.bmo.com/2026-08-25-BMO-Financial-Group-Reports-Third-Quarter-2026-Results",
       "official_verified": true,
-      "headline": "CBAK Energy secures approximately $96M battery cell order",
-      "flow_path": "large order→facility utilization/backlog visibility→2027 revenue conversion→EV supply-chain investor demand"
+      "headline": "BMO reports third-quarter 2026 results",
+      "flow_path": "earnings+credit/capital update→bank estimate revisions→institutional allocation response"
+    },
+    {
+      "ticker": "SLF",
+      "event_id": "SLF-20260825-WILTON",
+      "event_type": "M&A",
+      "axis": "INSURANCE_ASSET_MANAGEMENT",
+      "event_published_at_utc": "2026-08-25T12:05:00Z",
+      "official_source_url": "https://www.sunlife.com/en/newsroom/news-releases/announcement/sun-life-and-wilton-re-announce-a-strategic-partnership-combining-depth-and-breadth-of-capabilities-across-life-and-annuity-reinsurance-and-asset-management/124124/",
+      "official_verified": true,
+      "headline": "Sun Life and Wilton Re announce strategic reinsurance and asset-management partnership",
+      "flow_path": "strategic capital partnership→insurance asset-management scale→permanent capital growth→longer-duration fee potential"
     }
   ]
 }
