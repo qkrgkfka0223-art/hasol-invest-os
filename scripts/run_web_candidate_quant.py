@@ -14,9 +14,12 @@ from hasol_quant.features import build_features
 from hasol_quant.ranker import rank_universe, top_n
 from hasol_quant.yahoo_client import fetch_daily_bars
 
-ENGINE = "HASOL-WEB-CANDIDATE-QUANT-v2"
+ENGINE = "HASOL-WEB-CANDIDATE-QUANT-v2.1"
 DATA_SOURCE = "YAHOO_YFINANCE_DETECTION_ONLY"
 FINAL_VALIDATOR = "ALPACA_CONNECTED_APP"
+MIN_FREEZE_CANDIDATES = 5
+CANDIDATE_BREADTH_TARGET = 20
+MIN_MARKET_DATA_COVERAGE = 0.80
 
 
 def _load(path: Path) -> tuple[dict, dict]:
@@ -73,6 +76,53 @@ def _eligibility(features: pd.DataFrame) -> pd.DataFrame:
     return x
 
 
+def _quality(payload: dict, input_count: int, market_returned: int, eligible_count: int, ranked_count: int, top_count: int) -> dict:
+    coverage = (market_returned / input_count) if input_count else 0.0
+    production = bool(payload.get("eligible_for_prediction", False))
+    freeze_ready = (
+        production
+        and eligible_count >= MIN_FREEZE_CANDIDATES
+        and ranked_count >= MIN_FREEZE_CANDIDATES
+        and coverage >= MIN_MARKET_DATA_COVERAGE
+    )
+    if not production:
+        status = "TEST_ONLY"
+    elif eligible_count == 0:
+        status = "NO_PREDICTION"
+    elif freeze_ready:
+        status = "PASS"
+    else:
+        status = "DEGRADED"
+    reasons = []
+    if production and input_count < CANDIDATE_BREADTH_TARGET:
+        reasons.append("BREADTH_BELOW_TARGET")
+    if production and coverage < MIN_MARKET_DATA_COVERAGE:
+        reasons.append("MARKET_DATA_COVERAGE_LOW")
+    if production and eligible_count < MIN_FREEZE_CANDIDATES:
+        reasons.append("QUANT_ELIGIBLE_LT_5")
+    if production and ranked_count < MIN_FREEZE_CANDIDATES:
+        reasons.append("RANKED_LT_5")
+    return {
+        "raw_event_count": int(payload.get("event_count_raw", 0)),
+        "deduped_event_count": int(payload.get("event_count_deduped", 0)),
+        "input_candidates": input_count,
+        "candidate_breadth_target": CANDIDATE_BREADTH_TARGET,
+        "breadth_warning": bool(production and input_count < CANDIDATE_BREADTH_TARGET),
+        "market_data_returned": market_returned,
+        "market_data_coverage": coverage,
+        "min_market_data_coverage": MIN_MARKET_DATA_COVERAGE,
+        "quant_eligible": eligible_count,
+        "min_freeze_candidates": MIN_FREEZE_CANDIDATES,
+        "quant_ranked": ranked_count,
+        "top50_count": top_count,
+        "quality_status": status,
+        "freeze_ready": freeze_ready,
+        "quality_reasons": reasons,
+        "canonical_market_fact": False,
+        "final_market_validation_required": True,
+    }
+
+
 def run(input_path: Path, output_dir: Path) -> dict:
     raw_payload, payload = _load(input_path)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -81,7 +131,6 @@ def run(input_path: Path, output_dir: Path) -> dict:
     symbols = sorted(set(candidates.get("ticker", pd.Series(dtype=str)).tolist()) | {"SPY"})
 
     if candidates.empty:
-        features = pd.DataFrame()
         all_candidates = candidates.copy()
         ranked = pd.DataFrame()
         top50 = pd.DataFrame()
@@ -110,18 +159,7 @@ def run(input_path: Path, output_dir: Path) -> dict:
     input_count = int(len(candidates))
     market_returned = int(all_candidates["history_bars"].notna().sum()) if input_count and "history_bars" in all_candidates.columns else 0
     eligible_count = int(all_candidates["quant_eligible"].fillna(False).sum()) if input_count and "quant_eligible" in all_candidates.columns else 0
-    quality = {
-        "raw_event_count": int(payload.get("event_count_raw", 0)),
-        "deduped_event_count": int(payload.get("event_count_deduped", 0)),
-        "input_candidates": input_count,
-        "market_data_returned": market_returned,
-        "market_data_coverage": (market_returned / input_count) if input_count else 1.0,
-        "quant_eligible": eligible_count,
-        "quant_ranked": int(len(ranked)),
-        "top50_count": int(len(top50)),
-        "canonical_market_fact": False,
-        "final_market_validation_required": True,
-    }
+    quality = _quality(payload, input_count, market_returned, eligible_count, int(len(ranked)), int(len(top50)))
     (output_dir / "data_quality.json").write_text(json.dumps(quality, indent=2), encoding="utf-8")
 
     manifest = {
@@ -149,9 +187,12 @@ def main() -> None:
     p = argparse.ArgumentParser(description="HASOL Web-first candidate Quant runner (no Alpaca secret required)")
     p.add_argument("--input", default="runtime/web_candidates/latest.json")
     p.add_argument("--output-dir", default="output_web_quant")
+    p.add_argument("--require-freeze-ready", action="store_true", help="Fail the process when a prediction-eligible input is not freeze-ready")
     args = p.parse_args()
     manifest = run(Path(args.input), Path(args.output_dir))
     print(json.dumps(manifest, indent=2))
+    if args.require_freeze_ready and manifest["eligible_for_prediction"] and not manifest["quality"]["freeze_ready"]:
+        raise SystemExit(2)
 
 
 if __name__ == "__main__":
