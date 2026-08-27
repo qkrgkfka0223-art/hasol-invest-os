@@ -10,10 +10,22 @@ from zoneinfo import ZoneInfo
 SCHEMA_VERSION = "HASOL-WEB-CANDIDATES-v2"
 NY = ZoneInfo("America/New_York")
 
+RUN_TYPE_ALIASES = {
+    "PREMARKET_WATCH": "PREMARKET",
+}
 ALLOWED_RUN_TYPES = {"PREMARKET", "INTRADAY_EVENT", "E2E_SIM", "SYSTEM_TEST"}
+
+EVENT_TYPE_ALIASES = {
+    "FDA_APPROVAL": "FDA",
+    "FDA_CLEARANCE": "FDA",
+    "EARNINGS_GUIDANCE": "GUIDANCE",
+    "EARNINGS_AND_GUIDANCE": "GUIDANCE",
+    "LICENSING_FINANCING": "FINANCING",
+}
 ALLOWED_EVENT_TYPES = {
     "SEC", "IR", "FDA", "EARNINGS", "EARNINGS_NEGATIVE", "GUIDANCE", "CONTRACT",
     "POLICY", "M&A", "FINANCING", "MAJOR_NEWS", "CORPORATE_ACTION", "OTHER_OFFICIAL",
+    "LICENSING", "PARTNERSHIP", "CAPEX", "CUSTOMER", "INDEX", "OWNERSHIP",
 }
 
 
@@ -83,10 +95,13 @@ def _validate_event(event: dict[str, Any], *, production: bool, cutoff: datetime
         raise ValueError("candidate ticker is required")
     item["ticker"] = ticker
 
-    event_type = str(item.get("event_type", "")).upper().strip()
+    raw_event_type = str(item.get("event_type", "")).upper().strip()
+    event_type = EVENT_TYPE_ALIASES.get(raw_event_type, raw_event_type)
     if event_type not in ALLOWED_EVENT_TYPES:
-        raise ValueError(f"unsupported event_type for {ticker}: {event_type}")
+        raise ValueError(f"unsupported event_type for {ticker}: {raw_event_type}")
     item["event_type"] = event_type
+    if raw_event_type != event_type:
+        item["event_type_raw"] = raw_event_type
 
     published = _parse_dt(item.get("event_published_at_utc"))
     if production and published is None:
@@ -115,7 +130,8 @@ def _validate_event(event: dict[str, Any], *, production: bool, cutoff: datetime
 def normalize_payload(payload: dict[str, Any]) -> dict[str, Any]:
     if payload.get("schema_version") != SCHEMA_VERSION:
         raise ValueError(f"schema_version must be {SCHEMA_VERSION}")
-    run_type = str(payload.get("run_type", "")).upper().strip()
+    raw_run_type = str(payload.get("run_type", "")).upper().strip()
+    run_type = RUN_TYPE_ALIASES.get(raw_run_type, raw_run_type)
     if run_type not in ALLOWED_RUN_TYPES:
         raise ValueError(f"run_type must be one of {sorted(ALLOWED_RUN_TYPES)}")
     production = bool(payload.get("eligible_for_prediction", False))
@@ -165,6 +181,8 @@ def normalize_payload(payload: dict[str, Any]) -> dict[str, Any]:
 
     out = dict(payload)
     out["run_type"] = run_type
+    if raw_run_type != run_type:
+        out["run_type_raw"] = raw_run_type
     out["normalized_at_utc"] = datetime.now(ZoneInfo("UTC")).isoformat()
     out["event_count_raw"] = len(raw)
     out["event_count_deduped"] = len(verified_events)
