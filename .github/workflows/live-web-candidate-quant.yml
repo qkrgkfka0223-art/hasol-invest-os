@@ -1,0 +1,90 @@
+name: HASOL Live Candidate Quant
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/live-web-candidate-quant.yml'
+      - 'scripts/run_web_candidate_quant.py'
+      - 'hasol_detector/**'
+      - 'hasol_quant/**'
+      - 'hasol_judgment/**'
+      - 'requirements-quant.txt'
+      - 'runtime/web_candidates/latest.json'
+  push:
+    branches: [main]
+    paths:
+      - 'runtime/web_candidates/latest.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hasol-live-candidate-quant-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  live-quant:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate commit
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-quant.txt
+
+      - name: Install runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-quant.txt
+
+      - name: Run latest Web-candidate Quant
+        run: |
+          rm -rf output_live_quant
+          python -m scripts.run_web_candidate_quant \
+            --input runtime/web_candidates/latest.json \
+            --output-dir output_live_quant
+
+      - name: Verify exact candidate lineage
+        env:
+          SOURCE_COMMIT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          source = Path('runtime/web_candidates/latest.json')
+          raw = json.loads(source.read_text(encoding='utf-8'))
+          canonical = json.dumps(raw, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+          expected = hashlib.sha256(canonical.encode('utf-8')).hexdigest()
+          manifest = json.loads(Path('output_live_quant/run_manifest.json').read_text(encoding='utf-8'))
+          quality = manifest['quality']
+          assert manifest['schema_version'] == 'HASOL-WEB-CANDIDATES-v2'
+          assert manifest['input_sha256'] == expected
+          assert manifest['run_type'] in {'PREMARKET', 'INTRADAY_EVENT'}
+          assert manifest['quant_source_policy'] == 'DETECTION_ONLY_NOT_CANONICAL'
+          assert manifest['final_market_validator'] == 'ALPACA_CONNECTED_APP'
+          Path('output_live_quant/source_commit_sha.txt').write_text(os.environ['SOURCE_COMMIT_SHA'] + '\n', encoding='utf-8')
+          Path('output_live_quant/candidate_input_sha256.txt').write_text(expected + '\n', encoding='utf-8')
+          print(json.dumps({'source_commit_sha': os.environ['SOURCE_COMMIT_SHA'], 'input_sha256': expected, 'quality': quality}, indent=2))
+          PY
+          for f in run_manifest.json data_quality.json input_snapshot_raw.json input_snapshot_normalized.json candidate_features.csv web_candidate_quant.csv quant_top50.csv quant_top50.json source_commit_sha.txt candidate_input_sha256.txt; do
+            test -s "output_live_quant/$f"
+          done
+
+      - name: Upload live-only artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hasol-live-quant-${{ github.run_id }}
+          path: output_live_quant/**
+          if-no-files-found: error
+          retention-days: 30
