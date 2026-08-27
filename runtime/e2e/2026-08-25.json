@@ -1,0 +1,65 @@
+{
+  "schema_version": "HASOL-WEB-CANDIDATES-v2",
+  "run_type": "E2E_SIM",
+  "eligible_for_prediction": true,
+  "prediction_date_et": "2026-08-25",
+  "cutoff_et": "2026-08-25T09:25:00-04:00",
+  "restore_from": "E2E-20260824-GROWTH",
+  "candidates": [
+    {
+      "ticker": "VEEV",
+      "event_id": "VEEV-20260825-CRM",
+      "event_type": "CONTRACT",
+      "axis": "LIFE_SCIENCES_SOFTWARE",
+      "event_published_at_utc": "2026-08-25T11:03:00Z",
+      "official_source_url": "https://ir.veeva.com/news/news-details/2026/Veeva-Vault-CRM-Selected-by-Regeneron/default.aspx",
+      "official_verified": true,
+      "headline": "Veeva Vault CRM selected globally by Regeneron",
+      "flow_path": "global enterprise CRM commitment→commercial workflow adoption→recurring software expansion→estimate support"
+    },
+    {
+      "ticker": "VIPS",
+      "event_id": "VIPS-20260825-Q2",
+      "event_type": "EARNINGS",
+      "axis": "CHINA_CONSUMER",
+      "event_published_at_utc": "2026-08-25T09:00:00Z",
+      "official_source_url": "https://ir.vip.com/news-releases/news-release-details/vipshop-reports-unaudited-second-quarter-2026-financial-results",
+      "official_verified": true,
+      "headline": "Vipshop reports Q2 results, cash generation and shareholder returns",
+      "flow_path": "earnings+cash return update→expectation reset→fundamental investor repositioning"
+    },
+    {
+      "ticker": "TFC",
+      "event_id": "TFC-20260825-PREMIER",
+      "event_type": "IR",
+      "axis": "BANKING_WEALTH",
+      "event_published_at_utc": "2026-08-25T12:05:00Z",
+      "official_source_url": "https://media.truist.com/2026-08-25-Truist-Premier-deepens-commitment-to-advice-led-banking-for-mass-affluent-clients",
+      "official_verified": true,
+      "headline": "Truist expands advice-led Premier banking for mass affluent clients",
+      "flow_path": "Premier investment+advisor expansion→deposit and wealth wallet share→fee/deposit growth→capital allocation interest"
+    },
+    {
+      "ticker": "BMO",
+      "event_id": "BMO-20260825-Q3",
+      "event_type": "EARNINGS",
+      "axis": "BANKING",
+      "event_published_at_utc": "2026-08-25T09:30:00Z",
+      "official_source_url": "https://newsroom.bmo.com/2026-08-25-BMO-Financial-Group-Reports-Third-Quarter-2026-Results",
+      "official_verified": true,
+      "headline": "BMO reports third-quarter 2026 results",
+      "flow_path": "earnings+credit/capital update→bank estimate revisions→institutional allocation response"
+    },
+    {
+      "ticker": "SLF",
+      "event_id": "SLF-20260825-WILTON",
+      "event_type": "M&A",
+      "axis": "INSURANCE_ASSET_MANAGEMENT",
+      "event_published_at_utc": "2026-08-25T12:05:00Z",
+      "official_source_url": "https://www.sunlife.com/en/newsroom/news-releases/announcement/sun-life-and-wilton-re-announce-a-strategic-partnership-combining-depth-and-breadth-of-capabilities-across-life-and-annuity-reinsurance-and-asset-management/124124/",
+      "official_verified": true,
+      "headline": "Sun Life and Wilton Re announce strategic reinsurance and asset-management partnership",
+      "flow_path": "strategic capital partnership→insurance asset-management scale→permanent capital growth→longer-duration fee potential"
+    }
+  ]
+}

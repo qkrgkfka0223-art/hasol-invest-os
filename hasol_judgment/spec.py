@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Iterable
 
-HASOL_JUDGMENT_VERSION = "HASOL-JUDGMENT-v1"
+HASOL_JUDGMENT_VERSION = "HASOL-JUDGMENT-v1.1"
 
 REQUIRED_TEXT_FIELDS = (
     "why_now",
@@ -41,6 +41,10 @@ def _score(value: Any, name: str) -> float:
 
 def validate_judgment(record: dict[str, Any]) -> dict[str, Any]:
     out = dict(record)
+    ticker = str(out.get("ticker", "")).upper().strip()
+    if not ticker:
+        raise ValueError("ticker is required for HASOL judgment")
+    out["ticker"] = ticker
     for field in REQUIRED_TEXT_FIELDS:
         if not str(out.get(field, "")).strip():
             raise ValueError(f"missing HASOL judgment field: {field}")
@@ -62,3 +66,34 @@ def fusion_score(record: dict[str, Any]) -> float:
     )
     penalty = 0.08 * x["chase_risk_score"] + 0.05 * x["countercase_risk_score"]
     return round(max(0.0, min(100.0, positive - penalty)), 4)
+
+
+def rank_judgments(records: Iterable[dict[str, Any]], *, top20_n: int = 20, top5_n: int = 5) -> list[dict[str, Any]]:
+    """Validate, score and rank judgments with a deterministic tie-break contract.
+
+    Tie-break order is fusion score, source quality, quant score, then ticker.  This
+    prevents Top20/Top5 from changing simply because input rows arrive in a
+    different order.
+    """
+    rows: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for record in records:
+        x = validate_judgment(record)
+        if x["ticker"] in seen:
+            raise ValueError(f"duplicate judgment ticker: {x['ticker']}")
+        seen.add(x["ticker"])
+        x["judgment_version"] = HASOL_JUDGMENT_VERSION
+        x["fusion_score"] = fusion_score(x)
+        rows.append(x)
+    rows.sort(
+        key=lambda x: (
+            -x["fusion_score"],
+            -x["source_quality_score"],
+            -x["quant_score"],
+            x["ticker"],
+        )
+    )
+    for idx, row in enumerate(rows, start=1):
+        row["top20_rank"] = idx if idx <= top20_n else None
+        row["top5_rank"] = idx if idx <= top5_n else None
+    return rows
