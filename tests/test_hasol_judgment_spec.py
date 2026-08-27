@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import copy
 import pytest
 
-from hasol_judgment.spec import fusion_score, validate_judgment
+from hasol_judgment.spec import fusion_score, rank_judgments, validate_judgment
 
 
-def _record():
+def _record(ticker="AAA"):
     return {
+        "ticker": ticker,
         "why_now": "new verified event before cutoff",
         "future_capital_flow": "contract converts into incremental demand",
         "next_buyer": "event-driven and growth funds",
@@ -39,3 +41,21 @@ def test_missing_required_field_fails():
     r["future_capital_flow"] = ""
     with pytest.raises(ValueError, match="future_capital_flow"):
         validate_judgment(r)
+
+
+def test_rank_is_stable_under_input_reordering_and_assigns_top5():
+    rows = []
+    for i, ticker in enumerate(["EEE", "DDD", "CCC", "BBB", "AAA", "FFF"]):
+        r = _record(ticker)
+        r["future_capital_flow_score"] += i
+        rows.append(r)
+    a = rank_judgments(copy.deepcopy(rows))
+    b = rank_judgments(list(reversed(copy.deepcopy(rows))))
+    assert [r["ticker"] for r in a] == [r["ticker"] for r in b]
+    assert [r["top5_rank"] for r in a[:5]] == [1, 2, 3, 4, 5]
+    assert a[5]["top5_rank"] is None
+
+
+def test_duplicate_ticker_fails():
+    with pytest.raises(ValueError, match="duplicate"):
+        rank_judgments([_record("AAA"), _record("AAA")])
