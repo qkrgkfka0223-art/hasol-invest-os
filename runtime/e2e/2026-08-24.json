@@ -7,59 +7,59 @@
   "restore_from": "BASELINE_V3",
   "candidates": [
     {
-      "ticker": "DTIL",
-      "event_id": "DTIL-20260824-FUNCTION-DMD",
+      "ticker": "XPEV",
+      "event_id": "XPEV-20260824-Q2",
+      "event_type": "EARNINGS",
+      "axis": "PHYSICAL_AI_EV",
+      "event_published_at_utc": "2026-08-24T10:30:00Z",
+      "official_source_url": "https://ir.xiaopeng.com/zh-hans/news-releases/news-release-details/xpeng-reports-second-quarter-2026-unaudited-financial-results",
+      "official_verified": true,
+      "headline": "XPENG reports second-quarter 2026 unaudited financial results",
+      "flow_path": "revenue+margin+delivery update→estimate revision→EV/physical-AI investor repositioning"
+    },
+    {
+      "ticker": "LH",
+      "event_id": "LH-20260824-PTAU217",
+      "event_type": "FDA",
+      "axis": "ALZHEIMERS_DIAGNOSTICS",
+      "event_published_at_utc": "2026-08-24T11:02:00Z",
+      "official_source_url": "https://ir.labcorp.com/news-releases/news-release-details/labcorp-offer-first-fda-cleared-blood-test-detect-alzheimers",
+      "official_verified": true,
+      "headline": "Labcorp to offer FDA-cleared Roche pTau217 blood test",
+      "flow_path": "FDA-cleared test adoption→nationwide diagnostic access→test-volume growth→earnings support"
+    },
+    {
+      "ticker": "DGX",
+      "event_id": "DGX-20260824-PTAU217",
+      "event_type": "FDA",
+      "axis": "ALZHEIMERS_DIAGNOSTICS",
+      "event_published_at_utc": "2026-08-24T11:24:00Z",
+      "official_source_url": "https://ir.questdiagnostics.com/press-releases/press-release-details/2026/Quest-Diagnostics-to-Offer-FDA-Cleared-Roche-pTau217-Blood-Test-to-Assess-Alzheimers-Disease-Pathology/default.aspx",
+      "official_verified": true,
+      "headline": "Quest Diagnostics to offer FDA-cleared Roche pTau217 blood test",
+      "flow_path": "FDA-cleared assay addition→broader AD-Detect access→future test volumes→diagnostics capital interest"
+    },
+    {
+      "ticker": "BIIB",
+      "event_id": "BIIB-20260824-IQLIK",
       "event_type": "IR",
-      "axis": "GENE_EDITING",
-      "event_published_at_utc": "2026-08-24T10:01:00Z",
-      "official_source_url": "https://precisionbiosciences.gcs-web.com/press-releases",
+      "axis": "ALZHEIMERS_TREATMENT",
+      "event_published_at_utc": "2026-08-24T12:00:00Z",
+      "official_source_url": "https://investors.biogen.com/node/30926",
       "official_verified": true,
-      "headline": "Precision BioSciences commences dosing in Phase 1/2 FUNCTION-DMD study",
-      "flow_path": "first patient dose→clinical execution de-risking→future efficacy data→biotech capital interest"
+      "headline": "LEQEMBI IQLIK autoinjector for initiation therapy becomes available in the U.S.",
+      "flow_path": "at-home initiation availability→lower administration friction→adoption expansion→therapy revenue expectations"
     },
     {
-      "ticker": "VRXA",
-      "event_id": "VRXA-20260824-AOC-MILESTONE",
+      "ticker": "PTCT",
+      "event_id": "PTCT-20260824-SEPHIENCE",
       "event_type": "IR",
-      "axis": "AOC_PLATFORM",
-      "event_published_at_utc": "2026-08-24T11:00:00Z",
-      "official_source_url": "https://www.secarna.com/news-events/news/veraxa-biotech-and-secarna-pharmaceuticals-achieve-research-milestone-in-antibody-oligonucleotide-conjugate-aoc-alliance",
+      "axis": "RARE_DISEASE",
+      "event_published_at_utc": "2026-08-24T12:00:00Z",
+      "official_source_url": "https://ir.ptcbio.com/node/19461",
       "official_verified": true,
-      "headline": "VERAXA and Secarna achieve AOC research milestone",
-      "flow_path": "proof of concept→platform validation→partnering optionality→future pipeline value"
-    },
-    {
-      "ticker": "GLUE",
-      "event_id": "GLUE-20260824-MODEFIRE1",
-      "event_type": "IR",
-      "axis": "ONCOLOGY_TRIAL",
-      "event_published_at_utc": "2026-08-24T11:00:00Z",
-      "official_source_url": "https://ir.monterosatx.com/news-and-events/press-releases",
-      "official_verified": true,
-      "headline": "Monte Rosa doses first patient in Phase 2 MODeFIRe-1",
-      "flow_path": "Phase 2 start→clinical catalyst clock starts→future efficacy readout→specialist fund demand"
-    },
-    {
-      "ticker": "USAR",
-      "event_id": "USAR-20260824-SPV",
-      "event_type": "FINANCING",
-      "axis": "CRITICAL_MINERALS",
-      "event_published_at_utc": "2026-08-24T11:00:00Z",
-      "official_source_url": "https://investors.usare.com/news-releases/news-release-details/usa-rare-earth-nasdaq-usar-announces-completion-upsized-155",
-      "official_verified": true,
-      "headline": "USA Rare Earth completes upsized $1.55B government-backed SPV capitalization",
-      "flow_path": "government capital+bank debt+forward purchase→funding/volume visibility→strategic supply-chain demand→institutional repricing"
-    },
-    {
-      "ticker": "PLUS",
-      "event_id": "PLUS-20260824-DAYMARK",
-      "event_type": "M&A",
-      "axis": "CLOUD_SERVICES",
-      "event_published_at_utc": "2026-08-24T13:15:00Z",
-      "official_source_url": "https://www.eplus.com/who-we-are/investor-relations/press-releases/2026/08/eplus-acquires-assets-of-daymark-solutions",
-      "official_verified": true,
-      "headline": "ePlus acquires assets of Daymark Solutions",
-      "flow_path": "cloud/cyber capability acquisition→cross-sell and geographic expansion→incremental services revenue→earnings revisions"
+      "headline": "PTC announces new Sephience data supporting broad and sustained PKU benefit",
+      "flow_path": "new clinical+real-world evidence→prescriber confidence→commercial adoption expectations→specialist capital interest"
     }
   ]
 }
