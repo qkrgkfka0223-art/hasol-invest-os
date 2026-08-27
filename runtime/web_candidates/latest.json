@@ -3,10 +3,10 @@
   "run_type": "INTRADAY_EVENT",
   "eligible_for_prediction": false,
   "prediction_date_et": "2026-08-27",
-  "as_of_utc": "2026-08-27T16:08:42Z",
+  "as_of_utc": "2026-08-27T17:05:45Z",
   "cutoff_et": "2026-08-27T09:25:00-04:00",
-  "event_count_raw": 5,
-  "event_count_deduped": 5,
+  "event_count_raw": 6,
+  "event_count_deduped": 6,
   "candidates": [
     {
       "ticker": "MRNA",
@@ -87,6 +87,22 @@
       "late_discovered_pre_cutoff_detector_miss": true,
       "discovered_at_utc": "2026-08-27T16:08:42Z",
       "detector_miss_reason": "First discovered by Web Watch after the 09:25 ET freeze although issuer publication timestamp was 09:00 ET; prohibited from retroactive PREMARKET insertion."
+    },
+    {
+      "ticker": "EOSE",
+      "event_id": "EOSE-20260827-CAPEX-THORN-HILL-CONSOLIDATION",
+      "event_type": "CAPEX",
+      "axis": "ENERGY_STORAGE_MANUFACTURING_SCALE",
+      "event_published_at_utc": "2026-08-27T13:21:00Z",
+      "headline": "Eos Energy consolidates battery manufacturing at Thorn Hill with approximately 4 GWh nameplate capacity and 10%-15% expected conversion-cost reduction",
+      "flow_path": "single-site battery manufacturing + approximately 4 GWh nameplate capacity + 10%-15% expected conversion-cost reduction from 2027 -> manufacturing efficiency and margin leverage -> long-duration energy-storage capital re-rating",
+      "official_verified": true,
+      "official_source_url": "https://www.globenewswire.com/news-release/2026/08/27/3352097/0/en/eos-energy-enterprises-to-consolidate-battery-manufacturing-at-thorn-hill-location.html",
+      "source_timestamp_basis": "Eos Energy Enterprises issuer/GlobeNewswire distribution August 27, 2026 09:21 EDT",
+      "eligible_for_prediction": false,
+      "late_discovered_pre_cutoff_detector_miss": true,
+      "discovered_at_utc": "2026-08-27T17:05:45Z",
+      "detector_miss_reason": "First discovered by Web Watch after the 09:25 ET cutoff although issuer publication timestamp was 09:21 ET; frozen PREMARKET snapshot did not contain EOSE, so retroactive insertion is prohibited."
     }
   ]
 }
