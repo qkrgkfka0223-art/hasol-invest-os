@@ -66,3 +66,24 @@ def test_intraday_event_observation_is_allowed_when_not_prediction_eligible():
     out = normalize_payload(_payload(run_type="INTRADAY_EVENT", eligible=False, cutoff=None))
     assert out["run_type"] == "INTRADAY_EVENT"
     assert out["eligible_for_prediction"] is False
+
+
+def test_live_web_watch_run_type_alias_normalizes_to_premarket():
+    out = normalize_payload(_payload(run_type="PREMARKET_WATCH"))
+    assert out["run_type"] == "PREMARKET"
+    assert out["run_type_raw"] == "PREMARKET_WATCH"
+
+
+@pytest.mark.parametrize(
+    ("raw_type", "canonical"),
+    [
+        ("FDA_APPROVAL", "FDA"),
+        ("EARNINGS_GUIDANCE", "GUIDANCE"),
+        ("LICENSING_FINANCING", "FINANCING"),
+    ],
+)
+def test_live_web_watch_event_type_aliases_normalize(raw_type, canonical):
+    out = normalize_payload(_payload(candidates=[_event(event_type=raw_type)]))
+    row = out["candidates"][0]
+    assert row["event_type"] == canonical
+    assert raw_type in row["event_bundle"]
