@@ -2,6 +2,16 @@ name: HASOL Live Candidate Quant
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/live-web-candidate-quant.yml'
+      - 'scripts/run_web_candidate_quant.py'
+      - 'hasol_detector/**'
+      - 'hasol_quant/**'
+      - 'hasol_judgment/**'
+      - 'requirements-quant.txt'
+      - 'runtime/web_candidates/latest.json'
   push:
     branches: [main]
     paths:
@@ -11,7 +21,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: hasol-live-candidate-quant-main
+  group: hasol-live-candidate-quant-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
