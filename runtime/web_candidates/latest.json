@@ -3,10 +3,10 @@
   "run_type": "PREMARKET_WATCH",
   "eligible_for_prediction": true,
   "prediction_date_et": "2026-08-27",
-  "as_of_utc": "2026-08-27T02:01:16Z",
+  "as_of_utc": "2026-08-27T02:59:14Z",
   "cutoff_et": "2026-08-27T09:25:00-04:00",
-  "event_count_raw": 2,
-  "event_count_deduped": 2,
+  "event_count_raw": 4,
+  "event_count_deduped": 4,
   "candidates": [
     {
       "ticker": "BHVN",
@@ -33,6 +33,32 @@
       "official_source_url": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-class-targeted-therapy-metastatic-pancreatic-cancer",
       "secondary_official_source_url": "https://ir.revmed.com/news-releases/news-release-details/us-fda-approves-revolution-medicines-rasonquetm-daraxonrasib",
       "source_timestamp_basis": "FDA release distributed 08:39 EDT; company IR confirms approval and same-day availability",
+      "eligible_for_prediction": true
+    },
+    {
+      "ticker": "CRM",
+      "event_id": "CRM-20260826-Q2FY27-EARNINGS-GUIDANCE",
+      "event_type": "EARNINGS_GUIDANCE",
+      "axis": "ENTERPRISE_AI_SOFTWARE",
+      "event_published_at_utc": "2026-08-26T20:01:00Z",
+      "headline": "Salesforce delivers record Q2 FY27 results and raises full-year revenue guidance",
+      "flow_path": "cRPO acceleration + Agentforce/Data 360 ARR growth + raised FY27 revenue guide -> higher forward revenue expectations -> enterprise AI/software capital re-rating",
+      "official_verified": true,
+      "official_source_url": "https://investor.salesforce.com/news/news-details/2026/Salesforce-Delivers-Record-Second-Quarter-Fiscal-2027-Results/default.aspx",
+      "source_timestamp_basis": "Official Salesforce IR release; Business Wire public distribution timestamp August 26, 2026 4:01 PM EDT",
+      "eligible_for_prediction": true
+    },
+    {
+      "ticker": "OKTA",
+      "event_id": "OKTA-20260826-Q2FY27-EARNINGS-GUIDANCE",
+      "event_type": "EARNINGS_GUIDANCE",
+      "axis": "CYBERSECURITY_IDENTITY_AI",
+      "event_published_at_utc": "2026-08-26T20:01:00Z",
+      "headline": "Okta reports Q2 FY27 results with accelerating RPO and higher full-year outlook",
+      "flow_path": "RPO/cRPO acceleration + AI identity demand + raised FY27 revenue/EPS outlook -> improved forward growth and cash-flow expectations -> cybersecurity capital re-rating",
+      "official_verified": true,
+      "official_source_url": "https://investor.okta.com/news-and-events/news-releases/news-details/2026/Okta-Announces-Second-Quarter-Fiscal-Year-2027-Financial-Results/default.aspx",
+      "source_timestamp_basis": "Official Okta IR release; Business Wire public distribution timestamp August 26, 2026 4:01 PM EDT",
       "eligible_for_prediction": true
     }
   ]
