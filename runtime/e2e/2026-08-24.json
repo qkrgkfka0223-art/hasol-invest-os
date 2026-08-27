@@ -1,0 +1,65 @@
+{
+  "schema_version": "HASOL-WEB-CANDIDATES-v2",
+  "run_type": "E2E_SIM",
+  "eligible_for_prediction": true,
+  "prediction_date_et": "2026-08-24",
+  "cutoff_et": "2026-08-24T09:25:00-04:00",
+  "restore_from": "BASELINE_V3",
+  "candidates": [
+    {
+      "ticker": "XPEV",
+      "event_id": "XPEV-20260824-Q2",
+      "event_type": "EARNINGS",
+      "axis": "PHYSICAL_AI_EV",
+      "event_published_at_utc": "2026-08-24T10:30:00Z",
+      "official_source_url": "https://ir.xiaopeng.com/zh-hans/news-releases/news-release-details/xpeng-reports-second-quarter-2026-unaudited-financial-results",
+      "official_verified": true,
+      "headline": "XPENG reports second-quarter 2026 unaudited financial results",
+      "flow_path": "revenue+margin+delivery update→estimate revision→EV/physical-AI investor repositioning"
+    },
+    {
+      "ticker": "LH",
+      "event_id": "LH-20260824-PTAU217",
+      "event_type": "FDA",
+      "axis": "ALZHEIMERS_DIAGNOSTICS",
+      "event_published_at_utc": "2026-08-24T11:02:00Z",
+      "official_source_url": "https://ir.labcorp.com/news-releases/news-release-details/labcorp-offer-first-fda-cleared-blood-test-detect-alzheimers",
+      "official_verified": true,
+      "headline": "Labcorp to offer FDA-cleared Roche pTau217 blood test",
+      "flow_path": "FDA-cleared test adoption→nationwide diagnostic access→test-volume growth→earnings support"
+    },
+    {
+      "ticker": "DGX",
+      "event_id": "DGX-20260824-PTAU217",
+      "event_type": "FDA",
+      "axis": "ALZHEIMERS_DIAGNOSTICS",
+      "event_published_at_utc": "2026-08-24T11:24:00Z",
+      "official_source_url": "https://ir.questdiagnostics.com/press-releases/press-release-details/2026/Quest-Diagnostics-to-Offer-FDA-Cleared-Roche-pTau217-Blood-Test-to-Assess-Alzheimers-Disease-Pathology/default.aspx",
+      "official_verified": true,
+      "headline": "Quest Diagnostics to offer FDA-cleared Roche pTau217 blood test",
+      "flow_path": "FDA-cleared assay addition→broader AD-Detect access→future test volumes→diagnostics capital interest"
+    },
+    {
+      "ticker": "BIIB",
+      "event_id": "BIIB-20260824-IQLIK",
+      "event_type": "IR",
+      "axis": "ALZHEIMERS_TREATMENT",
+      "event_published_at_utc": "2026-08-24T12:00:00Z",
+      "official_source_url": "https://investors.biogen.com/node/30926",
+      "official_verified": true,
+      "headline": "LEQEMBI IQLIK autoinjector for initiation therapy becomes available in the U.S.",
+      "flow_path": "at-home initiation availability→lower administration friction→adoption expansion→therapy revenue expectations"
+    },
+    {
+      "ticker": "PTCT",
+      "event_id": "PTCT-20260824-SEPHIENCE",
+      "event_type": "IR",
+      "axis": "RARE_DISEASE",
+      "event_published_at_utc": "2026-08-24T12:00:00Z",
+      "official_source_url": "https://ir.ptcbio.com/node/19461",
+      "official_verified": true,
+      "headline": "PTC announces new Sephience data supporting broad and sustained PKU benefit",
+      "flow_path": "new clinical+real-world evidence→prescriber confidence→commercial adoption expectations→specialist capital interest"
+    }
+  ]
+}
