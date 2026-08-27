@@ -1,0 +1,26 @@
+{
+  "schema_version": "HASOL-WEB-CANDIDATES-v2",
+  "run_type": "INTRADAY_EVENT",
+  "eligible_for_prediction": false,
+  "prediction_date_et": "2026-08-27",
+  "as_of_utc": "2026-08-27T13:55:39Z",
+  "cutoff_et": "2026-08-27T09:25:00-04:00",
+  "events": [
+    {
+      "ticker": "MTLS",
+      "event_id": "MTLS-20260827-Q2H1-EARNINGS",
+      "event_type": "EARNINGS",
+      "axis": "ADDITIVE_MANUFACTURING_MEDTECH",
+      "event_published_at_utc": "2026-08-27T05:00:00Z",
+      "discovered_after_freeze": true,
+      "headline": "Materialise reports Q2/H1 2026 growth and raises full-year Adjusted EBIT guidance",
+      "flow_path": "Q2 revenue +8.1% + adjusted EBITDA +15.7% + higher FY26 adjusted EBIT guide -> profitability estimate revisions -> additive-manufacturing/medtech capital interest",
+      "official_verified": true,
+      "official_source_url": "https://investors.materialise.com/news",
+      "secondary_official_source_url": "https://www.businesswire.com/news/home/20260826250614/en/Materialise-Reports-Second-Quarter-and-Half-Year-2026-Results",
+      "source_timestamp_basis": "Materialise scheduled/issued Q2 results at August 27, 2026 01:00 EDT; official IR lists the August 27 results release",
+      "eligible_for_prediction": false,
+      "freeze_mutation": false
+    }
+  ]
+}
