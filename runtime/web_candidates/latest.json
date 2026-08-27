@@ -3,10 +3,10 @@
   "run_type": "INTRADAY_EVENT",
   "eligible_for_prediction": false,
   "prediction_date_et": "2026-08-27",
-  "as_of_utc": "2026-08-27T14:58:27Z",
+  "as_of_utc": "2026-08-27T16:08:42Z",
   "cutoff_et": "2026-08-27T09:25:00-04:00",
-  "event_count_raw": 3,
-  "event_count_deduped": 3,
+  "event_count_raw": 5,
+  "event_count_deduped": 5,
   "candidates": [
     {
       "ticker": "MRNA",
@@ -55,6 +55,38 @@
       "late_discovered_pre_cutoff_detector_miss": true,
       "discovered_at_utc": "2026-08-27T14:58:27Z",
       "detector_miss_reason": "First discovered by Web Watch after the 09:25 ET freeze although issuer publication timestamp was 06:31 ET; prohibited from retroactive PREMARKET insertion."
+    },
+    {
+      "ticker": "BURL",
+      "event_id": "BURL-20260827-Q2-2026-EARNINGS-GUIDANCE",
+      "event_type": "GUIDANCE",
+      "axis": "CONSUMER_OFFPRICE_RETAIL",
+      "event_published_at_utc": "2026-08-27T10:45:00Z",
+      "headline": "Burlington reports Q2 sales and earnings growth and raises full-year adjusted EPS guidance",
+      "flow_path": "Q2 sales +11% + adjusted EPS +38% + adjusted EBIT margin +100bp + FY adjusted EPS guide raised to $11.77-$11.97 -> earnings revisions and operating leverage -> off-price retail capital re-rating",
+      "official_verified": true,
+      "official_source_url": "https://www.globenewswire.com/news-release/2026/08/27/3351860/0/en/burlington-stores-reports-strong-second-quarter-sales-and-earnings-growth-this-represents-the-15th-consecutive-quarter-of-double-digit-eps-growth.html",
+      "source_timestamp_basis": "Burlington Stores issuer/GlobeNewswire distribution August 27, 2026 06:45 EDT",
+      "eligible_for_prediction": false,
+      "late_discovered_pre_cutoff_detector_miss": true,
+      "discovered_at_utc": "2026-08-27T16:08:42Z",
+      "detector_miss_reason": "First discovered by Web Watch after the 09:25 ET freeze although issuer publication timestamp was 06:45 ET; prohibited from retroactive PREMARKET insertion."
+    },
+    {
+      "ticker": "DLB",
+      "event_id": "DLB-20260827-CEO-TRANSITION",
+      "event_type": "MAJOR_NEWS",
+      "axis": "MEDIA_TECH_MANAGEMENT_TRANSITION",
+      "event_published_at_utc": "2026-08-27T13:00:00Z",
+      "headline": "Dolby Laboratories announces CEO transition with Marc Whitten succeeding Kevin Yeaman",
+      "flow_path": "long-tenured CEO retirement + new CEO appointment after board succession process -> strategy/execution expectations reset -> media technology valuation and capital allocation reassessment",
+      "official_verified": true,
+      "official_source_url": "https://www.prnewswire.com/news-releases/dolby-laboratories-announces-leadership-transition-302861351.html",
+      "source_timestamp_basis": "Dolby Laboratories issuer/PRNewswire distribution August 27, 2026 09:00 EDT",
+      "eligible_for_prediction": false,
+      "late_discovered_pre_cutoff_detector_miss": true,
+      "discovered_at_utc": "2026-08-27T16:08:42Z",
+      "detector_miss_reason": "First discovered by Web Watch after the 09:25 ET freeze although issuer publication timestamp was 09:00 ET; prohibited from retroactive PREMARKET insertion."
     }
   ]
 }
