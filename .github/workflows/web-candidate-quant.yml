@@ -27,17 +27,30 @@ jobs:
           pip install -r requirements-quant.txt
       - name: Unit tests
         run: |
-          python -m pytest -q tests/test_quant_engine.py tests/test_web_candidate_quant.py tests/test_web_event_model.py tests/test_hasol_judgment_spec.py
+          python -m pytest -q tests/test_quant_engine.py tests/test_web_candidate_quant.py tests/test_web_event_model.py tests/test_hasol_judgment_spec.py tests/test_e2e_fixtures.py
       - name: Verify no Alpaca secret boundary
         run: |
           set -euo pipefail
           ! grep -R -n -E 'APCA_API_KEY|ALPACA_API_KEY|APCA_API_SECRET|ALPACA_SECRET' .github/workflows/web-candidate-quant.yml scripts/run_web_candidate_quant.py
           python -m scripts.run_web_candidate_quant --help
-      - name: Run Web-candidate Quant
+      - name: Run Web-candidate Quant system smoke
         run: |
           rm -rf output_web_quant
           python -m scripts.run_web_candidate_quant --input runtime/web_candidates/latest.json --output-dir output_web_quant
-      - name: Verify artifacts and source boundary
+      - name: Run 3-day future-blocked E2E Quant with freeze gate
+        run: |
+          set -euo pipefail
+          rm -rf output_e2e
+          for day in 2026-08-24 2026-08-25 2026-08-26; do
+            out="output_e2e/$day"
+            python -m scripts.run_web_candidate_quant \
+              --input "runtime/e2e/$day.json" \
+              --output-dir "$out" \
+              --require-freeze-ready
+            echo "=== E2E $day QUANT TOP ==="
+            cat "$out/quant_top50.csv"
+          done
+      - name: Verify artifacts, lineage and freeze readiness
         run: |
           set -euo pipefail
           for f in run_manifest.json data_quality.json input_snapshot_raw.json input_snapshot_normalized.json candidate_features.csv web_candidate_quant.csv quant_top50.csv quant_top50.json; do test -s "output_web_quant/$f"; done
@@ -50,13 +63,30 @@ jobs:
           assert m['quant_market_source']=='YAHOO_YFINANCE_DETECTION_ONLY'
           assert m['quant_source_policy']=='DETECTION_ONLY_NOT_CANONICAL'
           assert m['final_market_validator']=='ALPACA_CONNECTED_APP'
-          print(m['quality'])
+          print('system smoke', m['quality'])
+          for day in ['2026-08-24','2026-08-25','2026-08-26']:
+              p=Path('output_e2e')/day
+              em=json.loads((p/'run_manifest.json').read_text())
+              q=em['quality']
+              assert em['run_type']=='E2E_SIM'
+              assert em['eligible_for_prediction'] is True
+              assert em['cutoff_et']==f'{day}T09:25:00-04:00'
+              assert q['input_candidates'] >= 5
+              assert q['market_data_coverage'] >= q['min_market_data_coverage']
+              assert q['quant_eligible'] >= q['min_freeze_candidates']
+              assert q['quant_ranked'] >= q['min_freeze_candidates']
+              assert q['freeze_ready'] is True
+              assert q['quality_status']=='PASS'
+              assert (p/'quant_top50.csv').exists()
+              print(day, q)
           PY
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: hasol-web-candidate-quant-${{ github.run_id }}
-          path: output_web_quant/**
+          path: |
+            output_web_quant/**
+            output_e2e/**
           if-no-files-found: warn
           retention-days: 90
