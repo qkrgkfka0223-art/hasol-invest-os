@@ -29,15 +29,15 @@
       "flow_path": "earnings+cash return update→expectation reset→fundamental investor repositioning"
     },
     {
-      "ticker": "DKS",
-      "event_id": "DKS-20260825-Q2",
-      "event_type": "EARNINGS_NEGATIVE",
-      "axis": "SPORTING_GOODS_RETAIL",
-      "event_published_at_utc": "2026-08-25T11:00:00Z",
-      "official_source_url": "https://www.prnewswire.com/news-releases/dicks-sporting-goods-inc-reports-second-quarter-results-302859300.html",
+      "ticker": "TFC",
+      "event_id": "TFC-20260825-PREMIER",
+      "event_type": "IR",
+      "axis": "BANKING_WEALTH",
+      "event_published_at_utc": "2026-08-25T12:05:00Z",
+      "official_source_url": "https://media.truist.com/2026-08-25-Truist-Premier-deepens-commitment-to-advice-led-banking-for-mass-affluent-clients",
       "official_verified": true,
-      "headline": "DICK'S reports Q2 results and revises 2026 outlook lower",
-      "flow_path": "earnings miss+guidance reset→expectation repricing→sector read-through and short-side capital flow"
+      "headline": "Truist expands advice-led Premier banking for mass affluent clients",
+      "flow_path": "Premier investment+advisor expansion→deposit and wealth wallet share→fee/deposit growth→capital allocation interest"
     },
     {
       "ticker": "BMO",
