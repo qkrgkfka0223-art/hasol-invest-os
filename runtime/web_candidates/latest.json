@@ -3,10 +3,10 @@
   "run_type": "INTRADAY_EVENT",
   "eligible_for_prediction": false,
   "prediction_date_et": "2026-08-27",
-  "as_of_utc": "2026-08-27T13:57:46Z",
+  "as_of_utc": "2026-08-27T14:58:27Z",
   "cutoff_et": "2026-08-27T09:25:00-04:00",
-  "event_count_raw": 1,
-  "event_count_deduped": 1,
+  "event_count_raw": 3,
+  "event_count_deduped": 3,
   "candidates": [
     {
       "ticker": "MRNA",
@@ -23,6 +23,38 @@
       "late_discovered_pre_cutoff_detector_miss": true,
       "discovered_at_utc": "2026-08-27T13:57:46Z",
       "detector_miss_reason": "First discovered by Web Watch after the 09:25 ET freeze although issuer publication timestamp was 07:20 ET; prohibited from retroactive PREMARKET insertion."
+    },
+    {
+      "ticker": "CISS",
+      "event_id": "CISS-20260827-Q2-2026-EARNINGS",
+      "event_type": "EARNINGS",
+      "axis": "SHIPPING_TANKER_CYCLE",
+      "event_published_at_utc": "2026-08-27T10:30:00Z",
+      "headline": "C3is reports Q2 2026 revenue growth, sharply higher TCE and net income",
+      "flow_path": "Q2 revenue $24.0M + TCE +144.5% YoY + $10.0M net income + tanker-rate strength + fleet expansion -> higher earnings/cash-flow expectations -> shipping capital re-rating",
+      "official_verified": true,
+      "official_source_url": "https://www.globenewswire.com/news-release/2026/08/27/3351852/0/en/c3is-inc-reports-second-quarter-and-six-months-2026-financial-and-operating-results.html",
+      "source_timestamp_basis": "C3is issuer/GlobeNewswire distribution August 27, 2026 06:30 EDT",
+      "eligible_for_prediction": false,
+      "late_discovered_pre_cutoff_detector_miss": true,
+      "discovered_at_utc": "2026-08-27T14:58:27Z",
+      "detector_miss_reason": "First discovered by Web Watch after the 09:25 ET freeze although issuer publication timestamp was 06:30 ET; prohibited from retroactive PREMARKET insertion."
+    },
+    {
+      "ticker": "BZUN",
+      "event_id": "BZUN-20260827-Q2-2026-EARNINGS-GUIDANCE",
+      "event_type": "GUIDANCE",
+      "axis": "CHINA_ECOMMERCE_AI_AUTOMATION",
+      "event_published_at_utc": "2026-08-27T10:31:00Z",
+      "headline": "Baozun reports Q2 growth and raises 2028 non-GAAP operating income target",
+      "flow_path": "7% revenue growth + improving operating profitability + AI automation + 2028 non-GAAP operating income target raised to RMB700M from RMB550M -> higher medium-term margin expectations -> China e-commerce capital re-rating",
+      "official_verified": true,
+      "official_source_url": "https://www.prnewswire.com/news-releases/baozun-announces-second-quarter-2026-unaudited-financial-results-302861725.html",
+      "source_timestamp_basis": "Baozun issuer/PRNewswire distribution August 27, 2026 06:31 EDT",
+      "eligible_for_prediction": false,
+      "late_discovered_pre_cutoff_detector_miss": true,
+      "discovered_at_utc": "2026-08-27T14:58:27Z",
+      "detector_miss_reason": "First discovered by Web Watch after the 09:25 ET freeze although issuer publication timestamp was 06:31 ET; prohibited from retroactive PREMARKET insertion."
     }
   ]
 }
