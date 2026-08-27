@@ -1,0 +1,28 @@
+name: HASOL v3 Alpaca bridge probe
+
+on:
+  push:
+    branches:
+      - "hasol/model-loop-v3-runtime"
+    paths:
+      - ".github/workflows/hasol-v3-alpaca-bridge-probe.yml"
+      - "scripts/probe_alpaca_bridge.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  alpaca-bridge-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+      APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Probe Alpaca credentials and endpoints
+        run: python scripts/probe_alpaca_bridge.py
