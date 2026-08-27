@@ -29,16 +29,27 @@ def _bars() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _event(ticker: str, event_id: str, event_type: str) -> dict:
+    return {
+        "ticker": ticker,
+        "event_id": event_id,
+        "event_type": event_type,
+        "axis": "TEST",
+        "event_published_at_utc": "2026-08-25T00:00:00Z",
+        "official_source_url": f"https://investor.example.com/{event_id}",
+        "official_verified": True,
+        "headline": f"{event_id} headline",
+    }
+
+
 def test_candidate_quant_is_deterministic_and_noncanonical(tmp_path: Path, monkeypatch) -> None:
     payload = {
-        "schema_version": "HASOL-WEB-CANDIDATES-v1",
-        "run_type": "SYSTEM_TEST",
-        "eligible_for_prediction": False,
+        "schema_version": "HASOL-WEB-CANDIDATES-v2",
+        "run_type": "E2E_SIM",
+        "eligible_for_prediction": True,
         "prediction_date_et": "2026-08-26",
-        "candidates": [
-            {"ticker": "AAA", "event_id": "E1", "event_type": "CONTRACT"},
-            {"ticker": "BBB", "event_id": "E2", "event_type": "FDA"},
-        ],
+        "cutoff_et": "2026-08-26T09:25:00-04:00",
+        "candidates": [_event("AAA", "E1", "CONTRACT"), _event("BBB", "E2", "FDA")],
     }
     source = tmp_path / "input.json"
     source.write_text(json.dumps(payload), encoding="utf-8")
@@ -58,11 +69,12 @@ def test_candidate_quant_is_deterministic_and_noncanonical(tmp_path: Path, monke
     assert set(a["ticker"]) == {"AAA", "BBB"}
     assert (out1 / "quant_top50.json").exists()
     assert (out1 / "data_quality.json").exists()
+    assert (out1 / "input_snapshot_normalized.json").exists()
 
 
 def test_invalid_schema_rejected(tmp_path: Path) -> None:
     p = tmp_path / "bad.json"
-    p.write_text(json.dumps({"schema_version": "wrong", "candidates": []}), encoding="utf-8")
+    p.write_text(json.dumps({"schema_version": "wrong", "run_type": "SYSTEM_TEST", "candidates": []}), encoding="utf-8")
     try:
         mod.run(p, tmp_path / "out")
         assert False, "expected ValueError"
