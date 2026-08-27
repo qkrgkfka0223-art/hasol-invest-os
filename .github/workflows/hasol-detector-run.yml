@@ -1,13 +1,6 @@
-name: HASOL Detector Run
+name: HASOL Legacy Detector Run
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
-      - ops/live-run-action
   workflow_dispatch:
 
 permissions:
@@ -51,7 +44,7 @@ jobs:
           mkdir -p output_live
           python main.py --mode live --universe-csv universe_live.csv --output-dir output_live --max-tickers 300 --market-code SOFT_GO 2>&1 | tee output_live/run.log
 
-      - name: Verify official outputs
+      - name: Verify legacy outputs
         shell: bash
         run: |
           set -e
@@ -59,11 +52,11 @@ jobs:
             test -f "output_live/$file"
           done
 
-      - name: Upload outputs
+      - name: Upload legacy outputs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hasol-detector-output
+          name: hasol-legacy-detector-output
           path: |
             universe_live.csv
             output_v13_sample/**
