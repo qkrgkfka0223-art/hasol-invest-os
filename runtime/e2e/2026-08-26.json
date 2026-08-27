@@ -45,7 +45,7 @@
       "event_type": "GUIDANCE",
       "axis": "CONSUMER_STAPLES",
       "event_published_at_utc": "2026-08-26T11:00:00Z",
-      "official_source_url": "https://investors.jmsmucker.com/",
+      "official_source_url": "https://www.prnewswire.com/news-releases/the-jm-smucker-co-announces-fiscal-year-2027-first-quarter-results-and-updates-full-year-fiscal-2027-outlook-302860443.html",
       "official_verified": true,
       "headline": "J.M. Smucker releases fiscal Q1 2027 results and updated outlook",
       "flow_path": "earnings surprise+guidance update→estimate revisions→defensive/value fund demand→multiple reset"
@@ -60,6 +60,17 @@
       "official_verified": true,
       "headline": "FDA approves Rasonque, first-in-class targeted therapy for metastatic pancreatic cancer",
       "flow_path": "FDA approval→commercial launch+addressable patient pool→revenue forecasts→oncology specialist capital"
+    },
+    {
+      "ticker": "BBWI",
+      "event_id": "BBWI-20260826-Q2",
+      "event_type": "GUIDANCE",
+      "axis": "SPECIALTY_RETAIL",
+      "event_published_at_utc": "2026-08-26T10:55:00Z",
+      "official_source_url": "https://www.globenewswire.com/news-release/2026/08/26/3351180/0/en/bath-body-works-reports-second-quarter-results-exceeding-guidance-and-continued-progress-on-transformation.html",
+      "official_verified": true,
+      "headline": "Bath & Body Works Q2 results exceed guidance and full-year EPS outlook rises",
+      "flow_path": "earnings beat+guidance raise→estimate revisions→turnaround confidence→retail capital rotation"
     }
   ]
 }
