@@ -1,0 +1,65 @@
+{
+  "schema_version": "HASOL-WEB-CANDIDATES-v2",
+  "run_type": "E2E_SIM",
+  "eligible_for_prediction": true,
+  "prediction_date_et": "2026-08-24",
+  "cutoff_et": "2026-08-24T09:25:00-04:00",
+  "restore_from": "BASELINE_V3",
+  "candidates": [
+    {
+      "ticker": "DTIL",
+      "event_id": "DTIL-20260824-FUNCTION-DMD",
+      "event_type": "IR",
+      "axis": "GENE_EDITING",
+      "event_published_at_utc": "2026-08-24T10:01:00Z",
+      "official_source_url": "https://precisionbiosciences.gcs-web.com/press-releases",
+      "official_verified": true,
+      "headline": "Precision BioSciences commences dosing in Phase 1/2 FUNCTION-DMD study",
+      "flow_path": "first patient dose→clinical execution de-risking→future efficacy data→biotech capital interest"
+    },
+    {
+      "ticker": "VRXA",
+      "event_id": "VRXA-20260824-AOC-MILESTONE",
+      "event_type": "IR",
+      "axis": "AOC_PLATFORM",
+      "event_published_at_utc": "2026-08-24T11:00:00Z",
+      "official_source_url": "https://www.secarna.com/news-events/news/veraxa-biotech-and-secarna-pharmaceuticals-achieve-research-milestone-in-antibody-oligonucleotide-conjugate-aoc-alliance",
+      "official_verified": true,
+      "headline": "VERAXA and Secarna achieve AOC research milestone",
+      "flow_path": "proof of concept→platform validation→partnering optionality→future pipeline value"
+    },
+    {
+      "ticker": "GLUE",
+      "event_id": "GLUE-20260824-MODEFIRE1",
+      "event_type": "IR",
+      "axis": "ONCOLOGY_TRIAL",
+      "event_published_at_utc": "2026-08-24T11:00:00Z",
+      "official_source_url": "https://ir.monterosatx.com/news-and-events/press-releases",
+      "official_verified": true,
+      "headline": "Monte Rosa doses first patient in Phase 2 MODeFIRe-1",
+      "flow_path": "Phase 2 start→clinical catalyst clock starts→future efficacy readout→specialist fund demand"
+    },
+    {
+      "ticker": "USAR",
+      "event_id": "USAR-20260824-SPV",
+      "event_type": "FINANCING",
+      "axis": "CRITICAL_MINERALS",
+      "event_published_at_utc": "2026-08-24T11:00:00Z",
+      "official_source_url": "https://investors.usare.com/news-releases/news-release-details/usa-rare-earth-nasdaq-usar-announces-completion-upsized-155",
+      "official_verified": true,
+      "headline": "USA Rare Earth completes upsized $1.55B government-backed SPV capitalization",
+      "flow_path": "government capital+bank debt+forward purchase→funding/volume visibility→strategic supply-chain demand→institutional repricing"
+    },
+    {
+      "ticker": "PLUS",
+      "event_id": "PLUS-20260824-DAYMARK",
+      "event_type": "M&A",
+      "axis": "CLOUD_SERVICES",
+      "event_published_at_utc": "2026-08-24T13:15:00Z",
+      "official_source_url": "https://www.eplus.com/who-we-are/investor-relations/press-releases/2026/08/eplus-acquires-assets-of-daymark-solutions",
+      "official_verified": true,
+      "headline": "ePlus acquires assets of Daymark Solutions",
+      "flow_path": "cloud/cyber capability acquisition→cross-sell and geographic expansion→incremental services revenue→earnings revisions"
+    }
+  ]
+}
