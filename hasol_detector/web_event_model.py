@@ -106,7 +106,7 @@ def _validate_event(event: dict[str, Any], *, production: bool, cutoff: datetime
     published = _parse_dt(item.get("event_published_at_utc"))
     if production and published is None:
         raise ValueError(f"event_published_at_utc required for production candidate {ticker}")
-    if cutoff is not None and published is not None and published > cutoff:
+    if production and cutoff is not None and published is not None and published > cutoff:
         raise ValueError(f"future leakage: {ticker} event published after cutoff")
 
     official_url = item.get("official_source_url")
