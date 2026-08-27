@@ -1,0 +1,65 @@
+{
+  "schema_version": "HASOL-WEB-CANDIDATES-v2",
+  "run_type": "E2E_SIM",
+  "eligible_for_prediction": true,
+  "prediction_date_et": "2026-08-25",
+  "cutoff_et": "2026-08-25T09:25:00-04:00",
+  "restore_from": "E2E-20260824-GROWTH",
+  "candidates": [
+    {
+      "ticker": "NYAX",
+      "event_id": "NYAX-20260825-IPS",
+      "event_type": "M&A",
+      "axis": "PAYMENTS_SMART_PARKING",
+      "event_published_at_utc": "2026-08-25T10:00:00Z",
+      "official_source_url": "https://www.nayax.com/news/nayax-enters-into-definitive-agreement-to-acquire-ips-group-a-leading-smart-parking-technology-provider/",
+      "official_verified": true,
+      "headline": "Nayax agrees to acquire IPS Group for $350M",
+      "flow_path": "parking platform acquisition→$85B addressable opportunity expansion→cross-sell/synergies→earnings revisions"
+    },
+    {
+      "ticker": "LOT",
+      "event_id": "LOT-20260825-LOTUSUK",
+      "event_type": "M&A",
+      "axis": "EV_LUXURY",
+      "event_published_at_utc": "2026-08-25T11:00:00Z",
+      "official_source_url": "https://www.globenewswire.com/news-release/2026/08/25/3350311/0/en/lotus-tech-completed-acquisition-of-100-equity-interest-of-lotus-advance-technologies-integrating-all-businesses-and-operations-under-one-lotus.html",
+      "official_verified": true,
+      "headline": "Lotus Tech completes acquisition of 100% of Lotus UK",
+      "flow_path": "full integration→governance simplification+brand control→operational synergies→longer-term margin/capital-flow potential"
+    },
+    {
+      "ticker": "AVXL",
+      "event_id": "AVXL-20260825-Q3REG",
+      "event_type": "EARNINGS",
+      "axis": "CNS_REGULATORY",
+      "event_published_at_utc": "2026-08-25T10:25:00Z",
+      "official_source_url": "https://www.anavex.com/post/anavex-life-sciences-reports-third-fiscal-quarter-2026-financial-results-and-business-update",
+      "official_verified": true,
+      "headline": "Anavex reports Q3 update and regulatory progress across CNS programs",
+      "flow_path": "regulatory submissions→IND/meeting milestones→clinical/regulatory optionality→biotech specialist demand"
+    },
+    {
+      "ticker": "SUPX",
+      "event_id": "SUPX-20260825-B300",
+      "event_type": "CONTRACT",
+      "axis": "AI_INFRASTRUCTURE",
+      "event_published_at_utc": "2026-08-25T12:00:00Z",
+      "official_source_url": "https://www.prnewswire.com/news-releases/superx-secures-38-8-million-nvidia-b300-server-order-from-woodman-accelerating-expansion-into-japans-ai-infrastructure-market-302858000.html",
+      "official_verified": true,
+      "headline": "SuperX secures $38.8M NVIDIA B300 server order",
+      "flow_path": "signed AI server order→revenue backlog→Japan AI infrastructure penetration→follow-on customer demand"
+    },
+    {
+      "ticker": "CBAK",
+      "event_id": "CBAK-20260825-96M",
+      "event_type": "CONTRACT",
+      "axis": "BATTERY_EV",
+      "event_published_at_utc": "2026-08-25T13:00:00Z",
+      "official_source_url": "https://www.globenewswire.com/news-release/2026/08/25/3350419/0/en/cbak-energy-secures-approximately-us-96-million-battery-cell-order-from-indian-customer.html",
+      "official_verified": true,
+      "headline": "CBAK Energy secures approximately $96M battery cell order",
+      "flow_path": "large order→facility utilization/backlog visibility→2027 revenue conversion→EV supply-chain investor demand"
+    }
+  ]
+}
