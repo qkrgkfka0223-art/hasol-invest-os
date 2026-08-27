@@ -1,0 +1,65 @@
+{
+  "schema_version": "HASOL-WEB-CANDIDATES-v2",
+  "run_type": "E2E_SIM",
+  "eligible_for_prediction": true,
+  "prediction_date_et": "2026-08-26",
+  "cutoff_et": "2026-08-26T09:25:00-04:00",
+  "restore_from": "E2E-20260825-GROWTH",
+  "candidates": [
+    {
+      "ticker": "PERI",
+      "event_id": "PERI-20260826-PRN",
+      "event_type": "M&A",
+      "axis": "RETAIL_MEDIA",
+      "event_published_at_utc": "2026-08-26T11:00:00Z",
+      "official_source_url": "https://perion.com/investors/press/perion-acquires-prn-a-leading-in-store-retail-media-company-with-exclusive-multi-year-partnerships-across-some-of-north-americas/",
+      "official_verified": true,
+      "headline": "Perion acquires PRN to expand in-store retail media",
+      "flow_path": "retail-media acquisition→TAM expansion+exclusive inventory→revenue mix uplift→earnings revisions"
+    },
+    {
+      "ticker": "KSS",
+      "event_id": "KSS-20260826-Q2",
+      "event_type": "EARNINGS",
+      "axis": "RETAIL_TURNAROUND",
+      "event_published_at_utc": "2026-08-26T11:00:00Z",
+      "official_source_url": "https://investors.kohls.com/news/news-details/2026/Kohls-Reports-Second-Quarter-Fiscal-2026-Financial-Results/default.aspx",
+      "official_verified": true,
+      "headline": "Kohl's reports Q2 results, raises full-year outlook and restarts buybacks",
+      "flow_path": "margin improvement+guidance raise+buyback→estimate revisions→short-covering/value fund demand→repricing"
+    },
+    {
+      "ticker": "PLAB",
+      "event_id": "PLAB-20260826-Q3",
+      "event_type": "EARNINGS",
+      "axis": "SEMICONDUCTOR_CAPEX",
+      "event_published_at_utc": "2026-08-26T11:00:00Z",
+      "official_source_url": "https://www.photronics.com/news-events/press-releases",
+      "official_verified": true,
+      "headline": "Photronics reports fiscal Q3 2026 results",
+      "flow_path": "design-release recovery+high-end IC mix→revenue/margin expectations→semiconductor capital-flow response"
+    },
+    {
+      "ticker": "SJM",
+      "event_id": "SJM-20260826-Q1",
+      "event_type": "GUIDANCE",
+      "axis": "CONSUMER_STAPLES",
+      "event_published_at_utc": "2026-08-26T11:00:00Z",
+      "official_source_url": "https://investors.jmsmucker.com/",
+      "official_verified": true,
+      "headline": "J.M. Smucker releases fiscal Q1 2027 results and updated outlook",
+      "flow_path": "earnings surprise+guidance update→estimate revisions→defensive/value fund demand→multiple reset"
+    },
+    {
+      "ticker": "RVMD",
+      "event_id": "RVMD-20260826-RASONQUE",
+      "event_type": "FDA",
+      "axis": "PANCREATIC_CANCER",
+      "event_published_at_utc": "2026-08-26T12:39:00Z",
+      "official_source_url": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-class-targeted-therapy-metastatic-pancreatic-cancer",
+      "official_verified": true,
+      "headline": "FDA approves Rasonque, first-in-class targeted therapy for metastatic pancreatic cancer",
+      "flow_path": "FDA approval→commercial launch+addressable patient pool→revenue forecasts→oncology specialist capital"
+    }
+  ]
+}
