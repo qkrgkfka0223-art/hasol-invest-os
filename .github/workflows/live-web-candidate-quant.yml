@@ -87,4 +87,4 @@ jobs:
           name: hasol-live-quant-${{ github.run_id }}
           path: output_live_quant/**
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 90
