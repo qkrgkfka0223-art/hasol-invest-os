@@ -1,15 +1,39 @@
 {
   "schema_version": "HASOL-WEB-CANDIDATES-v2",
-  "run_type": "SYSTEM_TEST",
-  "eligible_for_prediction": false,
-  "prediction_date_et": "2026-08-26",
-  "as_of_utc": "2026-08-26T00:00:00Z",
-  "cutoff_et": "2026-08-26T09:25:00-04:00",
+  "run_type": "PREMARKET_WATCH",
+  "eligible_for_prediction": true,
+  "prediction_date_et": "2026-08-27",
+  "as_of_utc": "2026-08-27T02:01:16Z",
+  "cutoff_et": "2026-08-27T09:25:00-04:00",
+  "event_count_raw": 2,
+  "event_count_deduped": 2,
   "candidates": [
-    {"ticker":"JAZZ","event_id":"SYS-TEST-JAZZ-20260825","event_type":"FDA","axis":"BIOTECH","event_published_at_utc":"2026-08-25T00:00:00Z","headline":"system-test FDA event","flow_path":"approval→commercial adoption→revenue expectations","official_verified":false,"test_only":true},
-    {"ticker":"ABT","event_id":"SYS-TEST-ABT-20260825","event_type":"FDA","axis":"MEDTECH","event_published_at_utc":"2026-08-25T00:00:00Z","headline":"system-test medtech event","flow_path":"product authorization→addressable market expansion","official_verified":false,"test_only":true},
-    {"ticker":"NVTS","event_id":"SYS-TEST-NVTS-20260825","event_type":"M&A","axis":"AI_POWER","event_published_at_utc":"2026-08-25T00:00:00Z","headline":"system-test acquisition event","flow_path":"acquisition→AI power portfolio expansion","official_verified":false,"test_only":true},
-    {"ticker":"DKS","event_id":"SYS-TEST-DKS-20260825","event_type":"EARNINGS_NEGATIVE","axis":"CONSUMER","event_published_at_utc":"2026-08-25T00:00:00Z","headline":"system-test negative control","flow_path":"negative-control system test","official_verified":false,"test_only":true},
-    {"ticker":"CEG","event_id":"SYS-TEST-CEG-20260825","event_type":"POLICY","axis":"POWER","event_published_at_utc":"2026-08-25T00:00:00Z","headline":"system-test policy event","flow_path":"power policy→capacity value→cash-flow expectations","official_verified":false,"test_only":true}
+    {
+      "ticker": "BHVN",
+      "event_id": "BHVN-20260826-LICENSE-KV7-SKBP",
+      "event_type": "LICENSING_FINANCING",
+      "axis": "BIOTECH_CNS",
+      "event_published_at_utc": "2026-08-26T06:36:00Z",
+      "headline": "Biohaven and SK Biopharmaceuticals enter global Kv7/opakalim licensing agreement",
+      "flow_path": "$400M near-term non-dilutive cash + future milestones/royalties + transferred program costs -> stronger runway -> pipeline funding and catalyst capacity",
+      "official_verified": true,
+      "official_source_url": "https://ir.biohaven.com/news-releases/news-release-details/biohaven-and-sk-biopharmaceuticals-enter-strategic-global",
+      "source_timestamp_basis": "Biohaven IR page: August 26, 2026 at 2:36 AM EDT",
+      "eligible_for_prediction": true
+    },
+    {
+      "ticker": "RVMD",
+      "event_id": "RVMD-20260826-FDA-RASONQUE-PDAC",
+      "event_type": "FDA_APPROVAL",
+      "axis": "BIOTECH_ONCOLOGY",
+      "event_published_at_utc": "2026-08-26T14:39:00Z",
+      "headline": "FDA approves RASONQUE (daraxonrasib) for metastatic pancreatic adenocarcinoma",
+      "flow_path": "FDA approval -> immediate US prescription availability -> commercial launch/revenue expectations -> oncology capital re-rating",
+      "official_verified": true,
+      "official_source_url": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-class-targeted-therapy-metastatic-pancreatic-cancer",
+      "secondary_official_source_url": "https://ir.revmed.com/news-releases/news-release-details/us-fda-approves-revolution-medicines-rasonquetm-daraxonrasib",
+      "source_timestamp_basis": "FDA release distributed 08:39 EDT; company IR confirms approval and same-day availability",
+      "eligible_for_prediction": true
+    }
   ]
 }
