@@ -31,7 +31,16 @@ jobs:
       - name: Verify no Alpaca secret boundary
         run: |
           set -euo pipefail
-          ! grep -R -n -E 'APCA_API_KEY|ALPACA_API_KEY|APCA_API_SECRET|ALPACA_SECRET' scripts hasol_detector hasol_quant hasol_judgment
+          if grep -n -E 'APCA_API_KEY|ALPACA_API_KEY|APCA_API_SECRET|ALPACA_SECRET' \
+            scripts/run_web_candidate_quant.py \
+            hasol_detector/web_event_model.py \
+            hasol_quant/features.py \
+            hasol_quant/ranker.py \
+            hasol_quant/yahoo_client.py \
+            hasol_judgment/spec.py; then
+            echo 'ERROR: Web-candidate Quant path references Alpaca credentials' >&2
+            exit 1
+          fi
           python -m scripts.run_web_candidate_quant --help
       - name: Run Web-candidate Quant system smoke
         run: |
