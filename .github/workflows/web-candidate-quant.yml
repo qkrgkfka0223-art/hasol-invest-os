@@ -31,7 +31,7 @@ jobs:
       - name: Verify no Alpaca secret boundary
         run: |
           set -euo pipefail
-          ! grep -R -n -E 'APCA_API_KEY|ALPACA_API_KEY|APCA_API_SECRET|ALPACA_SECRET' .github/workflows/web-candidate-quant.yml scripts/run_web_candidate_quant.py
+          ! grep -R -n -E 'APCA_API_KEY|ALPACA_API_KEY|APCA_API_SECRET|ALPACA_SECRET' scripts hasol_detector hasol_quant hasol_judgment
           python -m scripts.run_web_candidate_quant --help
       - name: Run Web-candidate Quant system smoke
         run: |
