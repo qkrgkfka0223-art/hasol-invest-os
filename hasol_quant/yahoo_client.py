@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from datetime import date
 from typing import Iterable
 
@@ -7,9 +8,13 @@ import pandas as pd
 import yfinance as yf
 
 
+def _empty_bars() -> pd.DataFrame:
+    return pd.DataFrame(columns=["ticker", "timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap"])
+
+
 def _normalize_download(raw: pd.DataFrame, tickers: list[str]) -> pd.DataFrame:
     if raw is None or raw.empty:
-        return pd.DataFrame(columns=["ticker", "timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap"])
+        return _empty_bars()
 
     frames: list[pd.DataFrame] = []
     if isinstance(raw.columns, pd.MultiIndex):
@@ -30,7 +35,7 @@ def _normalize_download(raw: pd.DataFrame, tickers: list[str]) -> pd.DataFrame:
         frames.append(g.reset_index())
 
     if not frames:
-        return pd.DataFrame(columns=["ticker", "timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap"])
+        return _empty_bars()
 
     out = pd.concat(frames, ignore_index=True)
     date_col = next((c for c in out.columns if str(c).lower() in {"date", "datetime", "index"}), None)
@@ -50,6 +55,62 @@ def _normalize_download(raw: pd.DataFrame, tickers: list[str]) -> pd.DataFrame:
     return out[["ticker", "timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap"]].dropna(subset=["timestamp", "close"])
 
 
+def _download(tickers: list[str], *, period: str) -> pd.DataFrame:
+    """Use serial yfinance IO to avoid its shared sqlite cache lock races."""
+    if not tickers:
+        return _empty_bars()
+    raw = yf.download(
+        tickers=tickers,
+        period=period,
+        interval="1d",
+        auto_adjust=False,
+        actions=False,
+        group_by="column",
+        threads=False,
+        progress=False,
+        timeout=30,
+    )
+    return _normalize_download(raw, tickers)
+
+
+def _download_with_missing_retries(batch: list[str], *, period: str, retries: int = 2) -> pd.DataFrame:
+    """Fetch a batch, then retry only missing symbols serially.
+
+    yfinance can report individual failures without raising an exception. Missing
+    symbols therefore get bounded single-symbol retries. Permanent no-history
+    cases remain missing and are handled honestly by the downstream coverage gate.
+    """
+    try:
+        base = _download(batch, period=period)
+    except Exception:
+        base = _empty_bars()
+
+    frames = [base] if not base.empty else []
+    returned = set(base["ticker"].astype(str)) if not base.empty else set()
+    missing = [ticker for ticker in batch if ticker not in returned]
+
+    for attempt in range(retries):
+        if not missing:
+            break
+        next_missing: list[str] = []
+        if attempt:
+            time.sleep(0.5 * attempt)
+        for ticker in missing:
+            try:
+                one = _download([ticker], period=period)
+            except Exception:
+                one = _empty_bars()
+            if one.empty:
+                next_missing.append(ticker)
+            else:
+                frames.append(one)
+        missing = next_missing
+
+    if not frames:
+        return _empty_bars()
+    return pd.concat(frames, ignore_index=True).drop_duplicates(subset=["ticker", "timestamp"], keep="last")
+
+
 def fetch_daily_bars(
     tickers: Iterable[str],
     *,
@@ -67,18 +128,9 @@ def fetch_daily_bars(
     rows: list[pd.DataFrame] = []
     for start in range(0, len(symbols), batch_size):
         batch = symbols[start : start + batch_size]
-        raw = yf.download(
-            tickers=batch,
-            period=period,
-            interval="1d",
-            auto_adjust=False,
-            actions=False,
-            group_by="column",
-            threads=True,
-            progress=False,
-            timeout=30,
-        )
-        rows.append(_normalize_download(raw, batch))
+        frame = _download_with_missing_retries(batch, period=period)
+        if not frame.empty:
+            rows.append(frame)
     if not rows:
         return pd.DataFrame()
     out = pd.concat(rows, ignore_index=True)
