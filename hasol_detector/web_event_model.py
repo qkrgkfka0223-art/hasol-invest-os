@@ -88,7 +88,13 @@ def _validate_run_cutoff(payload: dict[str, Any], run_type: str, production: boo
         raise ValueError(f"prediction cutoff must be exactly {expected.isoformat()}")
 
 
-def _validate_event(event: dict[str, Any], *, production: bool, cutoff: datetime | None) -> dict[str, Any]:
+def _validate_event(
+    event: dict[str, Any],
+    *,
+    prediction_eligible: bool,
+    require_official: bool,
+    cutoff: datetime | None,
+) -> dict[str, Any]:
     item = dict(event)
     ticker = str(item.get("ticker", "")).upper().strip()
     if not ticker:
@@ -104,18 +110,21 @@ def _validate_event(event: dict[str, Any], *, production: bool, cutoff: datetime
         item["event_type_raw"] = raw_event_type
 
     published = _parse_dt(item.get("event_published_at_utc"))
-    if production and published is None:
-        raise ValueError(f"event_published_at_utc required for production candidate {ticker}")
-    if production and cutoff is not None and published is not None and published > cutoff:
+    if require_official and published is None:
+        raise ValueError(f"event_published_at_utc required for official candidate {ticker}")
+    # The information barrier applies only to prediction-eligible snapshots.
+    # INTRADAY_EVENT is explicitly non-predictive and may contain events published
+    # after the 09:25 cutoff; rejecting those observations breaks the live watch loop.
+    if prediction_eligible and cutoff is not None and published is not None and published > cutoff:
         raise ValueError(f"future leakage: {ticker} event published after cutoff")
 
     official_url = item.get("official_source_url")
     official_verified = bool(item.get("official_verified", False))
-    if production:
+    if require_official:
         if not _is_http_url(official_url):
-            raise ValueError(f"official_source_url required for production candidate {ticker}")
+            raise ValueError(f"official_source_url required for official candidate {ticker}")
         if not official_verified:
-            raise ValueError(f"official source must be verified for production candidate {ticker}")
+            raise ValueError(f"official source must be verified for official candidate {ticker}")
 
     item["official_source_url"] = _canonical_url(official_url)
     item["official_verified"] = official_verified
@@ -142,12 +151,20 @@ def normalize_payload(payload: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(raw, list):
         raise ValueError("candidates must be a list")
 
+    require_official = production or run_type == "INTRADAY_EVENT"
     seen: set[str] = set()
     verified_events: list[dict[str, Any]] = []
     for event in raw:
         if not isinstance(event, dict):
             raise ValueError("each candidate event must be an object")
-        item = _validate_event(event, production=production, cutoff=cutoff)
+        if run_type == "INTRADAY_EVENT" and bool(event.get("eligible_for_prediction", False)):
+            raise ValueError("INTRADAY_EVENT candidate must never be eligible_for_prediction")
+        item = _validate_event(
+            event,
+            prediction_eligible=production,
+            require_official=require_official,
+            cutoff=cutoff,
+        )
         fp = item["event_fingerprint"]
         if fp in seen:
             continue
@@ -173,7 +190,7 @@ def normalize_payload(payload: dict[str, Any]) -> dict[str, Any]:
             "axis": latest["axis"],
             "event_published_at_utc": latest.get("event_published_at_utc", ""),
             "official_source_url": latest.get("official_source_url", ""),
-            "official_verified": all(bool(e.get("official_verified")) for e in events) if production else bool(latest.get("official_verified")),
+            "official_verified": all(bool(e.get("official_verified")) for e in events) if require_official else bool(latest.get("official_verified")),
             "headline": latest.get("headline", ""),
             "flow_path": latest.get("flow_path", ""),
             "event_bundle": json.dumps(events, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
