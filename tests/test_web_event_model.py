@@ -42,7 +42,7 @@ def test_dedupes_headline_url_variants_but_preserves_multi_event_ticker():
     assert out["candidates"][0]["official_source_url"] == "https://investor.example.com/release/2"
 
 
-def test_rejects_future_leakage():
+def test_rejects_future_leakage_for_prediction_eligible_snapshot():
     with pytest.raises(ValueError, match="future leakage"):
         normalize_payload(_payload(run_type="E2E_SIM", candidates=[_event(event_published_at_utc="2026-08-24T14:00:00Z")]))
 
@@ -66,6 +66,54 @@ def test_intraday_event_observation_is_allowed_when_not_prediction_eligible():
     out = normalize_payload(_payload(run_type="INTRADAY_EVENT", eligible=False, cutoff=None))
     assert out["run_type"] == "INTRADAY_EVENT"
     assert out["eligible_for_prediction"] is False
+
+
+def test_intraday_event_published_after_cutoff_is_valid_observation():
+    out = normalize_payload(
+        _payload(
+            run_type="INTRADAY_EVENT",
+            eligible=False,
+            cutoff="2026-08-24T09:25:00-04:00",
+            candidates=[
+                _event(
+                    ticker="ROIV",
+                    event_published_at_utc="2026-08-24T15:00:00Z",
+                    eligible_for_prediction=False,
+                )
+            ],
+        )
+    )
+    assert out["candidate_count"] == 1
+    assert out["candidates"][0]["ticker"] == "ROIV"
+
+
+def test_intraday_event_still_requires_verified_primary_source():
+    with pytest.raises(ValueError, match="verified"):
+        normalize_payload(
+            _payload(
+                run_type="INTRADAY_EVENT",
+                eligible=False,
+                cutoff="2026-08-24T09:25:00-04:00",
+                candidates=[
+                    _event(
+                        event_published_at_utc="2026-08-24T15:00:00Z",
+                        official_verified=False,
+                        eligible_for_prediction=False,
+                    )
+                ],
+            )
+        )
+
+
+def test_intraday_event_candidate_level_prediction_flag_is_rejected():
+    with pytest.raises(ValueError, match="candidate must never"):
+        normalize_payload(
+            _payload(
+                run_type="INTRADAY_EVENT",
+                eligible=False,
+                candidates=[_event(eligible_for_prediction=True)],
+            )
+        )
 
 
 def test_live_web_watch_run_type_alias_normalizes_to_premarket():
