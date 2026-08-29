@@ -1,0 +1,17 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "PTGX",
+    "event_id": "PTGX-20260828-2030-FDA",
+    "event_type": "FDA",
+    "event_published_at_utc": "2026-08-29T00:30:00Z",
+    "axis": "POLYCYTHEMIA_VERA_FDA_MILESTONE",
+    "headline": "Protagonist Therapeutics Announces U.S. FDA Approval of MIMRYLO (rusfertide) for Polycythemia Vera",
+    "flow_path": "FDA approval triggers $275M payments plus 14%-29% royalties and up to $875M additional milestones -> direct future cash-flow inflection",
+    "official_source_url": "https://www.accessnewswire.com/newsroom/en/healthcare-and-pharmaceutical/protagonist-therapeutics-announces-u.s.-fda-approval-of-hepcidin-mime-1214342",
+    "official_verified": true,
+    "lineage": {"discovery_class":"post_cutoff_carryover","source_session_et":"2026-08-28","source_cutoff_et":"2026-08-28T09:25:00-04:00","carryover_reason":"published_after_prior_close_and_still_material"}
+  }
+}
