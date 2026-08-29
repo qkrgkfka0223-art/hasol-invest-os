@@ -1,0 +1,17 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "CYTK",
+    "event_id": "CYTK-20260829-1030-CLINICAL",
+    "event_type": "CLINICAL",
+    "event_published_at_utc": "2026-08-29T14:30:00Z",
+    "axis": "AFICAMTEN_LATE_BREAKING_PHASE3_ADDITIONAL_RESULTS",
+    "headline": "Cytokinetics Announces Additional Results from ACACIA-HCM and MAPLE-HCM Presented in Late Breaking Clinical Trial Session at ESC Congress 2026",
+    "flow_path": "additional Phase 3 analyses -> improved cardiac structure/diastolic-function measures in non-obstructive HCM plus consistent superiority versus metoprolol across pre-trial treatment groups -> incremental evidence for aficamten franchise ahead of planned Q4 2026 supplemental NDA",
+    "official_source_url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Additional-Results-from-ACACIA-HCM-and-MAPLE-HCM-Presented-in-Late-Breaking-Clinical-Trial-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026/default.aspx",
+    "official_verified": true,
+    "lineage": {"discovery_class":"weekend_carryover","source_session_et":"2026-08-28","source_cutoff_et":"2026-08-28T09:25:00-04:00","carryover_reason":"published_during_weekend_before_next_us_session_and_still_material"}
+  }
+}
