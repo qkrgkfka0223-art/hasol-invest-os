@@ -1,0 +1,17 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "GCL",
+    "event_id": "GCL-20260828-0330-BUYBACK",
+    "event_type": "CORPORATE_ACTION",
+    "event_published_at_utc": "2026-08-28T07:30:00Z",
+    "axis": "SHARE_REPURCHASE_CAPITAL_RETURN",
+    "headline": "GCL Announces $10 Million Share Repurchase Program",
+    "flow_path": "up to $10M repurchase authorization over 12 months -> potential incremental share demand and share-count reduction",
+    "official_source_url": "https://www.globenewswire.com/news-release/2026/08/28/3352527/0/en/gcl-announces-10-million-share-repurchase-program.html",
+    "official_verified": true,
+    "lineage": {"discovery_class":"late_discovered_pre_cutoff_detector_miss","source_session_et":"2026-08-28","source_cutoff_et":"2026-08-28T09:25:00-04:00","carryover_reason":"still_material_for_next_session"}
+  }
+}
