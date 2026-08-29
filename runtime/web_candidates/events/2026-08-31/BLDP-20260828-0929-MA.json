@@ -1,0 +1,17 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "BLDP",
+    "event_id": "BLDP-20260828-0929-MA",
+    "event_type": "M&A",
+    "event_published_at_utc": "2026-08-28T13:29:00Z",
+    "axis": "HYDROGEN_VERTICAL_INTEGRATION",
+    "headline": "Ballard closes acquisition of GeoPura, becoming an integrated hydrogen energy solutions provider",
+    "flow_path": "£275M upfront acquisition closes -> vertical integration into hydrogen Energy-as-a-Service plus equity issuance and expanded commercial footprint",
+    "official_source_url": "https://www.prnewswire.com/news-releases/ballard-closes-acquisition-of-geopura-becoming-an-integrated-hydrogen-energy-solutions-provider-302862829.html",
+    "official_verified": true,
+    "lineage": {"discovery_class":"post_cutoff_carryover","source_session_et":"2026-08-28","source_cutoff_et":"2026-08-28T09:25:00-04:00","carryover_reason":"published_after_prior_cutoff_and_still_material"}
+  }
+}
