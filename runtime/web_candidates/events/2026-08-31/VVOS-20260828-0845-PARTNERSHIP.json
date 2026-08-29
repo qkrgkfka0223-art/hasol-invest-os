@@ -1,0 +1,17 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "VVOS",
+    "event_id": "VVOS-20260828-0845-PARTNERSHIP",
+    "event_type": "PARTNERSHIP",
+    "event_published_at_utc": "2026-08-28T12:45:00Z",
+    "axis": "SLEEP_MEDTECH_COMMERCIAL_EXPANSION",
+    "headline": "Vivos Therapeutics and South Palm Cardiovascular Associates Sign Definitive Agreements to Launch Regional Sleep Testing and Treatment Center",
+    "flow_path": "definitive physician-aligned operating agreements -> new regional sleep/airway treatment center and scalable commercial-services footprint",
+    "official_source_url": "https://www.globenewswire.com/news-release/2026/08/28/3352691/0/en/vivos-therapeutics-and-south-palm-cardiovascular-associates-sign-definitive-agreements-to-launch-regional-sleep-testing-and-treatment-center.html",
+    "official_verified": true,
+    "lineage": {"discovery_class":"late_discovered_pre_cutoff_detector_miss","source_session_et":"2026-08-28","source_cutoff_et":"2026-08-28T09:25:00-04:00","carryover_reason":"still_material_for_next_session"}
+  }
+}
