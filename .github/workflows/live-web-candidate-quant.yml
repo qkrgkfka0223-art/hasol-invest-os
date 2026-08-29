@@ -6,21 +6,29 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/live-web-candidate-quant.yml'
+      - 'scripts/build_live_candidate_snapshot.py'
       - 'scripts/run_web_candidate_quant.py'
       - 'hasol_detector/**'
       - 'hasol_quant/**'
       - 'hasol_judgment/**'
       - 'requirements-quant.txt'
+      - 'runtime/web_candidates/session.json'
+      - 'runtime/web_candidates/events/**'
+      - 'runtime/web_candidates/intraday/**'
       - 'runtime/web_candidates/latest.json'
   push:
     branches: [main]
     paths:
       - '.github/workflows/live-web-candidate-quant.yml'
+      - 'scripts/build_live_candidate_snapshot.py'
       - 'scripts/run_web_candidate_quant.py'
       - 'hasol_detector/**'
       - 'hasol_quant/**'
       - 'hasol_judgment/**'
       - 'requirements-quant.txt'
+      - 'runtime/web_candidates/session.json'
+      - 'runtime/web_candidates/events/**'
+      - 'runtime/web_candidates/intraday/**'
       - 'runtime/web_candidates/latest.json'
 
 permissions:
@@ -50,11 +58,45 @@ jobs:
       - name: Install runtime dependencies
         run: pip install -r requirements-quant.txt
 
+      - name: Build effective live snapshot
+        run: |
+          set -euo pipefail
+          rm -rf output_live_quant
+          mkdir -p output_live_quant
+          if [ -s runtime/web_candidates/session.json ]; then
+            python -m scripts.build_live_candidate_snapshot \
+              --session runtime/web_candidates/session.json \
+              --premarket-root runtime/web_candidates/events \
+              --intraday-root runtime/web_candidates/intraday \
+              --output output_live_quant/effective_input.json \
+              --manifest output_live_quant/ledger_manifest.json
+          else
+            cp runtime/web_candidates/latest.json output_live_quant/effective_input.json
+            python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          source = Path('output_live_quant/effective_input.json')
+          raw = json.loads(source.read_text(encoding='utf-8'))
+          canonical = json.dumps(raw, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+          manifest = {
+              'schema_version': 'HASOL-WEB-LEDGER-MANIFEST-v1',
+              'mode': 'LEGACY_MONOLITHIC_FALLBACK',
+              'session_path': None,
+              'prediction_date_et': raw.get('prediction_date_et'),
+              'run_type': raw.get('run_type'),
+              'event_file_count': 0,
+              'snapshot_input_sha256': hashlib.sha256(canonical.encode('utf-8')).hexdigest(),
+          }
+          Path('output_live_quant/ledger_manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+          PY
+          fi
+
       - name: Run latest Web-candidate Quant
         run: |
-          rm -rf output_live_quant
           python -m scripts.run_web_candidate_quant \
-            --input runtime/web_candidates/latest.json \
+            --input output_live_quant/effective_input.json \
             --output-dir output_live_quant
 
       - name: Verify exact candidate lineage
@@ -68,22 +110,27 @@ jobs:
           import os
           from pathlib import Path
 
-          source = Path('runtime/web_candidates/latest.json')
+          source = Path('output_live_quant/effective_input.json')
           raw = json.loads(source.read_text(encoding='utf-8'))
           canonical = json.dumps(raw, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
           expected = hashlib.sha256(canonical.encode('utf-8')).hexdigest()
           manifest = json.loads(Path('output_live_quant/run_manifest.json').read_text(encoding='utf-8'))
+          ledger = json.loads(Path('output_live_quant/ledger_manifest.json').read_text(encoding='utf-8'))
           quality = manifest['quality']
           assert manifest['schema_version'] == 'HASOL-WEB-CANDIDATES-v2'
           assert manifest['input_sha256'] == expected
+          assert ledger['snapshot_input_sha256'] == expected
           assert manifest['run_type'] in {'PREMARKET', 'INTRADAY_EVENT'}
           assert manifest['quant_source_policy'] == 'DETECTION_ONLY_NOT_CANONICAL'
           assert manifest['final_market_validator'] == 'ALPACA_CONNECTED_APP'
           Path('output_live_quant/source_commit_sha.txt').write_text(os.environ['SOURCE_COMMIT_SHA'] + '\n', encoding='utf-8')
           Path('output_live_quant/candidate_input_sha256.txt').write_text(expected + '\n', encoding='utf-8')
-          print(json.dumps({'source_commit_sha': os.environ['SOURCE_COMMIT_SHA'], 'input_sha256': expected, 'quality': quality}, indent=2))
+          ledger_canonical = json.dumps(ledger, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+          ledger_sha = hashlib.sha256(ledger_canonical.encode('utf-8')).hexdigest()
+          Path('output_live_quant/ledger_manifest_sha256.txt').write_text(ledger_sha + '\n', encoding='utf-8')
+          print(json.dumps({'source_commit_sha': os.environ['SOURCE_COMMIT_SHA'], 'input_sha256': expected, 'ledger_manifest_sha256': ledger_sha, 'quality': quality}, indent=2))
           PY
-          for f in run_manifest.json data_quality.json input_snapshot_raw.json input_snapshot_normalized.json candidate_features.csv web_candidate_quant.csv quant_top50.csv quant_top50.json source_commit_sha.txt candidate_input_sha256.txt; do
+          for f in effective_input.json ledger_manifest.json run_manifest.json data_quality.json input_snapshot_raw.json input_snapshot_normalized.json candidate_features.csv web_candidate_quant.csv quant_top50.csv quant_top50.json source_commit_sha.txt candidate_input_sha256.txt ledger_manifest_sha256.txt; do
             test -s "output_live_quant/$f"
           done
 
