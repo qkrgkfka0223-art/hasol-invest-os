@@ -1,0 +1,22 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "MRNA",
+    "event_id": "MRNA-20260828-0700-FINANCING",
+    "event_type": "FINANCING",
+    "event_published_at_utc": "2026-08-28T11:00:00Z",
+    "axis": "BIOTECH_CAPITAL_STRUCTURE",
+    "headline": "Moderna Announces Pricing of Upsized $2.6 Billion Offering of Convertible Senior Notes",
+    "flow_path": "$2.6B 0% converts due 2032 plus $400M option -> major liquidity/capital-structure reset with capped-call dilution hedge",
+    "official_source_url": "https://www.accessnewswire.com/newsroom/en/healthcare-and-pharmaceutical/moderna-announces-pricing-of-upsized-2.6-billion-offering-of-converti-1213842",
+    "official_verified": true,
+    "lineage": {
+      "discovery_class": "late_discovered_pre_cutoff_detector_miss",
+      "source_session_et": "2026-08-28",
+      "source_cutoff_et": "2026-08-28T09:25:00-04:00",
+      "carryover_reason": "still_material_for_next_session"
+    }
+  }
+}
