@@ -1,0 +1,17 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "UUUU",
+    "event_id": "UUUU-20260828-1615-MA",
+    "event_type": "M&A",
+    "event_published_at_utc": "2026-08-28T20:15:00Z",
+    "axis": "RARE_EARTH_MINE_TO_MAGNET_INTEGRATION",
+    "headline": "Energy Fuels Completes Acquisition of Australian Strategic Materials",
+    "flow_path": "ASM acquisition closes -> immediate rare-earth metal/alloy capacity plus integrated Western mine-to-magnet platform",
+    "official_source_url": "https://www.prnewswire.com/news-releases/energy-fuels-completes-acquisition-of-australian-strategic-materials-302863022.html",
+    "official_verified": true,
+    "lineage": {"discovery_class":"post_close_carryover","source_session_et":"2026-08-28","source_cutoff_et":"2026-08-28T09:25:00-04:00","carryover_reason":"published_after_prior_close_and_still_material"}
+  }
+}
