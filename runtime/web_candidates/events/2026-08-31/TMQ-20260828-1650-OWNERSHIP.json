@@ -1,0 +1,17 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "TMQ",
+    "event_id": "TMQ-20260828-1650-OWNERSHIP",
+    "event_type": "OWNERSHIP",
+    "event_published_at_utc": "2026-08-28T20:50:00Z",
+    "axis": "US_GOVERNMENT_CRITICAL_MINERALS_EQUITY",
+    "headline": "Trilogy Metals Announces Execution of Definitive Agreements for Strategic Equity Investment by the U.S. Department of War",
+    "flow_path": "$35.6M strategic government equity transaction -> roughly 10% direct ownership plus development capital for Upper Kobuk critical-mineral projects",
+    "official_source_url": "https://www.prnewswire.com/news-releases/trilogy-metals-announces-execution-of-definitive-agreements-for-strategic-equity-investment-by-the-us-department-of-war-302863157.html",
+    "official_verified": true,
+    "lineage": {"discovery_class":"post_close_carryover","source_session_et":"2026-08-28","source_cutoff_et":"2026-08-28T09:25:00-04:00","carryover_reason":"published_after_prior_close_and_still_material"}
+  }
+}
