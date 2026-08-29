@@ -1,0 +1,17 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "QNRX",
+    "event_id": "QNRX-20260828-0600-CLINICAL",
+    "event_type": "OTHER_OFFICIAL",
+    "event_published_at_utc": "2026-08-28T10:00:00Z",
+    "axis": "PHASE2_3_NETHERTON_SYNDROME",
+    "headline": "Quoin Pharmaceuticals Reports Positive Interim Data from Ongoing Phase 2/3 Study of QRX003 in Netherton Syndrome",
+    "flow_path": "4 of 6 met primary endpoint with p=0.0087 vs alpha=0.0215 and positive key secondary -> clinical de-risking",
+    "official_source_url": "https://www.globenewswire.com/news-release/2026/08/28/3352586/0/en/quoin-pharmaceuticals-reports-positive-interim-data-from-ongoing-phase-2-3-study-of-qrx003-in-netherton-syndrome.html",
+    "official_verified": true,
+    "lineage": {"discovery_class":"late_discovered_pre_cutoff_detector_miss","source_session_et":"2026-08-28","source_cutoff_et":"2026-08-28T09:25:00-04:00","carryover_reason":"still_material_for_next_session"}
+  }
+}
