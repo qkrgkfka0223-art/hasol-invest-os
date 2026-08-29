@@ -1,0 +1,22 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "CYTK",
+    "event_id": "CYTK-20260828-0545-CLINICAL",
+    "event_type": "OTHER_OFFICIAL",
+    "event_published_at_utc": "2026-08-28T09:45:00Z",
+    "axis": "PHASE3_NONOBSTRUCTIVE_HCM",
+    "headline": "Cytokinetics Announces Positive Results from ACACIA-HCM",
+    "flow_path": "pivotal Phase 3 met both primary endpoints -> planned FDA supplemental NDA in Q4 2026 -> regulatory/commercial de-risking",
+    "official_source_url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Results-from-ACACIA-HCM-Presented-in-Hot-Line-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026-and-Published-in-The-New-England-Journal-of-Medicine/default.aspx",
+    "official_verified": true,
+    "lineage": {
+      "discovery_class": "late_discovered_pre_cutoff_detector_miss",
+      "source_session_et": "2026-08-28",
+      "source_cutoff_et": "2026-08-28T09:25:00-04:00",
+      "carryover_reason": "still_material_for_next_session"
+    }
+  }
+}
