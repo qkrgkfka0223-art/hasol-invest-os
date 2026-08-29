@@ -1,0 +1,22 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "BTAI",
+    "event_id": "BTAI-20260828-0600-MA",
+    "event_type": "M&A",
+    "event_published_at_utc": "2026-08-28T10:00:00Z",
+    "axis": "DISTRESSED_BIOTECH_ASSET_SALE_BANKRUPTCY",
+    "headline": "BioXcel Therapeutics Enters Into Asset Sale Agreement with Teva Pharmaceuticals",
+    "flow_path": "Chapter 11 + Section 363 sale of substantially all assets + $19M DIP financing -> control/value transfer and liquidity bridge",
+    "official_source_url": "https://www.globenewswire.com/news-release/2026/08/28/3352588/0/en/bioxcel-therapeutics-enters-into-asset-sale-agreement-with-teva-pharmaceuticals.html",
+    "official_verified": true,
+    "lineage": {
+      "discovery_class": "late_discovered_pre_cutoff_detector_miss",
+      "source_session_et": "2026-08-28",
+      "source_cutoff_et": "2026-08-28T09:25:00-04:00",
+      "carryover_reason": "still_material_for_next_session"
+    }
+  }
+}
