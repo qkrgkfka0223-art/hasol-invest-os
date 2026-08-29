@@ -1,0 +1,23 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "TNON",
+    "event_id": "TNON-20260828-0815-FINANCING",
+    "event_type": "FINANCING",
+    "event_published_at_utc": "2026-08-28T12:15:00Z",
+    "axis": "SMALL_CAP_MEDTECH_DILUTIVE_FINANCING",
+    "headline": "Tenon Medical Announces Pricing of $3M Private Placement Offering",
+    "flow_path": "$3M private placement with common/pre-funded shares and warrants -> added cash runway with dilution/overhang",
+    "official_source_url": "https://www.accessnewswire.com/newsroom/en/healthcare-and-pharmaceutical/tenon-medical-announces-pricing-of-3m-private-placement-offering-1213826",
+    "official_verified": true,
+    "lineage": {
+      "discovery_class": "late_discovered_pre_cutoff_detector_miss",
+      "source_session_et": "2026-08-28",
+      "source_cutoff_et": "2026-08-28T09:25:00-04:00",
+      "growth_ref": "GRW-DETECTOR_MISS-TNON-20260828",
+      "carryover_reason": "still_material_for_next_session"
+    }
+  }
+}
