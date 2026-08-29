@@ -1,0 +1,17 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "QNRX",
+    "event_id": "QNRX-20260828-0600-FINANCING",
+    "event_type": "FINANCING",
+    "event_published_at_utc": "2026-08-28T10:00:00Z",
+    "axis": "BIOTECH_CAPITAL_RAISE",
+    "headline": "Quoin Pharmaceuticals Announces Private Placement Financing of Up to $50.0 Million",
+    "flow_path": "$30.8M upfront plus up to $19.2M warrant proceeds -> extended clinical-development runway with dilution",
+    "official_source_url": "https://quoinpharma.gcs-web.com/news-releases/news-release-details/quoin-pharmaceuticals-announces-private-placement-financing-500",
+    "official_verified": true,
+    "lineage": {"discovery_class":"late_discovered_pre_cutoff_detector_miss","source_session_et":"2026-08-28","source_cutoff_et":"2026-08-28T09:25:00-04:00","carryover_reason":"still_material_for_next_session"}
+  }
+}
