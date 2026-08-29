@@ -36,7 +36,10 @@ def _event_files(root: Path, prediction_date_et: str) -> list[Path]:
     target = root / prediction_date_et
     if not target.exists():
         return []
-    return sorted(path for path in target.glob("*.json") if path.is_file())
+    # Recurse defensively so an event_id/path sanitization mistake cannot silently
+    # hide a valid event from the effective snapshot. The date directory is
+    # dedicated to event envelopes, so every JSON beneath it is validated below.
+    return sorted(path for path in target.rglob("*.json") if path.is_file())
 
 
 def _load_event(path: Path, *, prediction_date_et: str, run_type: str) -> dict[str, Any]:

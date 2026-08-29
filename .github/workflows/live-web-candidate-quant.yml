@@ -15,7 +15,6 @@ on:
       - 'runtime/web_candidates/session.json'
       - 'runtime/web_candidates/events/**'
       - 'runtime/web_candidates/intraday/**'
-      - 'runtime/web_candidates/latest.json'
   push:
     branches: [main]
     paths:
@@ -29,7 +28,6 @@ on:
       - 'runtime/web_candidates/session.json'
       - 'runtime/web_candidates/events/**'
       - 'runtime/web_candidates/intraday/**'
-      - 'runtime/web_candidates/latest.json'
 
 permissions:
   contents: read

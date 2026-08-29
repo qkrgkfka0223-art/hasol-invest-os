@@ -106,3 +106,77 @@ def test_event_target_date_mismatch_is_rejected(tmp_path):
             tmp_path / "effective.json",
             tmp_path / "manifest.json",
         )
+
+
+def test_nested_event_path_is_not_silently_dropped(tmp_path):
+    session_path = tmp_path / "session.json"
+    session_path.write_text(json.dumps(_session()), encoding="utf-8")
+    premarket_root = tmp_path / "events"
+    intraday_root = tmp_path / "intraday"
+    target = premarket_root / "2026-08-31" / "accidental" / "nested"
+    target.mkdir(parents=True, exist_ok=True)
+    envelope = {
+        "ledger_schema": EVENT_SCHEMA,
+        "prediction_date_et": "2026-08-31",
+        "run_type": "PREMARKET",
+        "event": _event("NEST", "2026-08-31T12:00:00Z"),
+    }
+    (target / "NEST-E1.json").write_text(json.dumps(envelope), encoding="utf-8")
+
+    manifest = build_snapshot(
+        session_path,
+        premarket_root,
+        intraday_root,
+        tmp_path / "effective.json",
+        tmp_path / "manifest.json",
+    )
+    assert manifest["event_file_count"] == 1
+    assert manifest["candidate_count"] == 1
+    assert manifest["event_files"][0]["ticker"] == "NEST"
+
+
+def test_duplicate_event_files_are_audited_but_deduped(tmp_path):
+    session_path = tmp_path / "session.json"
+    session_path.write_text(json.dumps(_session()), encoding="utf-8")
+    premarket_root = tmp_path / "events"
+    intraday_root = tmp_path / "intraday"
+    _write_event(premarket_root, "DUP", "2026-08-31T12:00:00Z")
+    source = premarket_root / "2026-08-31" / "DUP-E1.json"
+    duplicate_dir = premarket_root / "2026-08-31" / "duplicate"
+    duplicate_dir.mkdir(parents=True, exist_ok=True)
+    (duplicate_dir / "DUP-E1-copy.json").write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+
+    manifest = build_snapshot(
+        session_path,
+        premarket_root,
+        intraday_root,
+        tmp_path / "effective.json",
+        tmp_path / "manifest.json",
+    )
+    assert manifest["event_file_count"] == 2
+    assert manifest["event_count_raw"] == 2
+    assert manifest["event_count_deduped"] == 1
+    assert manifest["candidate_count"] == 1
+
+
+def test_500_event_ledger_is_complete_and_hash_stable(tmp_path):
+    session_path = tmp_path / "session.json"
+    session_path.write_text(json.dumps(_session()), encoding="utf-8")
+    premarket_root = tmp_path / "events"
+    intraday_root = tmp_path / "intraday"
+    for i in range(500):
+        _write_event(premarket_root, f"T{i:04d}", "2026-08-31T12:00:00Z")
+
+    first_output = tmp_path / "effective-1.json"
+    first_manifest_path = tmp_path / "manifest-1.json"
+    first = build_snapshot(session_path, premarket_root, intraday_root, first_output, first_manifest_path)
+
+    second_output = tmp_path / "effective-2.json"
+    second_manifest_path = tmp_path / "manifest-2.json"
+    second = build_snapshot(session_path, premarket_root, intraday_root, second_output, second_manifest_path)
+
+    assert first["event_file_count"] == 500
+    assert first["event_count_deduped"] == 500
+    assert first["candidate_count"] == 500
+    assert first["snapshot_input_sha256"] == second["snapshot_input_sha256"]
+    assert first_output.read_bytes() == second_output.read_bytes()
