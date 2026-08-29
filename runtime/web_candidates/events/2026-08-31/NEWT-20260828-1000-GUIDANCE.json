@@ -1,0 +1,17 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event": {
+    "ticker": "NEWT",
+    "event_id": "NEWT-20260828-1000-GUIDANCE",
+    "event_type": "GUIDANCE",
+    "event_published_at_utc": "2026-08-28T14:00:00Z",
+    "axis": "SBA_NET_INTEREST_INCOME_STRATEGY",
+    "headline": "NewtekOne Repositions Earnings Guidance with an Emphasis on Recurring Net Interest Income",
+    "flow_path": "2026 EPS $1.70-$1.80 / 2027 EPS $2.00-$2.20 plus higher retained SBA 7(a) balances -> larger recurring NII mix",
+    "official_source_url": "https://www.globenewswire.com/news-release/2026/08/28/3352738/0/en/newtekone-repositions-earnings-guidance-with-an-emphasis-on-recurring-net-interest-income.html",
+    "official_verified": true,
+    "lineage": {"discovery_class":"post_cutoff_carryover","source_session_et":"2026-08-28","source_cutoff_et":"2026-08-28T09:25:00-04:00","carryover_reason":"published_after_prior_cutoff_and_still_material"}
+  }
+}
