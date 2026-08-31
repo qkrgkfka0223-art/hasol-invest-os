@@ -6,7 +6,7 @@
   "event": {
     "ticker": "SRXH",
     "event_id": "SRXH-20260831-0730-INVESTMENT",
-    "event_type": "INVESTMENT",
+    "event_type": "OTHER_OFFICIAL",
     "event_published_at_utc": "2026-08-31T11:30:00Z",
     "axis": "CERO_SECURED_DEBT_INVESTMENT",
     "headline": "SRX Global acquires senior secured debt in CERo Therapeutics",
