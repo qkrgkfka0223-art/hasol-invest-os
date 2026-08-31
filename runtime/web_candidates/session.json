@@ -1,11 +1,11 @@
 {
   "session_schema": "HASOL-WEB-SESSION-v1",
   "prediction_date_et": "2026-08-31",
-  "run_type": "PREMARKET",
-  "eligible_for_prediction": true,
-  "as_of_utc": "2026-08-31T13:48:47Z",
+  "run_type": "INTRADAY",
+  "eligible_for_prediction": false,
+  "as_of_utc": "2026-08-31T14:37:48Z",
   "cutoff_et": "2026-08-31T09:25:00-04:00",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
   "stage_marker": "POST_CUTOFF_AUDIT_ADVANCE",
-  "notes": "09:05 Warmup state preserved. Post-cutoff Web Watch appended SY earnings event plus ADS MATERIALITY_DROP as audit-only state; sealed 2026-08-31 cohort must ignore the post-cutoff decision."
+  "notes": "Verified 2026-08-31 freeze outcome remains NO_PREDICTION. Post-cutoff Web Watch appended UTMD acquisition as audit-only intraday state; official frozen history is immutable. Session run_type advanced to INTRADAY to match current live audit lineage; official prediction eligibility remains false."
 }
