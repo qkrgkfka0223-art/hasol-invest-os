@@ -1,0 +1,10 @@
+{
+  "decision_schema": "HASOL-WEB-DECISION-v1",
+  "decision_id": "DEC-QNRX-CLINICAL-ADS-DROP",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "event_id": "QNRX-20260828-0600-CLINICAL",
+  "action": "MATERIALITY_DROP",
+  "decided_at_utc": "2026-08-31T06:29:00Z",
+  "reason": "SECURITY_TYPE_ADS: Alpaca asset metadata identifies QNRX as American Depositary Shares; HASOL official common-equity cohort excludes ADS/ADR/depositary receipts."
+}
