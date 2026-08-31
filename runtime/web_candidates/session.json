@@ -3,9 +3,9 @@
   "prediction_date_et": "2026-08-31",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-08-31T08:25:55Z",
+  "as_of_utc": "2026-08-31T12:49:15Z",
   "cutoff_et": "2026-08-31T09:25:00-04:00",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
-  "stage_marker": "WEB_WATCH_ARWR_SHASTA_DETAILED_DATA",
-  "notes": "Session as-of advanced in the same atomic commit as newly verified ARWR weekend carryover event; no latest.json production-state rewrite."
+  "stage_marker": "WEB_WATCH_ENSC_PF614_MPAR_ENROLLMENT_COMPLETE",
+  "notes": "Session as-of advanced in the same atomic commit as newly verified ENSC premarket clinical event; no latest.json production-state rewrite."
 }

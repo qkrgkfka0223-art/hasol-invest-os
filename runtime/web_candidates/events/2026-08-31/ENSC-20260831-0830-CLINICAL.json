@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-08-31T12:49:15Z",
+  "event": {
+    "ticker": "ENSC",
+    "event_id": "ENSC-20260831-0830-CLINICAL",
+    "event_type": "CLINICAL",
+    "event_published_at_utc": "2026-08-31T12:30:00Z",
+    "axis": "PF614_MPAR_102_FINAL_STAGE_ENROLLMENT_COMPLETE",
+    "headline": "Ensysce Biosciences Completes Final Phase of PF614-MPAR-102 Clinical Study",
+    "flow_path": "final-stage enrollment completion in second PF614-MPAR study -> Breakthrough Therapy-designated overdose-protection program advances toward clinical data readout -> incremental clinical/regulatory evidence -> capital repricing",
+    "official_source_url": "https://www.accessnewswire.com/newsroom/en/healthcare-and-pharmaceutical/ensysce-biosciences-completes-final-phase-of-pf614-mpar-102-clinical-1214652",
+    "official_verified": true,
+    "security_type": "COMMON_STOCK",
+    "security_type_source": "Alpaca asset metadata: Ensysce Biosciences, Inc. Common Stock; us_equity; NASDAQ; active",
+    "lineage": {"discovery_class":"same_day_premarket","source_session_et":"2026-08-31","source_cutoff_et":"2026-08-31T09:25:00-04:00","source_family":"ACCESS_NEWSWIRE"}
+  }
+}
