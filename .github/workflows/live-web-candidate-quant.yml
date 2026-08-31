@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/live-web-candidate-quant.yml'
       - 'scripts/build_live_candidate_snapshot.py'
+      - 'scripts/validate_live_state_asof.py'
       - 'scripts/run_web_candidate_quant.py'
       - 'hasol_detector/**'
       - 'hasol_quant/**'
@@ -21,6 +22,7 @@ on:
     paths:
       - '.github/workflows/live-web-candidate-quant.yml'
       - 'scripts/build_live_candidate_snapshot.py'
+      - 'scripts/validate_live_state_asof.py'
       - 'scripts/run_web_candidate_quant.py'
       - 'hasol_detector/**'
       - 'hasol_quant/**'
@@ -94,6 +96,17 @@ jobs:
           PY
           fi
 
+      - name: Validate state as-of integrity
+        if: ${{ hashFiles('runtime/web_candidates/session.json') != '' }}
+        run: |
+          python -m scripts.validate_live_state_asof \
+            --session runtime/web_candidates/session.json \
+            --effective-input output_live_quant/effective_input.json \
+            --premarket-root runtime/web_candidates/events \
+            --intraday-root runtime/web_candidates/intraday \
+            --decision-root runtime/web_candidates/decisions \
+            --output output_live_quant/state_asof_validation.json
+
       - name: Run latest Web-candidate Quant
         run: |
           python -m scripts.run_web_candidate_quant \
@@ -124,6 +137,11 @@ jobs:
           assert manifest['run_type'] in {'PREMARKET', 'INTRADAY_EVENT'}
           assert manifest['quant_source_policy'] == 'DETECTION_ONLY_NOT_CANONICAL'
           assert manifest['final_market_validator'] == 'ALPACA_CONNECTED_APP'
+          asof_path = Path('output_live_quant/state_asof_validation.json')
+          if asof_path.exists():
+              asof = json.loads(asof_path.read_text(encoding='utf-8'))
+              assert asof['valid'] is True
+              assert asof['effective_input_as_of_utc'] == asof['session_as_of_utc']
           Path('output_live_quant/source_commit_sha.txt').write_text(os.environ['SOURCE_COMMIT_SHA'] + '\n', encoding='utf-8')
           Path('output_live_quant/candidate_input_sha256.txt').write_text(expected + '\n', encoding='utf-8')
           ledger_canonical = json.dumps(ledger, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
@@ -134,6 +152,7 @@ jobs:
           for f in effective_input.json ledger_manifest.json run_manifest.json data_quality.json input_snapshot_raw.json input_snapshot_normalized.json candidate_features.csv web_candidate_quant.csv quant_top50.csv quant_top50.json source_commit_sha.txt candidate_input_sha256.txt ledger_manifest_sha256.txt; do
             test -s "output_live_quant/$f"
           done
+          if [ -s runtime/web_candidates/session.json ]; then test -s output_live_quant/state_asof_validation.json; fi
 
       - name: Upload live-only artifact
         uses: actions/upload-artifact@v7
