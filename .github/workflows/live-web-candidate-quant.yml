@@ -15,6 +15,7 @@ on:
       - 'runtime/web_candidates/session.json'
       - 'runtime/web_candidates/events/**'
       - 'runtime/web_candidates/intraday/**'
+      - 'runtime/web_candidates/decisions/**'
   push:
     branches: [main]
     paths:
@@ -28,6 +29,7 @@ on:
       - 'runtime/web_candidates/session.json'
       - 'runtime/web_candidates/events/**'
       - 'runtime/web_candidates/intraday/**'
+      - 'runtime/web_candidates/decisions/**'
 
 permissions:
   contents: read
@@ -66,6 +68,7 @@ jobs:
               --session runtime/web_candidates/session.json \
               --premarket-root runtime/web_candidates/events \
               --intraday-root runtime/web_candidates/intraday \
+              --decision-root runtime/web_candidates/decisions \
               --output output_live_quant/effective_input.json \
               --manifest output_live_quant/ledger_manifest.json
           else
