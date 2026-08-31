@@ -1,0 +1,10 @@
+{
+  "decision_schema": "HASOL-WEB-DECISION-v1",
+  "decision_id": "DEC-SY-EARNINGS-ADS-DROP",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "INTRADAY",
+  "event_id": "SY-20260831-0600-EARNINGS",
+  "action": "MATERIALITY_DROP",
+  "decided_at_utc": "2026-08-31T13:48:47Z",
+  "reason": "SECURITY_TYPE_ADS: Alpaca asset metadata identifies SY as American Depository Shares; HASOL official common-equity cohort excludes ADS/ADR/depositary receipts. Post-cutoff decision is audit-only for the sealed 2026-08-31 cohort."
+}

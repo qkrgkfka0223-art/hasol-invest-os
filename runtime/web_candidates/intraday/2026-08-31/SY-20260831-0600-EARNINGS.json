@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "INTRADAY",
+  "recorded_at_utc": "2026-08-31T13:48:47Z",
+  "event": {
+    "ticker": "SY",
+    "event_id": "SY-20260831-0600-EARNINGS",
+    "event_type": "EARNINGS",
+    "event_published_at_utc": "2026-08-31T10:00:00Z",
+    "axis": "Q2_2026_UNAUDITED_RESULTS",
+    "headline": "So-Young Reports Unaudited Second Quarter 2026 Financial Results",
+    "flow_path": "direct quarterly results release -> new earnings and operating information -> potential repricing catalyst -> audit retained, security-type gate applied",
+    "official_source_url": "https://www.prnewswire.com/news-releases/so-young-reports-unaudited-second-quarter-2026-financial-results-302864843.html",
+    "official_verified": true,
+    "security_type": "ADS",
+    "security_type_source": "Alpaca asset metadata: So-Young International Inc. American Depository Shares; us_equity; NASDAQ; active",
+    "lineage": {"discovery_class":"post_cutoff_intraday_audit","source_session_et":"2026-08-31","source_cutoff_et":"2026-08-31T09:25:00-04:00","source_family":"PRNEWSWIRE"}
+  }
+}
