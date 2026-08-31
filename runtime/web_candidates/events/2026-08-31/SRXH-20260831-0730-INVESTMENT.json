@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-08-31T13:14:59Z",
+  "event": {
+    "ticker": "SRXH",
+    "event_id": "SRXH-20260831-0730-INVESTMENT",
+    "event_type": "INVESTMENT",
+    "event_published_at_utc": "2026-08-31T11:30:00Z",
+    "axis": "CERO_SECURED_DEBT_INVESTMENT",
+    "headline": "SRX Global acquires senior secured debt in CERo Therapeutics",
+    "flow_path": "secured biotech credit investment -> deploys capital into clinical-stage CER-1236 platform and broadens high-conviction asset exposure -> risk/reward repricing",
+    "official_source_url": "https://www.globenewswire.com/news-release/2026/08/31/3353209/0/en/srx-global-acquires-senior-secured-debt-in-cero-therapeutics-holdings-inc-an-innovative-cellular-immunotherapy-company-with-cancer-fighting-molecule-for-the-treatment-of-hematologi.html",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: SRX Global Inc; us_equity; NYSE American; active/tradable operating-company listing",
+    "lineage": {"discovery_class":"same_day_premarket_warmup","source_session_et":"2026-08-31","source_cutoff_et":"2026-08-31T09:25:00-04:00","source_family":"GLOBENEWSWIRE"}
+  }
+}

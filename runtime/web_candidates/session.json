@@ -3,9 +3,10 @@
   "prediction_date_et": "2026-08-31",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-08-31T12:49:15Z",
+  "as_of_utc": "2026-08-31T13:14:59Z",
   "cutoff_et": "2026-08-31T09:25:00-04:00",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
-  "stage_marker": "WEB_WATCH_ENSC_PF614_MPAR_ENROLLMENT_COMPLETE",
-  "notes": "Session as-of advanced in the same atomic commit as newly verified ENSC premarket clinical event; no latest.json production-state rewrite."
+  "stage_marker": "WARMUP_0905_TARGETED_RECALL_EXPANSION",
+  "notes": "09:05 Warmup targeted verified recall expansion; seven same-day premarket material events added atomically with session as-of advancement; no latest.json production-state rewrite."
+}
 }

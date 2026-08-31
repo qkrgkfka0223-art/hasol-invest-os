@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-08-31T13:14:59Z",
+  "event": {
+    "ticker": "SMC",
+    "event_id": "SMC-20260831-0700-CAPEX",
+    "event_type": "CAPEX",
+    "event_published_at_utc": "2026-08-31T11:00:00Z",
+    "axis": "DOUBLE_E_COMPRESSION_FID",
+    "headline": "Summit Midstream reaches FID on Double E Pipeline mainline compression expansion",
+    "flow_path": "FID + new long-term take-or-pay 200 MMcf/d agreement + financing capacity fully funds expected contributions -> contracted throughput growth/de-risked capex funding -> cash-flow repricing",
+    "official_source_url": "https://www.prnewswire.com/news-releases/summit-midstream-corporation-announces-final-investment-decision-on-double-e-pipeline-mainline-compression-expansion-302864529.html",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Summit Midstream Corporation; us_equity; NYSE; active/tradable operating-company listing",
+    "lineage": {"discovery_class":"same_day_premarket_warmup","source_session_et":"2026-08-31","source_cutoff_et":"2026-08-31T09:25:00-04:00","source_family":"PRNEWSWIRE_ISSUER"}
+  }
+}

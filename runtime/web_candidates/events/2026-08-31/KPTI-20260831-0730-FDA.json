@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-08-31T13:14:59Z",
+  "event": {
+    "ticker": "KPTI",
+    "event_id": "KPTI-20260831-0730-FDA",
+    "event_type": "FDA",
+    "event_published_at_utc": "2026-08-31T11:30:00Z",
+    "axis": "XPOVIO_MYELOFIBROSIS_SNDA_SUBMISSION",
+    "headline": "Karyopharm submits sNDA for XPOVIO plus ruxolitinib in myelofibrosis",
+    "flow_path": "accelerated-approval sNDA submission + Priority Review request -> defined regulatory path and potential six-month review -> oncology franchise optionality -> capital repricing",
+    "official_source_url": "https://www.prnewswire.com/news-releases/karyopharm-submits-supplemental-new-drug-application-to-the-fda-for-xpovio-selinexor-plus-ruxolitinib-for-patients-with-myelofibrosis-302864537.html",
+    "official_verified": true,
+    "security_type": "COMMON_STOCK",
+    "security_type_source": "Alpaca asset metadata: Karyopharm Therapeutics Inc. Common Stock; us_equity; NASDAQ; active/tradable",
+    "lineage": {"discovery_class":"same_day_premarket_warmup","source_session_et":"2026-08-31","source_cutoff_et":"2026-08-31T09:25:00-04:00","source_family":"PRNEWSWIRE_FDA_REGULATORY"}
+  }
+}

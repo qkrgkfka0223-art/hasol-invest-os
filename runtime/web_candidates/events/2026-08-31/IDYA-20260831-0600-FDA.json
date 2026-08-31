@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-08-31T13:14:59Z",
+  "event": {
+    "ticker": "IDYA",
+    "event_id": "IDYA-20260831-0600-FDA",
+    "event_type": "FDA",
+    "event_published_at_utc": "2026-08-31T10:00:00Z",
+    "axis": "IDE849_PHASE3_REGULATORY_ALIGNMENT",
+    "headline": "IDEAYA reports successful FDA Type C meeting and Phase 3 registrational design for IDE849",
+    "flow_path": "FDA alignment on randomized Phase 3 with ORR accelerated-approval endpoint and OS full-approval endpoint -> registrational path de-risking -> pipeline value repricing",
+    "official_source_url": "https://www.prnewswire.com/news-releases/ideaya-biosciences-announces-successful-fda-type-c-meeting-for-ide849-dll3-top1-adc-on-phase-3-registrational-trial-design-for-potential-accelerated-and-full-approval-in-extensive-stage-small-cell-lung-cancer-302864315.html",
+    "official_verified": true,
+    "security_type": "COMMON_STOCK",
+    "security_type_source": "Alpaca asset metadata: IDEAYA Biosciences, Inc. Common Stock; us_equity; NASDAQ; active/tradable",
+    "lineage": {"discovery_class":"same_day_premarket_warmup","source_session_et":"2026-08-31","source_cutoff_et":"2026-08-31T09:25:00-04:00","source_family":"PRNEWSWIRE_FDA_REGULATORY"}
+  }
+}
