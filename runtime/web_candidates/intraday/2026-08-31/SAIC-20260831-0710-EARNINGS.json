@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "INTRADAY",
+  "recorded_at_utc": "2026-08-31T17:34:45Z",
+  "event": {
+    "ticker": "SAIC",
+    "event_id": "SAIC-20260831-0710-EARNINGS",
+    "event_type": "GUIDANCE",
+    "event_published_at_utc": "2026-08-31T11:10:00Z",
+    "axis": "Q2_FY2027_RESULTS_AND_RAISED_GUIDANCE",
+    "headline": "SAIC Announces Second Quarter of Fiscal Year 2027 Results",
+    "flow_path": "Q2 revenue $1.88B with 5.3% organic growth and adjusted EPS $3.01 -> company raises FY2027 revenue, adjusted EBITDA, margin and adjusted EPS guidance while reiterating >$600M free-cash-flow guidance -> material earnings/guidance update discovered post-cutoff and retained audit-only",
+    "official_source_url": "https://www.globenewswire.com/news-release/2026/08/31/3353185/0/en/saic-announces-second-quarter-of-fiscal-year-2027-results.html",
+    "official_verified": true,
+    "security_type": "COMMON_STOCK",
+    "security_type_source": "Alpaca asset metadata: Science Applications International Corporation Common Stock, NASDAQ, active us_equity.",
+    "lineage": {"discovery_class":"post_cutoff_intraday_audit","source_session_et":"2026-08-31","source_cutoff_et":"2026-08-31T09:25:00-04:00","source_family":"GLOBENEWSWIRE","detector_reconciliation":"SOURCE_RECALL_SCAN"}
+  }
+}

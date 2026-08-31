@@ -3,9 +3,9 @@
   "prediction_date_et": "2026-08-31",
   "run_type": "INTRADAY",
   "eligible_for_prediction": false,
-  "as_of_utc": "2026-08-31T15:39:00Z",
+  "as_of_utc": "2026-08-31T17:34:45Z",
   "cutoff_et": "2026-08-31T09:25:00-04:00",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
   "stage_marker": "POST_CUTOFF_AUDIT_ADVANCE",
-  "notes": "Verified 2026-08-31 freeze outcome remains NO_PREDICTION. Post-cutoff Web Watch appended BMRN global patent settlement as audit-only intraday state after identifying a pre-cutoff PRNewswire detector miss; official frozen history is immutable. Session run_type remains INTRADAY and official prediction eligibility remains false."
+  "notes": "Verified 2026-08-31 freeze outcome remains NO_PREDICTION. Post-cutoff Web Watch appended SAIC Q2 FY2027 earnings/guidance and TNON private-placement closing as audit-only intraday state. Official frozen history is immutable. Session run_type remains INTRADAY and official prediction eligibility remains false."
 }

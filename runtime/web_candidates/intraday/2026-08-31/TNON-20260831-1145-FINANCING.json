@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "INTRADAY",
+  "recorded_at_utc": "2026-08-31T17:34:45Z",
+  "event": {
+    "ticker": "TNON",
+    "event_id": "TNON-20260831-1145-FINANCING",
+    "event_type": "FINANCING",
+    "event_published_at_utc": "2026-08-31T15:45:00Z",
+    "axis": "PRIVATE_PLACEMENT_CLOSING_3M",
+    "headline": "Tenon Medical Announces Closing of $3M Private Placement Offering",
+    "flow_path": "$3.0M gross private placement closed at $5.02 effective price with common shares/pre-funded warrants plus immediately exercisable five-year warrants -> financing and dilution-capacity event -> post-cutoff audit-only",
+    "official_source_url": "https://www.accessnewswire.com/newsroom/en/education/tenon-medical-announces-closing-of-3m-private-placement-offering-1214709",
+    "official_verified": true,
+    "security_type": "COMMON_STOCK",
+    "security_type_source": "Alpaca asset metadata: Tenon Medical, Inc. Common Stock, NASDAQ, active us_equity.",
+    "lineage": {"discovery_class":"post_cutoff_intraday_audit","source_session_et":"2026-08-31","source_cutoff_et":"2026-08-31T09:25:00-04:00","source_family":"ACCESS_NEWSWIRE","detector_reconciliation":"SOURCE_RECALL_SCAN"}
+  }
+}
