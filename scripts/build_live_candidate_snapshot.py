@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +37,19 @@ def _read_json(path: Path) -> dict[str, Any]:
     return raw
 
 
+def _parse_aware_dt(value: str, *, field: str, path: Path) -> datetime:
+    text = str(value).strip().replace("Z", "+00:00")
+    if not text:
+        raise ValueError(f"{field} is required in {path}")
+    try:
+        dt = datetime.fromisoformat(text)
+    except ValueError as exc:
+        raise ValueError(f"invalid {field} in {path}: {value}") from exc
+    if dt.tzinfo is None:
+        raise ValueError(f"{field} must be timezone-aware in {path}")
+    return dt.astimezone(timezone.utc)
+
+
 def _json_files(root: Path, prediction_date_et: str) -> list[Path]:
     target = root / prediction_date_et
     if not target.exists():
@@ -44,9 +58,6 @@ def _json_files(root: Path, prediction_date_et: str) -> list[Path]:
 
 
 def _event_files(root: Path, prediction_date_et: str) -> list[Path]:
-    # Recurse defensively so an event_id/path sanitization mistake cannot silently
-    # hide a valid event from the effective snapshot. The date directory is
-    # dedicated to event envelopes, so every JSON beneath it is validated below.
     return _json_files(root, prediction_date_et)
 
 
@@ -76,6 +87,9 @@ def _load_decision(path: Path, *, prediction_date_et: str, run_type: str) -> dic
     raw = _read_json(path)
     if raw.get("decision_schema") != DECISION_SCHEMA:
         raise ValueError(f"decision_schema must be {DECISION_SCHEMA} in {path}")
+    decision_id = str(raw.get("decision_id", "")).strip()
+    if not decision_id:
+        raise ValueError(f"decision_id is required in {path}")
     target_date = str(raw.get("prediction_date_et", "")).strip()
     if target_date != prediction_date_et:
         raise ValueError(f"decision target date mismatch in {path}: {target_date}")
@@ -88,12 +102,16 @@ def _load_decision(path: Path, *, prediction_date_et: str, run_type: str) -> dic
     action = str(raw.get("action", "")).upper().strip()
     if action not in ALLOWED_DECISIONS:
         raise ValueError(f"unsupported materiality decision in {path}: {action}")
-    decided_at_utc = str(raw.get("decided_at_utc", "")).strip()
-    if not decided_at_utc:
-        raise ValueError(f"decision decided_at_utc is required in {path}")
+    decided_at = _parse_aware_dt(str(raw.get("decided_at_utc", "")), field="decided_at_utc", path=path)
     if action == MATERIALITY_DROP and not str(raw.get("reason", "")).strip():
         raise ValueError(f"MATERIALITY_DROP reason is required in {path}")
-    return raw
+    out = dict(raw)
+    out["decision_id"] = decision_id
+    out["event_id"] = event_id
+    out["action"] = action
+    out["decided_at_utc"] = decided_at.isoformat().replace("+00:00", "Z")
+    out["_decided_at_sort"] = decided_at.timestamp()
+    return out
 
 
 def build_snapshot(
@@ -120,6 +138,11 @@ def build_snapshot(
     else:
         raise ValueError("live ledger supports PREMARKET or INTRADAY_EVENT only")
 
+    prediction_eligible = bool(session.get("eligible_for_prediction", False))
+    cutoff_utc: datetime | None = None
+    if run_type == "PREMARKET" and prediction_eligible:
+        cutoff_utc = _parse_aware_dt(str(session.get("cutoff_et", "")), field="cutoff_et", path=session_path)
+
     event_paths = _event_files(root, prediction_date_et)
     loaded: list[tuple[Path, dict[str, Any]]] = [
         (path, _load_event(path, prediction_date_et=prediction_date_et, run_type=run_type))
@@ -133,27 +156,53 @@ def build_snapshot(
             pair[0].as_posix(),
         )
     )
+    loaded_event_ids = {
+        str(event.get("event_id", "")).strip()
+        for _, event in loaded
+        if str(event.get("event_id", "")).strip()
+    }
 
     decision_paths = _decision_files(decision_root, prediction_date_et)
     decisions: list[tuple[Path, dict[str, Any]]] = [
         (path, _load_decision(path, prediction_date_et=prediction_date_et, run_type=run_type))
         for path in decision_paths
     ]
+    seen_decision_ids: set[str] = set()
+    for path, decision in decisions:
+        decision_id = str(decision["decision_id"])
+        if decision_id in seen_decision_ids:
+            raise ValueError(f"duplicate decision_id in materiality ledger: {decision_id}")
+        seen_decision_ids.add(decision_id)
+        if str(decision["event_id"]) not in loaded_event_ids:
+            raise ValueError(f"materiality decision references unknown event_id in {path}: {decision['event_id']}")
+
     decisions.sort(
         key=lambda pair: (
-            str(pair[1].get("decided_at_utc", "")),
-            str(pair[1].get("decision_id", "")),
+            float(pair[1]["_decided_at_sort"]),
+            str(pair[1]["decision_id"]),
             pair[0].as_posix(),
         )
     )
-    latest_decision_by_event: dict[str, tuple[Path, dict[str, Any]]] = {}
+
+    applicable_decisions: list[tuple[Path, dict[str, Any]]] = []
+    ignored_post_cutoff_decision_ids: list[str] = []
     for path, decision in decisions:
-        latest_decision_by_event[str(decision["event_id"]).strip()] = (path, decision)
+        decided_at_utc = datetime.fromtimestamp(float(decision["_decided_at_sort"]), tz=timezone.utc)
+        applies = cutoff_utc is None or decided_at_utc <= cutoff_utc
+        decision["_applies_to_snapshot"] = applies
+        if applies:
+            applicable_decisions.append((path, decision))
+        else:
+            ignored_post_cutoff_decision_ids.append(str(decision["decision_id"]))
+
+    latest_decision_by_event: dict[str, tuple[Path, dict[str, Any]]] = {}
+    for path, decision in applicable_decisions:
+        latest_decision_by_event[str(decision["event_id"])] = (path, decision)
 
     excluded_event_ids = {
         event_id
         for event_id, (_, decision) in latest_decision_by_event.items()
-        if str(decision.get("action", "")).upper().strip() == MATERIALITY_DROP
+        if str(decision["action"]) == MATERIALITY_DROP
     }
     active_loaded = [
         (path, event)
@@ -165,7 +214,7 @@ def build_snapshot(
     payload: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "run_type": run_type,
-        "eligible_for_prediction": bool(session.get("eligible_for_prediction", False)),
+        "eligible_for_prediction": prediction_eligible,
         "prediction_date_et": prediction_date_et,
         "as_of_utc": session.get("as_of_utc"),
         "cutoff_et": session.get("cutoff_et"),
@@ -199,14 +248,17 @@ def build_snapshot(
 
     decision_rows = []
     for path, decision in decisions:
+        applies = bool(decision.get("_applies_to_snapshot", False))
         decision_rows.append(
             {
                 "path": path.as_posix(),
                 "sha256": _sha256_bytes(path.read_bytes()),
-                "decision_id": str(decision.get("decision_id", "")),
-                "event_id": str(decision.get("event_id", "")),
-                "action": str(decision.get("action", "")).upper(),
-                "decided_at_utc": str(decision.get("decided_at_utc", "")),
+                "decision_id": str(decision["decision_id"]),
+                "event_id": str(decision["event_id"]),
+                "action": str(decision["action"]),
+                "decided_at_utc": str(decision["decided_at_utc"]),
+                "applies_to_snapshot": applies,
+                "ignored_reason": None if applies else "AFTER_PREDICTION_CUTOFF",
             }
         )
 
@@ -216,9 +268,10 @@ def build_snapshot(
         latest_decisions.append(
             {
                 "event_id": event_id,
-                "action": str(decision.get("action", "")).upper(),
+                "action": str(decision["action"]),
                 "reason": str(decision.get("reason", "")),
-                "decided_at_utc": str(decision.get("decided_at_utc", "")),
+                "decided_at_utc": str(decision["decided_at_utc"]),
+                "decision_id": str(decision["decision_id"]),
                 "path": path.as_posix(),
             }
         )
@@ -230,12 +283,14 @@ def build_snapshot(
         "session_sha256": _sha256_json(session),
         "prediction_date_et": prediction_date_et,
         "run_type": run_type,
-        "eligible_for_prediction": bool(payload["eligible_for_prediction"]),
+        "eligible_for_prediction": prediction_eligible,
         "event_root": (root / prediction_date_et).as_posix(),
         "event_file_count": len(event_paths),
         "active_event_file_count": len(active_loaded),
         "decision_root": (decision_root / prediction_date_et).as_posix() if decision_root is not None else None,
         "decision_file_count": len(decision_paths),
+        "applicable_decision_count": len(applicable_decisions),
+        "ignored_post_cutoff_decision_ids": sorted(ignored_post_cutoff_decision_ids),
         "excluded_event_ids": sorted(excluded_event_ids),
         "event_count_raw": int(normalized.get("event_count_raw", 0)),
         "event_count_deduped": int(normalized.get("event_count_deduped", 0)),
