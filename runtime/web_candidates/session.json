@@ -3,9 +3,9 @@
   "prediction_date_et": "2026-08-31",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-08-31T06:34:04Z",
+  "as_of_utc": "2026-08-31T08:25:55Z",
   "cutoff_et": "2026-08-31T09:25:00-04:00",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
-  "stage_marker": "STATE_ASOF_INTEGRITY_REPAIR",
-  "notes": "Session as-of advanced to cover the latest durably committed premarket materiality state; no synthetic production events."
+  "stage_marker": "WEB_WATCH_ARWR_SHASTA_DETAILED_DATA",
+  "notes": "Session as-of advanced in the same atomic commit as newly verified ARWR weekend carryover event; no latest.json production-state rewrite."
 }
