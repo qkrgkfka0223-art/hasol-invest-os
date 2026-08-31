@@ -138,6 +138,11 @@ def build_snapshot(
     else:
         raise ValueError("live ledger supports PREMARKET or INTRADAY_EVENT only")
 
+    prediction_eligible = bool(session.get("eligible_for_prediction", False))
+    cutoff_utc: datetime | None = None
+    if run_type == "PREMARKET" and prediction_eligible:
+        cutoff_utc = _parse_aware_dt(str(session.get("cutoff_et", "")), field="cutoff_et", path=session_path)
+
     event_paths = _event_files(root, prediction_date_et)
     loaded: list[tuple[Path, dict[str, Any]]] = [
         (path, _load_event(path, prediction_date_et=prediction_date_et, run_type=run_type))
@@ -151,7 +156,11 @@ def build_snapshot(
             pair[0].as_posix(),
         )
     )
-    loaded_event_ids = {str(event.get("event_id", "")).strip() for _, event in loaded if str(event.get("event_id", "")).strip()}
+    loaded_event_ids = {
+        str(event.get("event_id", "")).strip()
+        for _, event in loaded
+        if str(event.get("event_id", "")).strip()
+    }
 
     decision_paths = _decision_files(decision_root, prediction_date_et)
     decisions: list[tuple[Path, dict[str, Any]]] = [
@@ -166,6 +175,7 @@ def build_snapshot(
         seen_decision_ids.add(decision_id)
         if str(decision["event_id"]) not in loaded_event_ids:
             raise ValueError(f"materiality decision references unknown event_id in {path}: {decision['event_id']}")
+
     decisions.sort(
         key=lambda pair: (
             float(pair[1]["_decided_at_sort"]),
@@ -173,14 +183,26 @@ def build_snapshot(
             pair[0].as_posix(),
         )
     )
-    latest_decision_by_event: dict[str, tuple[Path, dict[str, Any]]] = {}
+
+    applicable_decisions: list[tuple[Path, dict[str, Any]]] = []
+    ignored_post_cutoff_decision_ids: list[str] = []
     for path, decision in decisions:
+        decided_at_utc = datetime.fromtimestamp(float(decision["_decided_at_sort"]), tz=timezone.utc)
+        applies = cutoff_utc is None or decided_at_utc <= cutoff_utc
+        decision["_applies_to_snapshot"] = applies
+        if applies:
+            applicable_decisions.append((path, decision))
+        else:
+            ignored_post_cutoff_decision_ids.append(str(decision["decision_id"]))
+
+    latest_decision_by_event: dict[str, tuple[Path, dict[str, Any]]] = {}
+    for path, decision in applicable_decisions:
         latest_decision_by_event[str(decision["event_id"])] = (path, decision)
 
     excluded_event_ids = {
         event_id
         for event_id, (_, decision) in latest_decision_by_event.items()
-        if str(decision.get("action", "")).upper().strip() == MATERIALITY_DROP
+        if str(decision["action"]) == MATERIALITY_DROP
     }
     active_loaded = [
         (path, event)
@@ -192,7 +214,7 @@ def build_snapshot(
     payload: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "run_type": run_type,
-        "eligible_for_prediction": bool(session.get("eligible_for_prediction", False)),
+        "eligible_for_prediction": prediction_eligible,
         "prediction_date_et": prediction_date_et,
         "as_of_utc": session.get("as_of_utc"),
         "cutoff_et": session.get("cutoff_et"),
@@ -226,6 +248,7 @@ def build_snapshot(
 
     decision_rows = []
     for path, decision in decisions:
+        applies = bool(decision.get("_applies_to_snapshot", False))
         decision_rows.append(
             {
                 "path": path.as_posix(),
@@ -234,6 +257,8 @@ def build_snapshot(
                 "event_id": str(decision["event_id"]),
                 "action": str(decision["action"]),
                 "decided_at_utc": str(decision["decided_at_utc"]),
+                "applies_to_snapshot": applies,
+                "ignored_reason": None if applies else "AFTER_PREDICTION_CUTOFF",
             }
         )
 
@@ -258,12 +283,14 @@ def build_snapshot(
         "session_sha256": _sha256_json(session),
         "prediction_date_et": prediction_date_et,
         "run_type": run_type,
-        "eligible_for_prediction": bool(payload["eligible_for_prediction"]),
+        "eligible_for_prediction": prediction_eligible,
         "event_root": (root / prediction_date_et).as_posix(),
         "event_file_count": len(event_paths),
         "active_event_file_count": len(active_loaded),
         "decision_root": (decision_root / prediction_date_et).as_posix() if decision_root is not None else None,
         "decision_file_count": len(decision_paths),
+        "applicable_decision_count": len(applicable_decisions),
+        "ignored_post_cutoff_decision_ids": sorted(ignored_post_cutoff_decision_ids),
         "excluded_event_ids": sorted(excluded_event_ids),
         "event_count_raw": int(normalized.get("event_count_raw", 0)),
         "event_count_deduped": int(normalized.get("event_count_deduped", 0)),
