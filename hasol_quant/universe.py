@@ -8,10 +8,33 @@ import requests
 
 from .config import NASDAQ_LISTED_URL, OTHER_LISTED_URL
 
+# Deterministic reference-universe purity gate.  This intentionally filters by
+# the listed security name instead of assuming ETF=N means common equity.
+# Foreign operating-company ordinary/common shares remain allowed, while
+# depositary receipts/shares and other non-common security forms are excluded.
 EXCLUDE_NAME_RE = re.compile(
-    r"\b(warrant|warrants|right|rights|unit|units|preferred|preference|closed[- ]end|exchange[- ]traded|etn|notes due|income fund|acquisition corp|acquisition company|blank check)\b",
+    r"\b("
+    r"warrant|warrants|right|rights|unit|units|preferred|preference|"
+    r"closed[- ]end|exchange[- ]traded|etn|etns|notes due|income fund|"
+    r"acquisition corp|acquisition company|blank check|"
+    r"american depositary share|american depositary shares|"
+    r"american depositary receipt|american depositary receipts|"
+    r"american depository share|american depository shares|"
+    r"american depository receipt|american depository receipts|"
+    r"depositary receipt|depositary receipts|depository receipt|depository receipts|"
+    r"depositary share|depositary shares|depository share|depository shares|"
+    r"shares of beneficial interest|units of beneficial interest|"
+    r"limited partnership unit|limited partnership units"
+    r")\b",
     flags=re.IGNORECASE,
 )
+
+
+def is_common_equity_security_name(name: object) -> bool:
+    text = str(name or "").strip()
+    if not text:
+        return False
+    return EXCLUDE_NAME_RE.search(text) is None
 
 
 def _parse_pipe_table(text: str) -> pd.DataFrame:
@@ -51,7 +74,7 @@ def load_reference_universe() -> pd.DataFrame:
     ref["ticker"] = ref["ticker"].astype(str).str.upper().str.strip()
     ref["security_name"] = ref["security_name"].astype(str).str.strip()
     ref = ref[ref["ticker"].ne("")]
-    ref = ref[~ref["security_name"].str.contains(EXCLUDE_NAME_RE, na=False)]
+    ref = ref[ref["security_name"].map(is_common_equity_security_name)]
     # ^ and $ are CQS preferred/special issue delimiters; / is not an Alpaca common-stock symbol form.
     # Dot-class common shares (e.g. BRK.B) remain valid and are retained.
     ref = ref[~ref["ticker"].str.contains(r"[\^$/]", regex=True, na=False)]
