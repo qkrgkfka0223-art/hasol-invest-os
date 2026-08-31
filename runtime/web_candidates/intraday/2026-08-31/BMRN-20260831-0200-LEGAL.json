@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-08-31",
+  "run_type": "INTRADAY",
+  "recorded_at_utc": "2026-08-31T15:39:00Z",
+  "event": {
+    "ticker": "BMRN",
+    "event_id": "BMRN-20260831-0200-LEGAL",
+    "event_type": "LEGAL_SETTLEMENT",
+    "event_published_at_utc": "2026-08-31T06:00:00Z",
+    "axis": "ASCENDIS_GLOBAL_PATENT_SETTLEMENT_ROYALTY_LICENSE",
+    "headline": "BioMarin Announces Global Settlement with Ascendis Pharma A/S; Ascendis Will Pay Royalties to BioMarin on Yuviwel Sales in U.S., EU, Brazil and South Korea",
+    "flow_path": "global patent settlement -> BioMarin receives 20% U.S. and 18% EU/Brazil/South Korea Yuviwel net-sales royalties through May 2030 -> resolves litigation and creates direct royalty economics -> discovered post-cutoff and retained audit-only",
+    "official_source_url": "https://www.prnewswire.com/news-releases/biomarin-announces-global-settlement-with-ascendis-pharma-as-ascendis-will-pay-royalties-to-biomarin-on-yuviwel-sales-in-us-eu-brazil-and-south-korea-302864555.html",
+    "official_verified": true,
+    "security_type": "COMMON_STOCK",
+    "security_type_source": "Alpaca asset metadata: BioMarin Pharmaceutical Inc. Common Stock, NASDAQ, active us_equity.",
+    "lineage": {"discovery_class":"post_cutoff_intraday_audit_detector_miss","source_session_et":"2026-08-31","source_cutoff_et":"2026-08-31T09:25:00-04:00","source_family":"PRNEWSWIRE","detector_reconciliation":"PREMARKET_SOURCE_RECALL_MISS"}
+  }
+}
