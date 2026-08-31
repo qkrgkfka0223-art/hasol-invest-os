@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +37,19 @@ def _read_json(path: Path) -> dict[str, Any]:
     return raw
 
 
+def _parse_aware_dt(value: str, *, field: str, path: Path) -> datetime:
+    text = str(value).strip().replace("Z", "+00:00")
+    if not text:
+        raise ValueError(f"{field} is required in {path}")
+    try:
+        dt = datetime.fromisoformat(text)
+    except ValueError as exc:
+        raise ValueError(f"invalid {field} in {path}: {value}") from exc
+    if dt.tzinfo is None:
+        raise ValueError(f"{field} must be timezone-aware in {path}")
+    return dt.astimezone(timezone.utc)
+
+
 def _json_files(root: Path, prediction_date_et: str) -> list[Path]:
     target = root / prediction_date_et
     if not target.exists():
@@ -44,9 +58,6 @@ def _json_files(root: Path, prediction_date_et: str) -> list[Path]:
 
 
 def _event_files(root: Path, prediction_date_et: str) -> list[Path]:
-    # Recurse defensively so an event_id/path sanitization mistake cannot silently
-    # hide a valid event from the effective snapshot. The date directory is
-    # dedicated to event envelopes, so every JSON beneath it is validated below.
     return _json_files(root, prediction_date_et)
 
 
@@ -76,6 +87,9 @@ def _load_decision(path: Path, *, prediction_date_et: str, run_type: str) -> dic
     raw = _read_json(path)
     if raw.get("decision_schema") != DECISION_SCHEMA:
         raise ValueError(f"decision_schema must be {DECISION_SCHEMA} in {path}")
+    decision_id = str(raw.get("decision_id", "")).strip()
+    if not decision_id:
+        raise ValueError(f"decision_id is required in {path}")
     target_date = str(raw.get("prediction_date_et", "")).strip()
     if target_date != prediction_date_et:
         raise ValueError(f"decision target date mismatch in {path}: {target_date}")
@@ -88,12 +102,16 @@ def _load_decision(path: Path, *, prediction_date_et: str, run_type: str) -> dic
     action = str(raw.get("action", "")).upper().strip()
     if action not in ALLOWED_DECISIONS:
         raise ValueError(f"unsupported materiality decision in {path}: {action}")
-    decided_at_utc = str(raw.get("decided_at_utc", "")).strip()
-    if not decided_at_utc:
-        raise ValueError(f"decision decided_at_utc is required in {path}")
+    decided_at = _parse_aware_dt(str(raw.get("decided_at_utc", "")), field="decided_at_utc", path=path)
     if action == MATERIALITY_DROP and not str(raw.get("reason", "")).strip():
         raise ValueError(f"MATERIALITY_DROP reason is required in {path}")
-    return raw
+    out = dict(raw)
+    out["decision_id"] = decision_id
+    out["event_id"] = event_id
+    out["action"] = action
+    out["decided_at_utc"] = decided_at.isoformat().replace("+00:00", "Z")
+    out["_decided_at_sort"] = decided_at.timestamp()
+    return out
 
 
 def build_snapshot(
@@ -133,22 +151,31 @@ def build_snapshot(
             pair[0].as_posix(),
         )
     )
+    loaded_event_ids = {str(event.get("event_id", "")).strip() for _, event in loaded if str(event.get("event_id", "")).strip()}
 
     decision_paths = _decision_files(decision_root, prediction_date_et)
     decisions: list[tuple[Path, dict[str, Any]]] = [
         (path, _load_decision(path, prediction_date_et=prediction_date_et, run_type=run_type))
         for path in decision_paths
     ]
+    seen_decision_ids: set[str] = set()
+    for path, decision in decisions:
+        decision_id = str(decision["decision_id"])
+        if decision_id in seen_decision_ids:
+            raise ValueError(f"duplicate decision_id in materiality ledger: {decision_id}")
+        seen_decision_ids.add(decision_id)
+        if str(decision["event_id"]) not in loaded_event_ids:
+            raise ValueError(f"materiality decision references unknown event_id in {path}: {decision['event_id']}")
     decisions.sort(
         key=lambda pair: (
-            str(pair[1].get("decided_at_utc", "")),
-            str(pair[1].get("decision_id", "")),
+            float(pair[1]["_decided_at_sort"]),
+            str(pair[1]["decision_id"]),
             pair[0].as_posix(),
         )
     )
     latest_decision_by_event: dict[str, tuple[Path, dict[str, Any]]] = {}
     for path, decision in decisions:
-        latest_decision_by_event[str(decision["event_id"]).strip()] = (path, decision)
+        latest_decision_by_event[str(decision["event_id"])] = (path, decision)
 
     excluded_event_ids = {
         event_id
@@ -203,10 +230,10 @@ def build_snapshot(
             {
                 "path": path.as_posix(),
                 "sha256": _sha256_bytes(path.read_bytes()),
-                "decision_id": str(decision.get("decision_id", "")),
-                "event_id": str(decision.get("event_id", "")),
-                "action": str(decision.get("action", "")).upper(),
-                "decided_at_utc": str(decision.get("decided_at_utc", "")),
+                "decision_id": str(decision["decision_id"]),
+                "event_id": str(decision["event_id"]),
+                "action": str(decision["action"]),
+                "decided_at_utc": str(decision["decided_at_utc"]),
             }
         )
 
@@ -216,9 +243,10 @@ def build_snapshot(
         latest_decisions.append(
             {
                 "event_id": event_id,
-                "action": str(decision.get("action", "")).upper(),
+                "action": str(decision["action"]),
                 "reason": str(decision.get("reason", "")),
-                "decided_at_utc": str(decision.get("decided_at_utc", "")),
+                "decided_at_utc": str(decision["decided_at_utc"]),
+                "decision_id": str(decision["decision_id"]),
                 "path": path.as_posix(),
             }
         )

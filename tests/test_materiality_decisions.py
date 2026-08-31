@@ -89,9 +89,7 @@ def _build(tmp_path):
 def test_materiality_drop_excludes_event_but_preserves_audit_record(tmp_path):
     _write_event(tmp_path / "events")
     _write_decision(tmp_path / "decisions", decision_id="DROP-1")
-
     payload, manifest = _build(tmp_path)
-
     assert payload["candidates"] == []
     assert manifest["event_file_count"] == 1
     assert manifest["active_event_file_count"] == 0
@@ -104,21 +102,22 @@ def test_materiality_drop_excludes_event_but_preserves_audit_record(tmp_path):
 def test_later_keep_reactivates_previously_dropped_event(tmp_path):
     _write_event(tmp_path / "events")
     _write_decision(tmp_path / "decisions", decision_id="DROP-1", decided_at="2026-08-31T13:00:00Z")
-    _write_decision(
-        tmp_path / "decisions",
-        decision_id="KEEP-2",
-        action=MATERIALITY_KEEP,
-        decided_at="2026-08-31T13:05:00Z",
-        reason="materiality restored",
-    )
-
+    _write_decision(tmp_path / "decisions", decision_id="KEEP-2", action=MATERIALITY_KEEP, decided_at="2026-08-31T13:05:00Z", reason="materiality restored")
     payload, manifest = _build(tmp_path)
-
     assert [row["ticker"] for row in payload["candidates"]] == ["ABC"]
     assert manifest["active_event_file_count"] == 1
     assert manifest["excluded_event_ids"] == []
     assert manifest["decision_file_count"] == 2
     assert manifest["latest_materiality_decisions"][0]["action"] == MATERIALITY_KEEP
+
+
+def test_decision_order_uses_actual_instants_not_iso_lexicographic_order(tmp_path):
+    _write_event(tmp_path / "events")
+    _write_decision(tmp_path / "decisions", decision_id="DROP-1", action=MATERIALITY_DROP, decided_at="2026-08-31T13:05:00Z")
+    _write_decision(tmp_path / "decisions", decision_id="KEEP-2", action=MATERIALITY_KEEP, decided_at="2026-08-31T09:04:00-04:00", reason="older instant despite offset text")
+    payload, manifest = _build(tmp_path)
+    assert payload["candidates"] == []
+    assert manifest["latest_materiality_decisions"][0]["decision_id"] == "DROP-1"
 
 
 def test_materiality_decision_target_date_mismatch_is_rejected(tmp_path):
@@ -128,7 +127,6 @@ def test_materiality_decision_target_date_mismatch_is_rejected(tmp_path):
     raw = json.loads(source.read_text(encoding="utf-8"))
     raw["prediction_date_et"] = "2026-08-30"
     source.write_text(json.dumps(raw), encoding="utf-8")
-
     with pytest.raises(ValueError, match="decision target date mismatch"):
         _build(tmp_path)
 
@@ -136,6 +134,30 @@ def test_materiality_decision_target_date_mismatch_is_rejected(tmp_path):
 def test_materiality_drop_requires_reason(tmp_path):
     _write_event(tmp_path / "events")
     _write_decision(tmp_path / "decisions", decision_id="DROP-1", reason=None)
-
     with pytest.raises(ValueError, match="MATERIALITY_DROP reason"):
+        _build(tmp_path)
+
+
+def test_decision_id_is_required(tmp_path):
+    _write_event(tmp_path / "events")
+    _write_decision(tmp_path / "decisions", decision_id="TEMP")
+    path = tmp_path / "decisions" / DATE / "TEMP.json"
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    raw.pop("decision_id")
+    path.write_text(json.dumps(raw), encoding="utf-8")
+    with pytest.raises(ValueError, match="decision_id is required"):
+        _build(tmp_path)
+
+
+def test_decision_must_reference_existing_event(tmp_path):
+    _write_event(tmp_path / "events")
+    _write_decision(tmp_path / "decisions", decision_id="DROP-1", event_id="MISSING-EVENT")
+    with pytest.raises(ValueError, match="references unknown event_id"):
+        _build(tmp_path)
+
+
+def test_decision_timestamp_must_be_timezone_aware(tmp_path):
+    _write_event(tmp_path / "events")
+    _write_decision(tmp_path / "decisions", decision_id="DROP-1", decided_at="2026-08-31T13:00:00")
+    with pytest.raises(ValueError, match="must be timezone-aware"):
         _build(tmp_path)
