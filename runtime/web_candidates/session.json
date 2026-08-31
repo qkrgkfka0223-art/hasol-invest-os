@@ -3,9 +3,9 @@
   "prediction_date_et": "2026-08-31",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-08-29T12:05:00Z",
+  "as_of_utc": "2026-08-31T01:40:00Z",
   "cutoff_et": "2026-08-31T09:25:00-04:00",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V2",
-  "stage_marker": "WARM_PREMARKET",
-  "notes": "Native append-only event-ledger session initialization. No synthetic production events."
+  "stage_marker": "RECOVERY_REFRESH",
+  "notes": "Recovery refresh to regenerate exact live Quant lineage after CLINICAL schema acceptance; no synthetic production events."
 }
