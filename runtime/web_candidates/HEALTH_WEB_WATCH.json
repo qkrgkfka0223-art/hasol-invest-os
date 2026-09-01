@@ -1,44 +1,58 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T22:07:16Z",
+  "updated_at_utc": "2026-09-01T23:06:41Z",
   "target_prediction_date_et": "2026-09-02",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
   "cutoff_et": "2026-09-02T09:30:00-04:00",
   "production_contract": "HASOL-TOP20-EXACT-v1",
   "status": "PREMARKET_SOURCE_RECOVERED_EXACT_RUN_UNVERIFIED",
+  "alpaca": {
+    "clock_status": "PASS",
+    "is_open": false,
+    "checked_at_et": "2026-09-01T19:06:41.166909-04:00",
+    "next_regular_open_et": "2026-09-02T09:30:00-04:00",
+    "next_regular_close_et": "2026-09-02T16:00:00-04:00"
+  },
   "source_scan_window": {
-    "window_start_utc": "2026-09-01T21:05:38Z",
-    "window_end_utc": "2026-09-01T22:07:16Z",
+    "window_start_utc": "2026-09-01T22:07:16Z",
+    "window_end_utc": "2026-09-01T23:06:41Z",
     "new_verified_material_event_count": 1,
-    "event_ids": ["CRDO-20260901-1605-EARNINGS"]
+    "event_ids": ["AHR-20260901-1616-MA"]
   },
   "source_coverage_status": "PARTIAL_VERIFIED_RECALL",
   "recovered_event_security_gate": {
-    "ticker": "CRDO",
-    "alpaca_asset_name": "Credo Technology Group Holding Ltd Ordinary Shares",
-    "common_stock_gate_eligible": false,
-    "treatment": "PRESERVE_EVENT_EXCLUDE_FROM_COMMON_STOCK_TOP20_GATE"
+    "ticker": "AHR",
+    "alpaca_asset_name": "American Healthcare REIT, Inc.",
+    "common_stock_gate_eligible": true,
+    "security_evidence": "Alpaca active/tradable US equity plus SEC registered Common Stock, $0.01 par value per share",
+    "treatment": "PRESERVE_EVENT_ALLOW_COMMON_STOCK_TOP20_GATE"
   },
   "prior_exact_rerun": {
     "workflow": "HASOL Live Candidate Quant",
-    "run_id": 33561046949,
-    "source_commit_sha": "f5aa161d2f22fe056d5148172c73b5690398a929",
+    "run_id": 33564852216,
+    "source_commit_sha": "e4291f618437efda317cb503d78fcdbe32fc1b6b",
     "conclusion": "SUCCESS",
     "build_effective_live_snapshot": "PASS",
     "state_asof_validation": "PASS",
     "quant": "PASS",
-    "exact_candidate_lineage": "PASS"
+    "exact_candidate_lineage": "PASS",
+    "input_sha256": "2eb7dc41cd89fa7f56126bdcc25beda1594b7fcab666ce8889043eaea3efecda",
+    "state_asof_valid": true
   },
   "healthy_lineage": {
     "new_state_healthy": false,
     "latest_valid_pointer_replaced": false,
-    "reason": "CRDO event and state-as-of were advanced after the successful prior rerun; exact rerun for this new state has not yet been validated."
+    "reason": "AHR event and session state-as-of were advanced after exact run 33564852216; the revised source state requires its own exact rerun and lineage validation."
   },
   "top20_contract": {
     "preferred_checkpoint_status": "TOP20_CONTRACT_STALE",
     "checkpoint_role": "AUDIT_ONLY",
     "promotion_eligible": false,
+    "top20_count": 6,
+    "unique_top20_count": 6,
+    "top5_matches_ranks_1_5": true,
+    "top20_provenance_complete": false,
     "legacy_thin_checkpoint_allowed_as_healthy_lineage": false,
     "target_date_exact_checkpoint_exists": false
   },

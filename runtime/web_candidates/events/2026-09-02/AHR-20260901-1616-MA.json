@@ -1,0 +1,25 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-02",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T23:06:41Z",
+  "event": {
+    "ticker": "AHR",
+    "event_id": "AHR-20260901-1616-MA",
+    "event_type": "M&A",
+    "event_published_at_utc": "2026-09-01T20:16:00Z",
+    "axis": "KENSINGTON_SENIOR_HOUSING_INITIAL_CLOSINGS_572M_AND_873M_PORTFOLIO",
+    "headline": "American Healthcare REIT closes six Kensington senior housing acquisitions for approximately $572M as part of an eight-community $873M portfolio",
+    "flow_path": "post-close acquisition completion + $572M deployed + $873M contracted portfolio + YTD investments above $2B -> next-session balance-sheet and growth repricing potential",
+    "official_source_url": "https://www.sec.gov/Archives/edgar/data/1632970/",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: American Healthcare REIT, Inc.; us_equity; NYSE; active/tradable. SEC registration identifies AHR as Common Stock, $0.01 par value per share.",
+    "lineage": {
+      "discovery_class": "postclose_to_next_premarket_source_recall",
+      "source_session_et": "2026-09-01",
+      "target_prediction_date_et": "2026-09-02",
+      "source_family": "SEC_8K_DIRECT_MA_COMPLETION"
+    }
+  }
+}

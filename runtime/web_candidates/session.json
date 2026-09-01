@@ -3,11 +3,11 @@
   "prediction_date_et": "2026-09-02",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-09-01T22:07:16Z",
+  "as_of_utc": "2026-09-01T23:06:41Z",
   "cutoff_et": "2026-09-02T09:30:00-04:00",
   "rollover_from_prediction_date_et": "2026-09-01",
   "rollover_policy": "POSTCLOSE_TO_NEXT_PREMARKET_ALPACA_CLOCK",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
   "stage_marker": "PREMARKET_WEB_WATCH_SOURCE_RECOVERY_TOP20_EXACT",
-  "notes": "CRDO FY2027 Q1 earnings released at 2026-09-01T20:05:00Z were recovered into the Sep. 2 PREMARKET ledger from the SEC exhibit. Alpaca identifies CRDO as Ordinary Shares, not Common Stock, so the event is preserved for source completeness but must not satisfy the common-stock Top20 gate. The prior exact rerun 33561046949 on f5aa161d2f22fe056d5148172c73b5690398a929 succeeded after ABVX ADS exclusion; this state revision requires a new exact rerun before any checkpoint or pointer promotion."
+  "notes": "Alpaca clock at 2026-09-01T19:06:41-04:00 confirmed market closed and next regular open 2026-09-02T09:30:00-04:00. Exact Live Candidate Quant run 33564852216 succeeded on source commit e4291f618437efda317cb503d78fcdbe32fc1b6b with state-as-of validation and exact candidate lineage passing. AHR's post-close Kensington acquisition completion, published at 2026-09-01T20:16:00Z, was subsequently recovered into the Sep. 2 PREMARKET ledger; therefore this revised state requires a new exact rerun before any healthy-lineage or checkpoint promotion."
 }
