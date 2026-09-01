@@ -84,12 +84,19 @@ def _validate_run_cutoff(payload: dict[str, Any], run_type: str, production: boo
         raise ValueError("prediction_date_et required for prediction-eligible run")
     prediction_date = datetime.fromisoformat(str(raw_date)).date()
     cutoff_et = cutoff.astimezone(NY)
-    # Live PREMARKET now uses the regular market open as the information barrier.
-    # Historical E2E fixtures retain the legacy 09:25 barrier for reproducibility.
-    expected_clock = time(9, 30) if run_type == "PREMARKET" else time(9, 25)
-    expected = datetime.combine(prediction_date, expected_clock, tzinfo=NY)
-    if cutoff_et != expected:
-        raise ValueError(f"prediction cutoff must be exactly {expected.isoformat()}")
+    if run_type == "E2E_SIM":
+        allowed = {datetime.combine(prediction_date, time(9, 25), tzinfo=NY)}
+    else:
+        # New live architecture uses regular open (09:30 ET). 09:25 remains
+        # readable only for legacy fixtures/state during migration; active
+        # session routing is required to write 09:30 for new live sessions.
+        allowed = {
+            datetime.combine(prediction_date, time(9, 25), tzinfo=NY),
+            datetime.combine(prediction_date, time(9, 30), tzinfo=NY),
+        }
+    if cutoff_et not in allowed:
+        expected = ", ".join(sorted(dt.isoformat() for dt in allowed))
+        raise ValueError(f"prediction cutoff must be exactly one of: {expected}")
 
 
 def _validate_event(
