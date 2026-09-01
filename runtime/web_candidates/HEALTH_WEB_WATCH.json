@@ -1,80 +1,44 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T21:23:14Z",
+  "updated_at_utc": "2026-09-01T22:07:16Z",
   "target_prediction_date_et": "2026-09-02",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
   "cutoff_et": "2026-09-02T09:30:00-04:00",
   "production_contract": "HASOL-TOP20-EXACT-v1",
-  "status": "TOP20_INCOMPLETE",
-  "alpaca": {
-    "clock_status": "PASS",
-    "is_open": false,
-    "checked_at_et": "2026-09-01T17:23:14.117769-04:00",
-    "next_regular_open_et": "2026-09-02T09:30:00-04:00",
-    "next_regular_close_et": "2026-09-02T16:00:00-04:00",
-    "market_feed_validation": {
-      "feed": "IEX",
-      "validated_at_utc": "2026-09-01T21:23:14Z",
-      "requested_top20": 20,
-      "snapshot_records": 20,
-      "status": "PASS"
-    }
-  },
+  "status": "PREMARKET_SOURCE_RECOVERED_EXACT_RUN_UNVERIFIED",
   "source_scan_window": {
-    "window_start_utc": "2026-09-01T20:00:00Z",
-    "window_end_utc": "2026-09-01T21:05:38Z",
-    "new_verified_material_event_count": 3,
-    "event_ids": [
-      "PANW-20260901-1605-EARNINGS",
-      "GTLB-20260901-1605-EARNINGS",
-      "RRGB-20260901-1605-MA"
-    ]
+    "window_start_utc": "2026-09-01T21:05:38Z",
+    "window_end_utc": "2026-09-01T22:07:16Z",
+    "new_verified_material_event_count": 1,
+    "event_ids": ["CRDO-20260901-1605-EARNINGS"]
   },
   "source_coverage_status": "PARTIAL_VERIFIED_RECALL",
-  "state_commit": {
-    "source_commit_sha": "6b0af25e69f3ba54274729a0d0775241d203b51e",
-    "commit_contains_ci_suppression_token": false,
-    "state_as_of_utc": "2026-09-01T21:05:38Z"
+  "recovered_event_security_gate": {
+    "ticker": "CRDO",
+    "alpaca_asset_name": "Credo Technology Group Holding Ltd Ordinary Shares",
+    "common_stock_gate_eligible": false,
+    "treatment": "PRESERVE_EVENT_EXCLUDE_FROM_COMMON_STOCK_TOP20_GATE"
   },
-  "exact_run": {
+  "prior_exact_rerun": {
     "workflow": "HASOL Live Candidate Quant",
-    "run_id": 33559131474,
-    "source_commit_sha": "6b0af25e69f3ba54274729a0d0775241d203b51e",
+    "run_id": 33561046949,
+    "source_commit_sha": "f5aa161d2f22fe056d5148172c73b5690398a929",
     "conclusion": "SUCCESS",
+    "build_effective_live_snapshot": "PASS",
     "state_asof_validation": "PASS",
-    "ledger_manifest_input_sha256": "5cf095d109cc286dd7288de2d6a52126d8caca9a8dd94b562f3b632f41ca3693",
-    "run_manifest_input_sha256": "5cf095d109cc286dd7288de2d6a52126d8caca9a8dd94b562f3b632f41ca3693",
-    "candidate_count": 41,
-    "eligible_count": 37,
-    "ranked_count": 37,
-    "top20_preview_count": 20
-  },
-  "top20_security_gate": {
-    "status": "FAIL",
-    "failed_tickers": ["ABVX"],
-    "failure_reason": "COMMON_STOCK_REQUIRED",
-    "alpaca_asset_name": "Abivax SA American Depositary Shares",
-    "remediation_commit_sha": "9d8013f738a25cc63a29710ecbd82c8288ef41e1",
-    "remediation": "ABVX execution_allowed changed to no in approved liquid-watchlist; exact rerun required before any checkpoint promotion"
+    "quant": "PASS",
+    "exact_candidate_lineage": "PASS"
   },
   "healthy_lineage": {
     "new_state_healthy": false,
     "latest_valid_pointer_replaced": false,
-    "prior_healthy_source_commit_sha": "41631ea6a1775bcae43aee6492d2566b32e7031d",
-    "prior_healthy_live_quant_run_id": 33510845296,
-    "prior_healthy_input_sha256": "799b439427dcf9a95b419ed178a62e1082ea50264e4c696167962c9c22d03b60",
-    "prior_healthy_state_asof_valid": true
+    "reason": "CRDO event and state-as-of were advanced after the successful prior rerun; exact rerun for this new state has not yet been validated."
   },
   "top20_contract": {
     "preferred_checkpoint_status": "TOP20_CONTRACT_STALE",
     "checkpoint_role": "AUDIT_ONLY",
     "promotion_eligible": false,
-    "top20_count": 20,
-    "unique_top20_count": 20,
-    "top5_matches_ranks_1_5": true,
-    "top20_provenance_complete": true,
-    "all_common_stock_verified": false,
     "legacy_thin_checkpoint_allowed_as_healthy_lineage": false,
     "target_date_exact_checkpoint_exists": false
   },

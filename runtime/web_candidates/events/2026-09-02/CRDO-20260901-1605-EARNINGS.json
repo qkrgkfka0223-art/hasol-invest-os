@@ -1,0 +1,25 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-02",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T22:07:16Z",
+  "event": {
+    "ticker": "CRDO",
+    "event_id": "CRDO-20260901-1605-EARNINGS",
+    "event_type": "EARNINGS",
+    "event_published_at_utc": "2026-09-01T20:05:00Z",
+    "axis": "FY2027_Q1_RESULTS_AND_Q2_GUIDANCE",
+    "headline": "Credo Technology reports FY2027 Q1 revenue of $479.0M, non-GAAP EPS of $1.20, and Q2 revenue guidance of $525M-$535M after the Sep. 1 close",
+    "flow_path": "post-close earnings + 114.7% YoY revenue growth + forward Q2 guidance -> next-session premarket repricing potential",
+    "official_source_url": "https://www.sec.gov/Archives/edgar/data/1807794/000162828026059795/credoq12027ex-991.htm",
+    "official_verified": true,
+    "security_type": "ORDINARY_SHARES",
+    "security_type_source": "Alpaca asset metadata: Credo Technology Group Holding Ltd Ordinary Shares; us_equity; NASDAQ; active/tradable",
+    "lineage": {
+      "discovery_class": "postclose_to_next_premarket_source_recall",
+      "source_session_et": "2026-09-01",
+      "target_prediction_date_et": "2026-09-02",
+      "source_family": "SEC_8K_DIRECT_EARNINGS"
+    }
+  }
+}
