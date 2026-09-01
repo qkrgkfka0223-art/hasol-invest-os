@@ -1,0 +1,26 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T00:39:26Z",
+  "event": {
+    "ticker": "TLACU",
+    "event_id": "TLACU-20260831-1900-IPO",
+    "event_type": "OFFERING",
+    "event_published_at_utc": "2026-08-31T23:00:00Z",
+    "axis": "SPAC_IPO_UNIT_PRICING",
+    "headline": "Three Lions Acquisition Corp. prices $100 million IPO of 10 million units at $10.00 per unit",
+    "flow_path": "after-close IPO pricing -> next-session listing event, but unit structure is excluded from HASOL common-equity prediction eligibility",
+    "official_source_url": "https://www.prnewswire.com/news-releases/three-lions-acquisition-corp-announces-pricing-of-100-million-initial-public-offering-302865426.html",
+    "official_verified": true,
+    "security_type": "UNIT_NON_COMMON",
+    "security_type_source": "Issuer PRNewswire release states TLACU units each consist of one ordinary share and one-half warrant; Alpaca asset metadata was unavailable before listing.",
+    "lineage": {
+      "discovery_class": "source_recall_after_close_next_session_reconciliation",
+      "source_session_et": "2026-08-31",
+      "target_prediction_date_et": "2026-09-01",
+      "source_close_et": "2026-08-31T16:00:00-04:00",
+      "source_family": "PRNEWSWIRE_ISSUER_DIRECT"
+    }
+  }
+}

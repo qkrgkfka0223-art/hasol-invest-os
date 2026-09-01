@@ -1,6 +1,6 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T00:32:53Z",
+  "updated_at_utc": "2026-09-01T00:39:26Z",
   "target_prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
@@ -9,22 +9,22 @@
   "schema_name": "HASOL-BRAIN-SCHEMA-v3.1",
   "schema_header_hash": "47fcf952df6179e0284b124a3b7d0439542921a57acaebe7f162e907126d446b",
   "source_coverage": {
-    "SEC_EDGAR": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:32:53Z"},
-    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:32:53Z"},
-    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:32:53Z"},
-    "PRNEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:32:53Z"},
-    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:32:53Z"},
-    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:32:53Z"},
-    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:32:53Z"},
-    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:32:53Z"}
+    "SEC_EDGAR": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
+    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
+    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
+    "PRNEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
+    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
+    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
+    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
+    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"}
   },
   "source_coverage_status": "PASS",
-  "state_change": "PXS_AFTER_CLOSE_EVENT_RECONCILED",
+  "state_change": "TLACU_SOURCE_RECALL_SECURITY_TYPE_DROP",
   "live_quant": {
-    "status": "PENDING_PUSH_TRIGGER",
-    "previous_verified_run_id": 33454870449,
-    "previous_source_commit_sha": "d67a0fe46bfc9c0ca7cbb497ba3ff51a6d40afcc",
-    "previous_input_sha256": "00dc410e6194d334317a3808186043d8dddf4ac4808fb77976e0feb6c9f6114b",
-    "previous_state_asof_validation_valid": true
+    "status": "PENDING_CURRENT_COMMIT_RUN",
+    "last_verified_run_id": 33455224996,
+    "last_verified_source_commit_sha": "06951ecf8af9dc85930f6f352120712be92b14eb",
+    "last_verified_input_sha256": "d678aa2920fabbdbb5808b6dcdcdfc136741cbab7235ca0b99cec45be8a8e3af",
+    "last_verified_state_asof_validation_valid": true
   }
 }

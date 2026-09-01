@@ -1,0 +1,10 @@
+{
+  "decision_schema": "HASOL-WEB-DECISION-v1",
+  "decision_id": "DEC-TLACU-20260901-UNIT-DROP",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "event_id": "TLACU-20260831-1900-IPO",
+  "action": "MATERIALITY_DROP",
+  "decided_at_utc": "2026-09-01T00:39:26Z",
+  "reason": "SECURITY_TYPE_UNIT_NON_COMMON: issuer release identifies TLACU as a unit consisting of one ordinary share and one-half warrant. HASOL official prediction eligibility excludes units/warrants/non-common instruments. Alpaca asset metadata was not yet available because the security had not begun trading."
+}
