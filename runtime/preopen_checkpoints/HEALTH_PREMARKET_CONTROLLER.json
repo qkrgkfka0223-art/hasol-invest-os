@@ -1,32 +1,33 @@
 {
   "schema": "HASOL-HEALTH-PREMARKET-CONTROLLER-v1",
   "prediction_date_et": "2026-09-01",
-  "checked_at_utc": "2026-09-01T02:14:03Z",
-  "status": "STRICT_VALID_CURRENT_INPUT",
-  "latest_valid_checkpoint": "runtime/preopen_checkpoints/2026-09-01/2026-09-01T02-12-00Z-7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43.json",
-  "checkpoint_commit_sha": "782c3ebb7b8d580ebf8c075a9fe4201fcfe9ee51",
-  "checkpoint_validation_run_id": 33461733522,
-  "checkpoint_validation_status": "SUCCESS",
-  "prediction_source_commit_sha": "dd3e8db13a397bd3fcafd78505760f431dc55a46",
-  "latest_input_sha256": "7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43",
-  "live_quant_run_id": 33461340656,
-  "artifact_id": 9783257609,
-  "state_asof_valid": true,
-  "source_scan_as_of_utc": "2026-09-01T02:05:01Z",
-  "market_feed_validated_at_utc": "2026-09-01T02:12:00Z",
-  "security_type_validated_at_utc": "2026-09-01T02:12:00Z",
-  "market_data_coverage_pct": 100.0,
-  "candidate_count": 10,
-  "eligible_count": 6,
-  "ranked_count": 6,
-  "breadth_warning": true,
-  "top5": ["SLB", "BMNR", "IDYA", "JAZZ", "ARWR"],
-  "refresh": {
-    "state_change": "SOURCE_RECALL_RECOVERY_SSM_DFDV_IHT",
-    "top5_changed_vs_prior_checkpoint": false,
-    "targeted_recall_performed": true,
-    "additional_candidate_admitted_by_targeted_recall": false,
-    "excluded_non_common_events": ["DFDV-20260831-1745-FINANCING", "IHT-20260831-1742-FINANCING", "TLACU-20260831-1900-IPO"]
+  "checked_at_utc": "2026-09-01T05:21:15Z",
+  "status": "TOP20_INCOMPLETE",
+  "promotion_contract": "HASOL-TOP20-EXACT-v1",
+  "required_top20_count": 20,
+  "current_verified_ranked_count": 6,
+  "promotion_eligible": false,
+  "legacy_checkpoint_preserved": "runtime/preopen_checkpoints/2026-09-01/2026-09-01T02-12-00Z-7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43.json",
+  "legacy_checkpoint_role": "AUDIT_ONLY",
+  "legacy_checkpoint_commit_sha": "782c3ebb7b8d580ebf8c075a9fe4201fcfe9ee51",
+  "legacy_validation_run_id": 33461733522,
+  "legacy_validation_status": "SUCCESS_UNDER_PRIOR_THIN_CONTRACT",
+  "current_contract_commit_sha": "da3ba30bb39a520615a8c9e397795c72f80c2768",
+  "contract_ci": {
+    "preopen_checkpoint_validate": "PASS",
+    "quant_unit_tests": "PASS",
+    "web_candidate_quant_ci": "PASS",
+    "mover_backtest": "PASS",
+    "live_mover_smoke": "PASS"
   },
-  "failure": null
+  "market_clock": {
+    "is_open": false,
+    "checked_at_et": "2026-09-01T01:21:14.970679-04:00",
+    "next_regular_open_et": "2026-09-01T09:30:00-04:00"
+  },
+  "top5_from_legacy_checkpoint": ["SLB", "BMNR", "IDYA", "JAZZ", "ARWR"],
+  "failure": {
+    "code": "TOP20_INCOMPLETE",
+    "detail": "Latest preserved checkpoint contains 6 verified ranked names, not exactly 20. Under HASOL-TOP20-EXACT-v1 it is audit-only and cannot be promoted. No arbitrary padding or fabricated events were used."
+  }
 }
