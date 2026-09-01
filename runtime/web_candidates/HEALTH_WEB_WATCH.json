@@ -1,16 +1,16 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T18:09:58Z",
+  "updated_at_utc": "2026-09-01T19:52:07Z",
   "target_prediction_date_et": "2026-09-01",
   "run_type": "INTRADAY_EVENT",
   "eligible_for_prediction": false,
   "cutoff_et": "2026-09-01T09:30:00-04:00",
   "production_contract": "HASOL-TOP20-EXACT-v1",
-  "status": "DEGRADED_EXACT_RUN_UNVERIFIED",
+  "status": "DEGRADED_EXACT_RUN_FAILED",
   "alpaca": {
     "clock_status": "ATTEMPTED_OK",
     "is_open": true,
-    "checked_at_et": "2026-09-01T14:09:58.675510-04:00",
+    "checked_at_et": "2026-09-01T15:52:07.915395-04:00",
     "next_regular_open_et": "2026-09-02T09:30:00-04:00",
     "next_regular_close_et": "2026-09-01T16:00:00-04:00"
   },
@@ -38,10 +38,11 @@
   },
   "exact_run": {
     "workflow": "HASOL Live Candidate Quant",
-    "run_id": null,
+    "run_id": 33542237800,
     "source_commit_sha": "57245026ffec3129f60559c36bab2d65a8737afb",
-    "conclusion": "PENDING_OR_UNOBSERVED",
-    "state_asof_validation": "NOT_YET_VERIFIED",
+    "conclusion": "FAILURE",
+    "failure_stage": "Build effective live snapshot",
+    "state_asof_validation": "NOT_RUN",
     "ledger_manifest_input_sha256": null,
     "run_manifest_input_sha256": null
   },
