@@ -1,47 +1,40 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T19:52:07Z",
-  "target_prediction_date_et": "2026-09-01",
-  "run_type": "INTRADAY_EVENT",
-  "eligible_for_prediction": false,
-  "cutoff_et": "2026-09-01T09:30:00-04:00",
+  "updated_at_utc": "2026-09-01T21:05:38Z",
+  "target_prediction_date_et": "2026-09-02",
+  "run_type": "PREMARKET",
+  "eligible_for_prediction": true,
+  "cutoff_et": "2026-09-02T09:30:00-04:00",
   "production_contract": "HASOL-TOP20-EXACT-v1",
-  "status": "DEGRADED_EXACT_RUN_FAILED",
+  "status": "PREMARKET_SOURCE_RECOVERED_EXACT_RUN_UNVERIFIED",
   "alpaca": {
-    "clock_status": "ATTEMPTED_OK",
-    "is_open": true,
-    "checked_at_et": "2026-09-01T15:52:07.915395-04:00",
+    "clock_status": "PASS",
+    "is_open": false,
+    "checked_at_et": "2026-09-01T17:05:38.682817-04:00",
     "next_regular_open_et": "2026-09-02T09:30:00-04:00",
-    "next_regular_close_et": "2026-09-01T16:00:00-04:00"
+    "next_regular_close_et": "2026-09-02T16:00:00-04:00"
   },
   "source_scan_window": {
-    "window_start_utc": "2026-09-01T16:02:42Z",
-    "window_end_utc": "2026-09-01T18:09:58Z",
-    "new_verified_material_event_count": 1,
-    "event_ids": ["YEXT-20260901-0802-EARNINGS"]
+    "window_start_utc": "2026-09-01T20:00:00Z",
+    "window_end_utc": "2026-09-01T21:05:38Z",
+    "new_verified_material_event_count": 3,
+    "event_ids": [
+      "PANW-20260901-1605-EARNINGS",
+      "GTLB-20260901-1605-EARNINGS",
+      "RRGB-20260901-1605-MA"
+    ]
   },
-  "source_coverage": {
-    "SEC_EDGAR": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":1,"event_ids":["YEXT-20260901-0802-EARNINGS"]},
-    "ISSUER_IR_NEWSROOMS": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":1,"event_ids":["YEXT-20260901-0802-EARNINGS"]},
-    "GLOBENEWSWIRE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":0},
-    "PRNEWSWIRE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":0},
-    "BUSINESS_WIRE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":1,"event_ids":["YEXT-20260901-0802-EARNINGS"]},
-    "ACCESS_NEWSWIRE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":3,"reviewed_nonappended_count":3},
-    "FDA_REGULATORY_CLINICAL": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":0},
-    "DIRECT_EARNINGS_GUIDANCE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":1,"event_ids":["YEXT-20260901-0802-EARNINGS"]}
-  },
-  "source_coverage_status": "PASS",
+  "source_coverage_status": "PARTIAL_VERIFIED_RECALL",
   "state_commit": {
-    "source_commit_sha": "57245026ffec3129f60559c36bab2d65a8737afb",
+    "source_commit_sha": "6b0af25e69f3ba54274729a0d0775241d203b51e",
     "commit_contains_ci_suppression_token": false,
-    "state_as_of_utc": "2026-09-01T18:09:58Z"
+    "state_as_of_utc": "2026-09-01T21:05:38Z"
   },
   "exact_run": {
     "workflow": "HASOL Live Candidate Quant",
-    "run_id": 33542237800,
-    "source_commit_sha": "57245026ffec3129f60559c36bab2d65a8737afb",
-    "conclusion": "FAILURE",
-    "failure_stage": "Build effective live snapshot",
+    "run_id": null,
+    "source_commit_sha": "6b0af25e69f3ba54274729a0d0775241d203b51e",
+    "conclusion": "NOT_TRIGGERED_OR_NOT_YET_VISIBLE",
     "state_asof_validation": "NOT_RUN",
     "ledger_manifest_input_sha256": null,
     "run_manifest_input_sha256": null
@@ -62,7 +55,8 @@
     "unique_top20_count": 6,
     "top5_matches_ranks_1_5": true,
     "top20_provenance_complete": false,
-    "legacy_thin_checkpoint_allowed_as_healthy_lineage": false
+    "legacy_thin_checkpoint_allowed_as_healthy_lineage": false,
+    "target_date_exact_checkpoint_exists": false
   },
   "official_prediction_created": false,
   "preopen_checkpoint_mutated": false,
