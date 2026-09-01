@@ -106,6 +106,23 @@ def _eligibility(features: pd.DataFrame) -> pd.DataFrame:
     return x
 
 
+def _event_first_rank(ranked: pd.DataFrame) -> pd.DataFrame:
+    """Keep verified event candidates primary, then use Quant-ranked backstop only to fill breadth."""
+    if ranked.empty:
+        return ranked
+    x = ranked.copy()
+    x["_source_priority"] = x.get("provenance", pd.Series(index=x.index, dtype=str)).map(
+        {"EVENT": 0, "FULL_MARKET_QUANT_BACKSTOP": 1}
+    ).fillna(2)
+    x = x.sort_values(
+        by=["_source_priority", "quant_score", "adv20_usd", "ticker"],
+        ascending=[True, False, False, True],
+        kind="mergesort",
+    ).drop(columns=["_source_priority"]).reset_index(drop=True)
+    x["quant_rank"] = range(1, len(x) + 1)
+    return x
+
+
 def _quality(
     payload: dict,
     input_count: int,
@@ -197,6 +214,7 @@ def run(input_path: Path, output_dir: Path) -> dict:
         ranked_core = rank_universe(features, eligible_tickers=eligible_set) if eligible_set else pd.DataFrame()
         meta_cols = [c for c in candidates.columns if c != "ticker"]
         ranked = ranked_core.merge(candidates[["ticker"] + meta_cols], on="ticker", how="left") if not ranked_core.empty else ranked_core
+        ranked = _event_first_rank(ranked)
         top50 = top_n(ranked, 50) if not ranked.empty else ranked
 
     all_candidates.to_csv(output_dir / "candidate_features.csv", index=False)
@@ -233,7 +251,7 @@ def run(input_path: Path, output_dir: Path) -> dict:
         "prediction_date_et": prediction_date.isoformat(),
         "cutoff_et": payload.get("cutoff_et"),
         "candidate_source": "HASOL_WEB_EVENT_DETECTOR+APPROVED_LIQUID_WATCHLIST_BACKSTOP",
-        "event_source_policy": "OFFICIAL_PRIMARY_REQUIRED_FOR_EVENT_CANDIDATES",
+        "event_source_policy": "OFFICIAL_PRIMARY_REQUIRED_FOR_PRODUCTION",
         "backstop_policy": "APPROVED_LIQUID_WATCHLIST_DETECTION_ONLY_NO_FABRICATED_EVENTS",
         "quant_market_source": DATA_SOURCE,
         "quant_source_policy": "DETECTION_ONLY_NOT_CANONICAL",
