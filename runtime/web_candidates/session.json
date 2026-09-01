@@ -3,11 +3,11 @@
   "prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-09-01T01:32:05Z",
+  "as_of_utc": "2026-09-01T01:34:18Z",
   "cutoff_et": "2026-09-01T09:30:00-04:00",
   "rollover_from_prediction_date_et": "2026-08-31",
   "rollover_policy": "PREOPEN_RECENCY_CARRYOVER_PLUS_NEW_EVENTS",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
-  "stage_marker": "WEB_WATCH_RECOVERY",
-  "notes": "Regular market open is the prediction information barrier. Existing Sep 1 preopen checkpoints remain immutable. IPEX after-close SEC M&A evidence retained with canonical event_type M&A; prior-session frozen history remains immutable."
+  "stage_marker": "EXACT_LIVE_QUANT_RECOVERY",
+  "notes": "Regular market open is the prediction information barrier. Sep 1 preopen checkpoints remain immutable. IPEX after-close SEC M&A evidence is canonicalized. This commit intentionally triggers exact Live Quant; recovery commits must not use skip-ci when prediction state changed."
 }
