@@ -1,10 +1,16 @@
 {
   "schema": "HASOL-PREOPEN-POINTER-v1",
   "prediction_date_et": "2026-09-01",
-  "checkpoint_id": "PREOPEN-20260901-014404Z-ecf4f54a96b759a0",
-  "checkpoint_path": "runtime/preopen_checkpoints/2026-09-01/2026-09-01T01-44-04Z-ecf4f54a96b759a02370a43572149b71303269d4736521cecd209e1b3db01fd0.json",
-  "input_sha256": "ecf4f54a96b759a02370a43572149b71303269d4736521cecd209e1b3db01fd0",
-  "captured_at_utc": "2026-09-01T01:44:04.143754Z",
+  "checkpoint_id": "PREOPEN-20260901-021200Z-7170f820a812a096",
+  "checkpoint_path": "runtime/preopen_checkpoints/2026-09-01/2026-09-01T02-12-00Z-7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43.json",
+  "checkpoint_commit_sha": "782c3ebb7b8d580ebf8c075a9fe4201fcfe9ee51",
+  "prediction_source_commit_sha": "dd3e8db13a397bd3fcafd78505760f431dc55a46",
+  "input_sha256": "7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43",
+  "captured_at_utc": "2026-09-01T02:12:00Z",
   "next_regular_open_et": "2026-09-01T09:30:00-04:00",
-  "status": "VALID_PREOPEN_CHECKPOINT"
+  "validation_contract": "HASOL-PREOPEN-STRICT-v1",
+  "validation_workflow": "HASOL Preopen Checkpoint Validate",
+  "validation_run_id": 33461733522,
+  "validation_status": "SUCCESS",
+  "status": "STRICT_VALID"
 }
