@@ -1,0 +1,10 @@
+{
+  "schema": "HASOL-PREOPEN-POINTER-v1",
+  "prediction_date_et": "2026-09-01",
+  "checkpoint_id": "PREOPEN-20260901-014404Z-ecf4f54a96b759a0",
+  "checkpoint_path": "runtime/preopen_checkpoints/2026-09-01/2026-09-01T01-44-04Z-ecf4f54a96b759a02370a43572149b71303269d4736521cecd209e1b3db01fd0.json",
+  "input_sha256": "ecf4f54a96b759a02370a43572149b71303269d4736521cecd209e1b3db01fd0",
+  "captured_at_utc": "2026-09-01T01:44:04.143754Z",
+  "next_regular_open_et": "2026-09-01T09:30:00-04:00",
+  "status": "VALID_PREOPEN_CHECKPOINT"
+}
