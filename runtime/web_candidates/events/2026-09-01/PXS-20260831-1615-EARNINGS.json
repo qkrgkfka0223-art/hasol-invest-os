@@ -1,0 +1,26 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T00:32:53Z",
+  "event": {
+    "ticker": "PXS",
+    "event_id": "PXS-20260831-1615-EARNINGS",
+    "event_type": "EARNINGS",
+    "event_published_at_utc": "2026-08-31T20:15:00Z",
+    "axis": "Q2_2026_EARNINGS_STRONGEST_QUARTER_IN_SEVEN",
+    "headline": "Pyxis Tankers reports Q2 2026 net income of $2.8M and adjusted EBITDA of $6.5M, its strongest quarter in seven quarters",
+    "flow_path": "after-close earnings inflection + stronger fleet TCE economics + 87% Q3 contracted employment -> next-session valuation and momentum repricing potential",
+    "official_source_url": "https://www.globenewswire.com/news-release/2026/08/31/3353699/0/en/pyxis-tankers-announces-financial-results-for-the-three-six-months-ended-june-30-2026.html",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Pyxis Tankers Inc. Common Stock; us_equity; NASDAQ; active/tradable",
+    "lineage": {
+      "discovery_class": "after_close_next_session_reconciliation",
+      "source_session_et": "2026-08-31",
+      "target_prediction_date_et": "2026-09-01",
+      "source_close_et": "2026-08-31T16:00:00-04:00",
+      "source_family": "GLOBENEWSWIRE_ISSUER_DIRECT"
+    }
+  }
+}
