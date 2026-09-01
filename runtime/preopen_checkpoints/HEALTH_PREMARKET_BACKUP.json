@@ -1,37 +1,47 @@
 {
   "schema": "HASOL-HEALTH-PREMARKET-BACKUP-v1",
   "prediction_date_et": "2026-09-01",
-  "checked_at_utc": "2026-09-01T03:35:57Z",
-  "status": "DEGRADED_EXTERNAL_ALPACA_UNAVAILABLE",
+  "checked_at_utc": "2026-09-01T06:27:13Z",
+  "status": "TOP20_INCOMPLETE",
+  "production_contract": "HASOL-TOP20-EXACT-v1",
   "session_state": {
     "prediction_date_et": "2026-09-01",
     "run_type": "PREMARKET",
     "eligible_for_prediction": true,
-    "cutoff_et": "2026-09-01T09:30:00-04:00",
-    "session_as_of_utc": "2026-09-01T02:05:01Z"
+    "cutoff_et": "2026-09-01T09:30:00-04:00"
   },
-  "latest_valid_checkpoint": "runtime/preopen_checkpoints/2026-09-01/2026-09-01T02-12-00Z-7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43.json",
-  "latest_valid_checkpoint_status": "STRICT_VALID",
-  "latest_valid_checkpoint_preserved": true,
-  "freshness": {
-    "source_scan_as_of_utc": "2026-09-01T02:05:01Z",
-    "market_feed_validated_at_utc": "2026-09-01T02:12:00Z",
-    "security_type_validated_at_utc": "2026-09-01T02:12:00Z",
-    "source_refresh_due": true,
-    "market_feed_refresh_due": true,
-    "security_refresh_due": true
+  "alpaca": {
+    "clock_status": "PASS",
+    "is_open": false,
+    "checked_at_et": "2026-09-01T02:27:13.690105-04:00",
+    "next_regular_open_et": "2026-09-01T09:30:00-04:00",
+    "next_regular_close_et": "2026-09-01T16:00:00-04:00",
+    "historical_data_status": "PARTIAL_CONNECTED_READ_SUCCESS"
   },
-  "refresh_attempt": {
-    "alpaca_clock_attempts": 2,
-    "alpaca_calendar_attempts": 1,
-    "alpaca_error": "HTTP 502 upstream/external service error",
+  "source_evidence": {
+    "latest_complete_scan_at_utc": "2026-09-01T06:08:53Z",
+    "fresh_within_60_minutes": true,
+    "new_verified_material_event_count": 0
+  },
+  "latest_pointer": {
+    "checkpoint_id": "PREOPEN-20260901-021200Z-7170f820a812a096",
+    "checkpoint_path": "runtime/preopen_checkpoints/2026-09-01/2026-09-01T02-12-00Z-7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43.json",
+    "legacy_top20_count": 6,
+    "role_under_exact_contract": "AUDIT_ONLY",
+    "promotion_eligible": false,
+    "pointer_changed": false
+  },
+  "backstop_attempt": {
+    "approved_universe": "data/candidate_universe.csv groups A/B execution_allowed yes|conditional",
+    "event_ranked_count": 6,
+    "backstop_needed": 14,
+    "full_quant_lineage_status": "NOT_VERIFIED_EXACT_RUN",
     "new_checkpoint_created": false,
-    "pointer_changed": false,
-    "reason": "Strict refresh was fail-closed because current Alpaca clock/calendar/feed could not be independently revalidated. Existing strict checkpoint and pointer were left unchanged."
+    "reason": "Connected Alpaca market data recovered, but the approved liquid-watchlist/full-market Quant backstop has not completed as one exact reproducible run with all common-stock, liquidity, data, security, freshness and source/input lineage gates. Degraded/test rankings are non-promotable."
   },
-  "failure": {
-    "code": "ALPACA_UPSTREAM_502",
-    "transient": true,
-    "action": "Retry on next backup cycle; do not promote or overwrite checkpoint until Alpaca validation succeeds."
-  }
+  "action": "PRESERVE_PREVIOUS_POINTER_NO_NEW_CHECKPOINT",
+  "failures": [
+    "TOP20_INCOMPLETE:EVENT_6_BACKSTOP_14_NOT_EXACT_LINEAGE_VERIFIED",
+    "LEGACY_CHECKPOINT_AUDIT_ONLY:PREOPEN-20260901-021200Z-7170f820a812a096"
+  ]
 }
