@@ -14,12 +14,14 @@ from hasol_quant.features import build_features
 from hasol_quant.ranker import rank_universe, top_n
 from hasol_quant.yahoo_client import fetch_daily_bars
 
-ENGINE = "HASOL-WEB-CANDIDATE-QUANT-v2.1"
+ENGINE = "HASOL-WEB-CANDIDATE-QUANT-v2.2"
 DATA_SOURCE = "YAHOO_YFINANCE_DETECTION_ONLY"
 FINAL_VALIDATOR = "ALPACA_CONNECTED_APP"
-MIN_FREEZE_CANDIDATES = 5
+TOP20_CONTRACT = "HASOL-TOP20-EXACT-v1"
+MIN_FREEZE_CANDIDATES = 20
 CANDIDATE_BREADTH_TARGET = 20
 MIN_MARKET_DATA_COVERAGE = 0.80
+BACKSTOP_WATCHLIST_PATH = Path("data/candidate_universe.csv")
 
 
 def _load(path: Path) -> tuple[dict, dict]:
@@ -48,10 +50,38 @@ def _candidate_frame(payload: dict) -> pd.DataFrame:
             continue
         row = dict(item)
         row["ticker"] = ticker
+        row["provenance"] = "EVENT"
         rows.append(row)
     if not rows:
-        return pd.DataFrame(columns=["ticker"])
+        return pd.DataFrame(columns=["ticker", "provenance"])
     return pd.DataFrame(rows).drop_duplicates(subset=["ticker"], keep="first").reset_index(drop=True)
+
+
+def _load_backstop_watchlist(exclude_tickers: set[str]) -> pd.DataFrame:
+    """Load the approved liquid-watchlist backstop without fabricating events.
+
+    This is detection-only input. Final common-stock/security/tradability/freshness validation
+    remains mandatory through the connected Alpaca app before checkpoint promotion.
+    """
+    if not BACKSTOP_WATCHLIST_PATH.exists():
+        return pd.DataFrame(columns=["ticker", "provenance"])
+    x = pd.read_csv(BACKSTOP_WATCHLIST_PATH, dtype=str, keep_default_na=False).fillna("")
+    required = {"ticker", "execution_allowed"}
+    if not required.issubset(x.columns):
+        raise ValueError("approved backstop watchlist missing required columns")
+    x["ticker"] = x["ticker"].astype(str).str.upper().str.strip()
+    x["execution_allowed"] = x["execution_allowed"].astype(str).str.lower().str.strip()
+    x = x[x["execution_allowed"].isin({"yes", "conditional"})].copy()
+    x = x[(x["ticker"] != "") & (~x["ticker"].isin(exclude_tickers))].copy()
+    x = x.drop_duplicates(subset=["ticker"], keep="first").reset_index(drop=True)
+    if x.empty:
+        return pd.DataFrame(columns=["ticker", "provenance"])
+    keep = [c for c in ("ticker", "group", "axis", "watch_reason", "liquidity_bucket", "risk_bucket", "execution_allowed") if c in x.columns]
+    x = x[keep].copy()
+    x["provenance"] = "FULL_MARKET_QUANT_BACKSTOP"
+    x["event_id"] = ""
+    x["backstop_source"] = "APPROVED_LIQUID_WATCHLIST"
+    return x
 
 
 def _eligibility(features: pd.DataFrame) -> pd.DataFrame:
@@ -76,13 +106,23 @@ def _eligibility(features: pd.DataFrame) -> pd.DataFrame:
     return x
 
 
-def _quality(payload: dict, input_count: int, market_returned: int, eligible_count: int, ranked_count: int, top_count: int) -> dict:
+def _quality(
+    payload: dict,
+    input_count: int,
+    event_count: int,
+    backstop_count: int,
+    market_returned: int,
+    eligible_count: int,
+    ranked_count: int,
+    top_count: int,
+) -> dict:
     coverage = (market_returned / input_count) if input_count else 0.0
     production = bool(payload.get("eligible_for_prediction", False))
     freeze_ready = (
         production
         and eligible_count >= MIN_FREEZE_CANDIDATES
         and ranked_count >= MIN_FREEZE_CANDIDATES
+        and top_count >= CANDIDATE_BREADTH_TARGET
         and coverage >= MIN_MARKET_DATA_COVERAGE
     )
     if not production:
@@ -99,15 +139,19 @@ def _quality(payload: dict, input_count: int, market_returned: int, eligible_cou
     if production and coverage < MIN_MARKET_DATA_COVERAGE:
         reasons.append("MARKET_DATA_COVERAGE_LOW")
     if production and eligible_count < MIN_FREEZE_CANDIDATES:
-        reasons.append("QUANT_ELIGIBLE_LT_5")
+        reasons.append("QUANT_ELIGIBLE_LT_20")
     if production and ranked_count < MIN_FREEZE_CANDIDATES:
-        reasons.append("RANKED_LT_5")
+        reasons.append("RANKED_LT_20")
+    if production and top_count < CANDIDATE_BREADTH_TARGET:
+        reasons.append("TOP20_INCOMPLETE")
     return {
         "raw_event_count": int(payload.get("event_count_raw", 0)),
         "deduped_event_count": int(payload.get("event_count_deduped", 0)),
+        "event_candidates": event_count,
+        "backstop_candidates": backstop_count,
         "input_candidates": input_count,
         "candidate_breadth_target": CANDIDATE_BREADTH_TARGET,
-        "breadth_warning": bool(production and input_count < CANDIDATE_BREADTH_TARGET),
+        "breadth_warning": bool(production and eligible_count < CANDIDATE_BREADTH_TARGET),
         "market_data_returned": market_returned,
         "market_data_coverage": coverage,
         "min_market_data_coverage": MIN_MARKET_DATA_COVERAGE,
@@ -115,6 +159,7 @@ def _quality(payload: dict, input_count: int, market_returned: int, eligible_cou
         "min_freeze_candidates": MIN_FREEZE_CANDIDATES,
         "quant_ranked": ranked_count,
         "top50_count": top_count,
+        "top20_contract": TOP20_CONTRACT,
         "quality_status": status,
         "freeze_ready": freeze_ready,
         "quality_reasons": reasons,
@@ -126,7 +171,12 @@ def _quality(payload: dict, input_count: int, market_returned: int, eligible_cou
 def run(input_path: Path, output_dir: Path) -> dict:
     raw_payload, payload = _load(input_path)
     output_dir.mkdir(parents=True, exist_ok=True)
-    candidates = _candidate_frame(payload)
+    event_candidates = _candidate_frame(payload)
+    production = bool(payload.get("eligible_for_prediction", False))
+    event_tickers = set(event_candidates.get("ticker", pd.Series(dtype=str)).astype(str))
+    backstop_candidates = _load_backstop_watchlist(event_tickers) if production and len(event_candidates) < CANDIDATE_BREADTH_TARGET else pd.DataFrame(columns=["ticker", "provenance"])
+    candidates = pd.concat([event_candidates, backstop_candidates], ignore_index=True, sort=False)
+    candidates = candidates.drop_duplicates(subset=["ticker"], keep="first").reset_index(drop=True)
     prediction_date = _prediction_date(payload)
     symbols = sorted(set(candidates.get("ticker", pd.Series(dtype=str)).tolist()) | {"SPY"})
 
@@ -137,9 +187,9 @@ def run(input_path: Path, output_dir: Path) -> dict:
     else:
         bars = fetch_daily_bars(symbols, completed_before_et=prediction_date)
         features = build_features(bars) if not bars.empty else pd.DataFrame()
-        event_features = features[features["ticker"].isin(set(candidates["ticker"]))].copy() if not features.empty else pd.DataFrame()
-        event_features = _eligibility(event_features)
-        all_candidates = candidates.merge(event_features, on="ticker", how="left")
+        candidate_features = features[features["ticker"].isin(set(candidates["ticker"]))].copy() if not features.empty else pd.DataFrame()
+        candidate_features = _eligibility(candidate_features)
+        all_candidates = candidates.merge(candidate_features, on="ticker", how="left")
         missing_mask = all_candidates["history_bars"].isna() if "history_bars" in all_candidates.columns else pd.Series(True, index=all_candidates.index)
         all_candidates.loc[missing_mask, "quant_eligible"] = False
         all_candidates.loc[missing_mask, "quant_reject_reason"] = "NO_MARKET_DATA"
@@ -159,23 +209,37 @@ def run(input_path: Path, output_dir: Path) -> dict:
     input_count = int(len(candidates))
     market_returned = int(all_candidates["history_bars"].notna().sum()) if input_count and "history_bars" in all_candidates.columns else 0
     eligible_count = int(all_candidates["quant_eligible"].fillna(False).sum()) if input_count and "quant_eligible" in all_candidates.columns else 0
-    quality = _quality(payload, input_count, market_returned, eligible_count, int(len(ranked)), int(len(top50)))
+    quality = _quality(
+        payload,
+        input_count,
+        int(len(event_candidates)),
+        int(len(backstop_candidates)),
+        market_returned,
+        eligible_count,
+        int(len(ranked)),
+        int(len(top50)),
+    )
     (output_dir / "data_quality.json").write_text(json.dumps(quality, indent=2), encoding="utf-8")
 
+    preview_cols = [c for c in ("ticker", "quant_rank", "quant_score", "adv20_usd", "provenance", "event_id", "backstop_source") if c in top50.columns]
+    top20_preview = top50.head(20)[preview_cols].to_dict(orient="records") if not top50.empty else []
     manifest = {
         "engine": ENGINE,
         "schema_version": SCHEMA_VERSION,
         "input_sha256": _input_hash(raw_payload),
         "normalized_input_sha256": _input_hash(payload),
         "run_type": payload.get("run_type", "UNKNOWN"),
-        "eligible_for_prediction": bool(payload.get("eligible_for_prediction", False)),
+        "eligible_for_prediction": production,
         "prediction_date_et": prediction_date.isoformat(),
         "cutoff_et": payload.get("cutoff_et"),
-        "candidate_source": "HASOL_WEB_EVENT_DETECTOR",
-        "event_source_policy": "OFFICIAL_PRIMARY_REQUIRED_FOR_PRODUCTION",
+        "candidate_source": "HASOL_WEB_EVENT_DETECTOR+APPROVED_LIQUID_WATCHLIST_BACKSTOP",
+        "event_source_policy": "OFFICIAL_PRIMARY_REQUIRED_FOR_EVENT_CANDIDATES",
+        "backstop_policy": "APPROVED_LIQUID_WATCHLIST_DETECTION_ONLY_NO_FABRICATED_EVENTS",
         "quant_market_source": DATA_SOURCE,
         "quant_source_policy": "DETECTION_ONLY_NOT_CANONICAL",
         "final_market_validator": FINAL_VALIDATOR,
+        "top20_contract": TOP20_CONTRACT,
+        "top20_preview": top20_preview,
         "generated_at_utc": datetime.now(ZoneInfo("UTC")).isoformat(),
         "quality": quality,
     }
@@ -184,13 +248,13 @@ def run(input_path: Path, output_dir: Path) -> dict:
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="HASOL Web-first candidate Quant runner (no Alpaca secret required)")
+    p = argparse.ArgumentParser(description="HASOL Web-first candidate Quant with approved exact-Top20 backstop (no Alpaca secret required)")
     p.add_argument("--input", default="runtime/web_candidates/latest.json")
     p.add_argument("--output-dir", default="output_web_quant")
-    p.add_argument("--require-freeze-ready", action="store_true", help="Fail the process when a prediction-eligible input is not freeze-ready")
+    p.add_argument("--require-freeze-ready", action="store_true", help="Fail when a prediction-eligible input cannot produce at least 20 Quant-eligible ranked names")
     args = p.parse_args()
     manifest = run(Path(args.input), Path(args.output_dir))
-    print(json.dumps(manifest, indent=2))
+    print(json.dumps(manifest, indent=2, default=str))
     if args.require_freeze_ready and manifest["eligible_for_prediction"] and not manifest["quality"]["freeze_ready"]:
         raise SystemExit(2)
 
