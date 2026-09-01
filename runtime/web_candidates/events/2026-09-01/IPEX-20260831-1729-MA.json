@@ -6,7 +6,7 @@
   "event": {
     "ticker": "IPEX",
     "event_id": "IPEX-20260831-1729-MA",
-    "event_type": "MA",
+    "event_type": "M&A",
     "event_published_at_utc": "2026-08-31T21:29:07Z",
     "axis": "BUSINESS_COMBINATION_AGREEMENT_AMENDMENT",
     "headline": "Inflection Point Acquisition Corp. V files an 8-K reporting amendments to its business combination agreement and related support arrangements ahead of the September 3 shareholder vote",

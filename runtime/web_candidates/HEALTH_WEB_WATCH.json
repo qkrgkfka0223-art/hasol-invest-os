@@ -1,6 +1,6 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T01:31:00Z",
+  "updated_at_utc": "2026-09-01T01:32:05Z",
   "target_prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
@@ -19,7 +19,7 @@
     "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"}
   },
   "source_coverage_status": "PASS",
-  "state_change": "IPEX_AFTER_CLOSE_SEC_MA_APPEND",
+  "state_change": "IPEX_EVENT_TYPE_CANONICALIZED_AFTER_LIVE_QUANT_FAILURE",
   "review_recovery": {
     "closed_session_date_et": "2026-08-31",
     "status": "PIPELINE_FAILURE_REVIEW",
@@ -28,8 +28,11 @@
     "duplicate_review_created": false
   },
   "live_quant": {
-    "status": "PENDING",
-    "source_commit_sha": null,
+    "status": "FAILED_RECOVERED_STATE_PENDING_NEXT_RUN",
+    "run_id": 33459064628,
+    "source_commit_sha": "ee97b17a848d1d35721c9cda2a8f3f228555d26b",
+    "failure_stage": "BUILD_EFFECTIVE_LIVE_SNAPSHOT",
+    "failure_reason": "unsupported event_type for IPEX: MA",
     "input_sha256": null,
     "ledger_snapshot_input_sha256": null,
     "run_manifest_input_sha256": null,
