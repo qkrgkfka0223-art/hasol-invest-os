@@ -3,11 +3,11 @@
   "prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-09-01T01:40:29Z",
+  "as_of_utc": "2026-09-01T02:05:01Z",
   "cutoff_et": "2026-09-01T09:30:00-04:00",
   "rollover_from_prediction_date_et": "2026-08-31",
   "rollover_policy": "PREOPEN_RECENCY_CARRYOVER_PLUS_NEW_EVENTS",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
-  "stage_marker": "PREMARKET_CONTROLLER_RECALL_RECOVERY",
-  "notes": "Regular market open is the prediction information barrier. Controller recovered missed same-day direct-source events for SLB and MOBX before Sep 1 open; prior checkpoints remain immutable and valid until a newer verified checkpoint is created."
+  "stage_marker": "WEB_WATCH_SOURCE_RECALL_RECOVERY",
+  "notes": "Alpaca clock confirms market closed; Sep 1 regular open 09:30 ET is the prediction cutoff. Web Watch reconciled missed after-close SSM, DFDV and IHT source events; DFDV preferred-stock financing and IHT trust security are excluded by append-only materiality decisions. Prior checkpoints remain immutable pending exact Live Quant validation."
 }

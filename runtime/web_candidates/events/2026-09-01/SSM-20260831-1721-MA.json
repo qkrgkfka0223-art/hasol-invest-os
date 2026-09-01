@@ -1,0 +1,26 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T02:05:01Z",
+  "event": {
+    "ticker": "SSM",
+    "event_id": "SSM-20260831-1721-MA",
+    "event_type": "M&A",
+    "event_published_at_utc": "2026-08-31T21:21:00Z",
+    "axis": "NON_BINDING_BUSINESS_COMBINATION_LOI",
+    "headline": "Sono Group N.V. and Sports One sign a non-binding letter of intent to combine; Sports One holders would own a super-majority of the combined public company, alongside a 19.9% registered direct ordinary-share investment.",
+    "flow_path": "after-close strategic combination LOI + concurrent 19.9% equity investment -> next-session transaction and control repricing potential",
+    "official_source_url": "https://www.globenewswire.com/news-release/2026/08/31/3353725/0/en/sono-group-n-v-and-sports-one-sign-letter-of-intent-to-combine-and-expand-into-professional-sports-franchise-ownership.html",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Sono Group N.V. Ordinary Shares; us_equity; NASDAQ; active/tradable",
+    "lineage": {
+      "discovery_class": "after_close_next_session_reconciliation",
+      "source_session_et": "2026-08-31",
+      "target_prediction_date_et": "2026-09-01",
+      "source_close_et": "2026-08-31T16:00:00-04:00",
+      "source_family": "GLOBENEWSWIRE"
+    }
+  }
+}

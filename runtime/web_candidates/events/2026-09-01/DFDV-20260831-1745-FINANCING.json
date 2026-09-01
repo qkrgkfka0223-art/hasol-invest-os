@@ -1,0 +1,26 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T02:05:01Z",
+  "event": {
+    "ticker": "DFDV",
+    "event_id": "DFDV-20260831-1745-FINANCING",
+    "event_type": "FINANCING",
+    "event_published_at_utc": "2026-08-31T21:45:00Z",
+    "axis": "PREFERRED_STOCK_PUBLIC_OFFERING",
+    "headline": "DeFi Development Corp. announces a proposed public offering of up to $20 million of Variable Rate Series C Perpetual Preferred Stock, with proceeds including SOL and strategic investments.",
+    "flow_path": "after-close perpetual preferred financing -> dilution/capital-structure and treasury-strategy repricing potential, but offering security is non-common and excluded from prediction eligibility",
+    "official_source_url": "https://www.globenewswire.com/news-release/2026/08/31/3353736/0/en/defi-development-corp-announces-proposed-initial-public-offering-of-variable-rate-series-c-perpetual-preferred-stock.html",
+    "official_verified": true,
+    "security_type": "PREFERRED_NON_COMMON",
+    "security_type_source": "Issuer release explicitly identifies the offered security as Variable Rate Series C Perpetual Preferred Stock; underlying DFDV is Alpaca NASDAQ active Common Stock",
+    "lineage": {
+      "discovery_class": "after_close_next_session_reconciliation",
+      "source_session_et": "2026-08-31",
+      "target_prediction_date_et": "2026-09-01",
+      "source_close_et": "2026-08-31T16:00:00-04:00",
+      "source_family": "GLOBENEWSWIRE"
+    }
+  }
+}

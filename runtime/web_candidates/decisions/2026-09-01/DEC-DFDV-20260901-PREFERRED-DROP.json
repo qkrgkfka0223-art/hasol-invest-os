@@ -1,0 +1,10 @@
+{
+  "decision_schema": "HASOL-WEB-DECISION-v1",
+  "decision_id": "DEC-DFDV-20260901-PREFERRED-DROP",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "event_id": "DFDV-20260831-1745-FINANCING",
+  "action": "MATERIALITY_DROP",
+  "decided_at_utc": "2026-09-01T02:05:01Z",
+  "reason": "SECURITY_TYPE_PREFERRED_NON_COMMON: the announced offering security is Variable Rate Series C Perpetual Preferred Stock. HASOL official prediction eligibility excludes preferred and other non-common instruments; audit event is retained."
+}

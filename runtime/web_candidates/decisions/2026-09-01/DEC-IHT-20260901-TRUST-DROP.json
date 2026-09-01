@@ -1,0 +1,10 @@
+{
+  "decision_schema": "HASOL-WEB-DECISION-v1",
+  "decision_id": "DEC-IHT-20260901-TRUST-DROP",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "event_id": "IHT-20260831-1742-FINANCING",
+  "action": "MATERIALITY_DROP",
+  "decided_at_utc": "2026-09-01T02:05:01Z",
+  "reason": "SECURITY_TYPE_TRUST_NON_COMMON: issuer/security is InnSuites Hospitality Trust. HASOL official prediction eligibility excludes trust/unit/non-common instruments; audit event is retained."
+}

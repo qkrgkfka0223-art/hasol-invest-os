@@ -1,6 +1,6 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T01:32:05Z",
+  "updated_at_utc": "2026-09-01T02:05:01Z",
   "target_prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
@@ -9,17 +9,17 @@
   "schema_name": "HASOL-BRAIN-SCHEMA-v3.1",
   "schema_header_hash": "47fcf952df6179e0284b124a3b7d0439542921a57acaebe7f162e907126d446b",
   "source_coverage": {
-    "SEC_EDGAR": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
-    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
-    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
-    "PRNEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
-    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
-    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
-    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
-    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"}
+    "SEC_EDGAR": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 0},
+    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 2},
+    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "event_ids": ["SSM-20260831-1721-MA", "DFDV-20260831-1745-FINANCING", "IHT-20260831-1742-FINANCING"]},
+    "PRNEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 1},
+    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 2},
+    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 1},
+    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 1},
+    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 2}
   },
   "source_coverage_status": "PASS",
-  "state_change": "IPEX_EVENT_TYPE_CANONICALIZED_AFTER_LIVE_QUANT_FAILURE",
+  "state_change": "SOURCE_RECALL_RECOVERY_SSM_DFDV_IHT",
   "review_recovery": {
     "closed_session_date_et": "2026-08-31",
     "status": "PIPELINE_FAILURE_REVIEW",
@@ -28,11 +28,8 @@
     "duplicate_review_created": false
   },
   "live_quant": {
-    "status": "FAILED_RECOVERED_STATE_PENDING_NEXT_RUN",
-    "run_id": 33459064628,
-    "source_commit_sha": "ee97b17a848d1d35721c9cda2a8f3f228555d26b",
-    "failure_stage": "BUILD_EFFECTIVE_LIVE_SNAPSHOT",
-    "failure_reason": "unsupported event_type for IPEX: MA",
+    "status": "PENDING_EXACT_SOURCE_COMMIT_RUN",
+    "source_commit_sha": null,
     "input_sha256": null,
     "ledger_snapshot_input_sha256": null,
     "run_manifest_input_sha256": null,

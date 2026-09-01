@@ -1,0 +1,26 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T02:05:01Z",
+  "event": {
+    "ticker": "IHT",
+    "event_id": "IHT-20260831-1742-FINANCING",
+    "event_type": "FINANCING",
+    "event_published_at_utc": "2026-08-31T21:42:00Z",
+    "axis": "DEBT_TO_EQUITY_AND_REVERSE_MERGER_DISCUSSIONS",
+    "headline": "InnSuites Hospitality Trust reports a $3 million debt-to-equity conversion restoring minimum equity compliance and says reverse-merger discussions continue.",
+    "flow_path": "after-close balance-sheet recapitalization + continuing reverse-merger discussions -> next-session repricing potential, but issuer is a trust and excluded from official prediction eligibility",
+    "official_source_url": "https://www.globenewswire.com/news-release/2026/08/31/3353735/36211/en/iht-adds-3-million-in-equity-and-reduces-debt-to-strengthen-balance-sheet-reverse-merger-discussions-continue.html",
+    "official_verified": true,
+    "security_type": "TRUST_NON_COMMON",
+    "security_type_source": "Alpaca asset metadata identifies InnSuites Hospitality Trust; security-type policy excludes trust instruments from official prediction eligibility",
+    "lineage": {
+      "discovery_class": "after_close_next_session_reconciliation",
+      "source_session_et": "2026-08-31",
+      "target_prediction_date_et": "2026-09-01",
+      "source_close_et": "2026-08-31T16:00:00-04:00",
+      "source_family": "GLOBENEWSWIRE"
+    }
+  }
+}
