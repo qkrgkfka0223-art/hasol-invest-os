@@ -1,0 +1,25 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T12:56:22Z",
+  "event": {
+    "ticker": "ACET",
+    "event_id": "ACET-20260901-0700-CLINICAL",
+    "event_type": "CLINICAL",
+    "event_published_at_utc": "2026-09-01T11:00:00Z",
+    "axis": "PRULA_CEL_SLE_LAST_PATIENT_VISIT_AND_SEPTEMBER_TOPLINE_READOUT",
+    "headline": "Adicet Bio completes last patient visit for planned prula-cel SLE analysis, expects topline data in September 2026, and reports FDA-cleared ADI-212 IND",
+    "flow_path": "premarket clinical milestone + near-term topline catalyst + FDA-cleared next program -> same-session biotech repricing potential",
+    "official_source_url": "https://www.sec.gov/Archives/edgar/data/1720580/000172058026000054/acet-20260901.htm",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Adicet Bio, Inc. Common Stock; us_equity; NASDAQ; active/tradable",
+    "lineage": {
+      "discovery_class": "premarket_source_recall_recovery",
+      "source_session_et": "2026-09-01",
+      "target_prediction_date_et": "2026-09-01",
+      "source_family": "SEC_EDGAR_BUSINESS_WIRE_ISSUER_DIRECT"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T12:56:22Z",
+  "event": {
+    "ticker": "MMED",
+    "event_id": "MMED-20260901-0645-EARNINGS",
+    "event_type": "EARNINGS",
+    "event_published_at_utc": "2026-09-01T10:45:00Z",
+    "axis": "Q1_FY2027_EARNINGS_BEAT_AND_ORGANIC_GROWTH_GUIDANCE_RAISE",
+    "headline": "MiniMed reports Q1 FY2027 sales of $843M, 17% reported growth, and raises FY2027 organic revenue growth guidance to approximately 10.5%",
+    "flow_path": "premarket earnings beat + accelerating U.S. growth + raised organic revenue guidance -> same-session opening repricing potential",
+    "official_source_url": "https://www.prnewswire.com/news-releases/minimed-delivers-strong-start-to-fiscal-year-2027-with-us-growth-acceleration-302865523.html",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: MiniMed Group, Inc. Common Stock; us_equity; NASDAQ; active/tradable",
+    "lineage": {
+      "discovery_class": "premarket_source_recall_recovery",
+      "source_session_et": "2026-09-01",
+      "target_prediction_date_et": "2026-09-01",
+      "source_family": "PRNEWSWIRE_DIRECT_EARNINGS"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T12:56:22Z",
+  "event": {
+    "ticker": "ENOV",
+    "event_id": "ENOV-20260901-0645-MA",
+    "event_type": "M&A",
+    "event_published_at_utc": "2026-09-01T10:45:00Z",
+    "axis": "BINDING_OFFER_TO_ACQUIRE_ECENTIAL_ROBOTICS",
+    "headline": "Enovis enters binding offer to acquire eCential Robotics for approximately EUR176M upfront cash plus up to EUR35M contingent consideration",
+    "flow_path": "premarket strategic acquisition + robotics platform expansion + disclosed 2027 margin dilution -> same-session valuation repricing potential",
+    "official_source_url": "https://ir.enovis.com/news-releases/news-release-details/enovis-invests-innovation-binding-offer-acquire-ecential",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Enovis Corporation; us_equity; NYSE; active/tradable",
+    "lineage": {
+      "discovery_class": "premarket_source_recall_recovery",
+      "source_session_et": "2026-09-01",
+      "target_prediction_date_et": "2026-09-01",
+      "source_family": "ISSUER_IR_GLOBENEWSWIRE_SEC_8K"
+    }
+  }
+}
