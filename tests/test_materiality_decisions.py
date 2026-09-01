@@ -22,8 +22,8 @@ def _session():
         "prediction_date_et": DATE,
         "run_type": "PREMARKET",
         "eligible_for_prediction": True,
-        "as_of_utc": "2026-08-31T13:15:00Z",
-        "cutoff_et": "2026-08-31T09:25:00-04:00",
+        "as_of_utc": "2026-08-31T13:31:00Z",
+        "cutoff_et": "2026-08-31T09:30:00-04:00",
     }
 
 
@@ -123,7 +123,7 @@ def test_decision_order_uses_actual_instants_not_iso_lexicographic_order(tmp_pat
 
 def test_post_cutoff_drop_is_audited_but_does_not_change_premarket_snapshot(tmp_path):
     _write_event(tmp_path / "events")
-    _write_decision(tmp_path / "decisions", decision_id="DROP-LATE", action=MATERIALITY_DROP, decided_at="2026-08-31T13:25:01Z")
+    _write_decision(tmp_path / "decisions", decision_id="DROP-LATE", action=MATERIALITY_DROP, decided_at="2026-08-31T13:30:01Z")
     payload, manifest = _build(tmp_path)
     assert [row["ticker"] for row in payload["candidates"]] == ["ABC"]
     assert manifest["excluded_event_ids"] == []
@@ -135,8 +135,8 @@ def test_post_cutoff_drop_is_audited_but_does_not_change_premarket_snapshot(tmp_
 
 def test_post_cutoff_keep_cannot_reactivate_pre_cutoff_drop(tmp_path):
     _write_event(tmp_path / "events")
-    _write_decision(tmp_path / "decisions", decision_id="DROP-1", action=MATERIALITY_DROP, decided_at="2026-08-31T13:24:00Z")
-    _write_decision(tmp_path / "decisions", decision_id="KEEP-LATE", action=MATERIALITY_KEEP, decided_at="2026-08-31T13:25:01Z", reason="too late")
+    _write_decision(tmp_path / "decisions", decision_id="DROP-1", action=MATERIALITY_DROP, decided_at="2026-08-31T13:29:00Z")
+    _write_decision(tmp_path / "decisions", decision_id="KEEP-LATE", action=MATERIALITY_KEEP, decided_at="2026-08-31T13:30:01Z", reason="too late")
     payload, manifest = _build(tmp_path)
     assert payload["candidates"] == []
     assert manifest["excluded_event_ids"] == ["ABC-E1"]
