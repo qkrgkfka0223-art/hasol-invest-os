@@ -3,11 +3,11 @@
   "prediction_date_et": "2026-09-02",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-09-01T20:14:54Z",
+  "as_of_utc": "2026-09-01T21:05:38Z",
   "cutoff_et": "2026-09-02T09:30:00-04:00",
   "rollover_from_prediction_date_et": "2026-09-01",
   "rollover_policy": "POSTCLOSE_TO_NEXT_PREMARKET_ALPACA_CLOCK",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
-  "stage_marker": "PREMARKET_CONTROLLER_TOP20_EXACT",
-  "notes": "Alpaca clock confirmed 2026-09-01 regular session closed and next regular open 2026-09-02T09:30:00-04:00. Controller rolled canonical session to next-session PREMARKET. Information barrier is the regular open; no fixed-minute cutoff."
+  "stage_marker": "PREMARKET_WEB_WATCH_SOURCE_RECOVERY_TOP20_EXACT",
+  "notes": "Alpaca clock at 2026-09-01T17:05:38-04:00 confirmed market closed and next regular open 2026-09-02T09:30:00-04:00. Web Watch appended verified post-close Sep. 1 events for PANW, GTLB and RRGB to the Sep. 2 PREMARKET ledger. No official prediction or checkpoint promotion created; legacy thin checkpoints remain non-production lineage."
 }
