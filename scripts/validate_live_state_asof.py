@@ -84,7 +84,9 @@ def validate_state_asof(
         cutoff = _parse_aware(session.get("cutoff_et"), field="cutoff_et", path=session_path)
 
     effective = _read_json(effective_input_path)
-    effective_run_type = _canonical_run_type(effective.get("run_type", run_type), field="effective run_type", path=effective_input_path)
+    effective_run_type = _canonical_run_type(
+        effective.get("run_type", run_type), field="effective run_type", path=effective_input_path
+    )
     if effective_run_type != run_type:
         raise ValueError(f"effective input run_type does not match session: effective={effective_run_type} session={run_type}")
     effective_as_of = _parse_aware(effective.get("as_of_utc"), field="as_of_utc", path=effective_input_path)
@@ -93,18 +95,40 @@ def validate_state_asof(
             f"effective input as_of_utc does not match session: effective={_iso(effective_as_of)} session={_iso(session_as_of)}"
         )
 
-    decision_files = _files(decision_root, prediction_date_et)
+    all_decision_files = _files(decision_root, prediction_date_et)
+    matching_decision_files: list[Path] = []
     applicable_decisions: list[tuple[str, datetime]] = []
     ignored_post_cutoff: list[str] = []
-    for path in decision_files:
+    ignored_cross_run_type: list[dict[str, str]] = []
+    seen_decision_ids: set[str] = set()
+
+    for path in all_decision_files:
         raw = _read_json(path)
         if raw.get("decision_schema") != DECISION_SCHEMA:
             raise ValueError(f"decision_schema must be {DECISION_SCHEMA} in {path}")
-        decision_run_type = _canonical_run_type(raw.get("run_type", run_type), field="decision run_type", path=path)
-        if decision_run_type != run_type:
-            raise ValueError(f"decision run_type mismatch in {path}: {decision_run_type}")
+        target_date = str(raw.get("prediction_date_et", "")).strip()
+        if target_date != prediction_date_et:
+            raise ValueError(f"decision target date mismatch in {path}: {target_date}")
+        decision_run_type = _canonical_run_type(raw.get("run_type"), field="decision run_type", path=path)
         decision_id = str(raw.get("decision_id", "")).strip()
+        if not decision_id:
+            raise ValueError(f"decision_id is required in {path}")
+        if decision_id in seen_decision_ids:
+            raise ValueError(f"duplicate decision_id in materiality ledger: {decision_id}")
+        seen_decision_ids.add(decision_id)
         decided_at = _parse_aware(raw.get("decided_at_utc"), field="decided_at_utc", path=path)
+
+        if decision_run_type != run_type:
+            ignored_cross_run_type.append(
+                {
+                    "decision_id": decision_id,
+                    "run_type": decision_run_type,
+                    "path": path.as_posix(),
+                }
+            )
+            continue
+
+        matching_decision_files.append(path)
         applies = cutoff is None or decided_at <= cutoff
         if applies:
             if decided_at > session_as_of:
@@ -174,7 +198,13 @@ def validate_state_asof(
         "session_as_of_utc": _iso(session_as_of),
         "effective_input_as_of_utc": _iso(effective_as_of),
         "cutoff_utc": _iso(cutoff),
-        "decision_file_count": len(decision_files),
+        "decision_file_count_total": len(all_decision_files),
+        "decision_file_count": len(matching_decision_files),
+        "ignored_cross_run_type_decision_count": len(ignored_cross_run_type),
+        "ignored_cross_run_type_decisions": sorted(
+            ignored_cross_run_type,
+            key=lambda row: (row["run_type"], row["decision_id"], row["path"]),
+        ),
         "applicable_decision_count": len(applicable_decisions),
         "ignored_post_cutoff_decision_ids": sorted(ignored_post_cutoff),
         "max_applicable_decision_at_utc": _iso(max_decision),
@@ -192,7 +222,7 @@ def validate_state_asof(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Validate HASOL session as-of metadata against effective ledger state")
+    parser = argparse.ArgumentParser(description="Validate HASOL session as-of metadata against run-scoped effective ledger state")
     parser.add_argument("--session", default="runtime/web_candidates/session.json")
     parser.add_argument("--effective-input", default="output_live_quant/effective_input.json")
     parser.add_argument("--premarket-root", default="runtime/web_candidates/events")
