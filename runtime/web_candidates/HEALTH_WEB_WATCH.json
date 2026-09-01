@@ -1,6 +1,6 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T02:05:01Z",
+  "updated_at_utc": "2026-09-01T02:07:48Z",
   "target_prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
@@ -28,11 +28,12 @@
     "duplicate_review_created": false
   },
   "live_quant": {
-    "status": "PENDING_EXACT_SOURCE_COMMIT_RUN",
-    "source_commit_sha": null,
-    "input_sha256": null,
-    "ledger_snapshot_input_sha256": null,
-    "run_manifest_input_sha256": null,
-    "state_asof_validation_valid": null
+    "status": "SUCCESS_EXACT_LINEAGE",
+    "run_id": 33461340656,
+    "source_commit_sha": "dd3e8db13a397bd3fcafd78505760f431dc55a46",
+    "input_sha256": "7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43",
+    "ledger_snapshot_input_sha256": "7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43",
+    "run_manifest_input_sha256": "7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43",
+    "state_asof_validation_valid": true
   }
 }
