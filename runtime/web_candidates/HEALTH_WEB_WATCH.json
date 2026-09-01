@@ -1,6 +1,6 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T07:55:28.604276Z",
+  "updated_at_utc": "2026-09-01T11:58:59Z",
   "target_prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
@@ -13,34 +13,44 @@
   "alpaca": {
     "clock_status": "ATTEMPTED_OK",
     "is_open": false,
-    "checked_at_et": "2026-09-01T03:55:28.604276-04:00",
+    "checked_at_et": "2026-09-01T07:58:59.640075-04:00",
     "next_regular_open_et": "2026-09-01T09:30:00-04:00",
     "next_regular_close_et": "2026-09-01T16:00:00-04:00"
   },
   "source_scan_window": {
-    "window_start_utc": "2026-09-01T06:08:53Z",
-    "window_end_utc": "2026-09-01T07:55:28.604276Z",
+    "window_start_utc": "2026-09-01T11:26:39Z",
+    "window_end_utc": "2026-09-01T11:58:59Z",
     "new_verified_material_event_count": 0
   },
   "source_coverage": {
-    "SEC_EDGAR": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW", "note": "Recent SEC results included previously-known IPEX business-combination deadline extension and FEED reverse split; no new eligible material event admitted."},
-    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
-    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
-    "PRNEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW", "note": "Search surfaced previously-known Three Lions IPO item; unit security remains non-eligible."},
-    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
-    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW", "note": "Current items included non-US/non-material conference and financial-release items; none admitted to the US common-stock prediction ledger."},
-    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
-    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"}
+    "SEC_EDGAR": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T11:58:59Z", "window_end_utc": "2026-09-01T11:58:59Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW", "note": "Fresh SEC search surfaced HUM guidance reaffirmation, YUMC interim-report furnishing, and the already-reviewed RGS earnings 8-K; none introduced a new eligible material event for the ledger."},
+    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T11:58:59Z", "window_end_utc": "2026-09-01T11:58:59Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
+    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T11:58:59Z", "window_end_utc": "2026-09-01T11:58:59Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
+    "PRNEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T11:58:59Z", "window_end_utc": "2026-09-01T11:58:59Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW", "note": "BMNR weekly holdings release was re-surfaced but is the previously-recorded Aug 31 08:30 ET event, not a new observation."},
+    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T11:58:59Z", "window_end_utc": "2026-09-01T11:58:59Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
+    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T11:58:59Z", "window_end_utc": "2026-09-01T11:58:59Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
+    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T11:58:59Z", "window_end_utc": "2026-09-01T11:58:59Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
+    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T11:58:59Z", "window_end_utc": "2026-09-01T11:58:59Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW", "note": "HUM reaffirmed prior FY2026 guidance rather than changing it; no new material guidance delta admitted."}
   },
   "source_coverage_status": "PASS",
-  "state_change": "CHECKPOINT_POINTER_CONTRACT_NORMALIZATION_ONLY",
+  "state_change": "HEALTH_ONLY_NO_PREDICTION_STATE_MUTATION",
   "session_state": {
     "prediction_date_et": "2026-09-01",
     "run_type": "PREMARKET",
     "eligible_for_prediction": true,
     "cutoff_et": "2026-09-01T09:30:00-04:00",
-    "as_of_utc": "2026-09-01T04:36:19Z",
-    "mutation": "NONE"
+    "as_of_utc": "2026-09-01T11:26:39Z",
+    "source_commit_sha": "e0287705e49a8ce4437ad68707a403526f5fd8ce",
+    "mutation": "NONE_THIS_WEB_WATCH_SCAN"
+  },
+  "session_lineage": {
+    "live_quant_run_id": 33502630351,
+    "live_quant_conclusion": "SUCCESS",
+    "source_commit_sha": "e0287705e49a8ce4437ad68707a403526f5fd8ce",
+    "ledger_snapshot_input_sha256": "035f9741edaa849effa9227f586f1f336a5d66f07b41d392603ccde8812b6749",
+    "run_manifest_input_sha256": "035f9741edaa849effa9227f586f1f336a5d66f07b41d392603ccde8812b6749",
+    "candidate_input_sha256": "035f9741edaa849effa9227f586f1f336a5d66f07b41d392603ccde8812b6749",
+    "state_asof_valid": true
   },
   "top20_contract": {
     "required_contract": "HASOL-TOP20-EXACT-v1",
@@ -54,9 +64,10 @@
     "checkpoint_status": "TOP20_CONTRACT_STALE",
     "checkpoint_role": "AUDIT_ONLY",
     "promotion_eligible": false,
-    "reason": "Preferred legacy checkpoint has only 6 unique ranked names and incomplete top20_provenance. Pointer normalized to explicit audit-only stale status; underlying immutable checkpoint content and historical lineage were not rewritten."
+    "reason": "Preferred legacy checkpoint remains thin and incomplete under HASOL-TOP20-EXACT-v1. Exact session/event lineage is healthy, but no exact-20 validated pre-open checkpoint exists for production promotion."
   },
   "healthy_production_lineage": {
+    "session_event_state_exact": true,
     "checkpoint_available": false,
     "reason": "NO_EXACT_TOP20_VALIDATED_PREOPEN_CHECKPOINT",
     "legacy_thin_checkpoint_allowed": false
