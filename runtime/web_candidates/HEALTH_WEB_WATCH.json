@@ -1,50 +1,47 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T16:09:00Z",
+  "updated_at_utc": "2026-09-01T18:09:58Z",
   "target_prediction_date_et": "2026-09-01",
   "run_type": "INTRADAY_EVENT",
   "eligible_for_prediction": false,
   "cutoff_et": "2026-09-01T09:30:00-04:00",
   "production_contract": "HASOL-TOP20-EXACT-v1",
-  "status": "DEGRADED_EXACT_RUN_FAILED",
+  "status": "DEGRADED_EXACT_RUN_UNVERIFIED",
   "alpaca": {
     "clock_status": "ATTEMPTED_OK",
     "is_open": true,
-    "checked_at_et": "2026-09-01T12:02:42.241647-04:00",
+    "checked_at_et": "2026-09-01T14:09:58.675510-04:00",
     "next_regular_open_et": "2026-09-02T09:30:00-04:00",
     "next_regular_close_et": "2026-09-01T16:00:00-04:00"
   },
   "source_scan_window": {
-    "window_start_utc": "2026-09-01T13:53:07Z",
-    "window_end_utc": "2026-09-01T16:02:42Z",
-    "new_verified_material_event_count": 4,
-    "event_ids": ["RZLV-20260901-0800-EARNINGS", "MDT-20260901-0645-EARNINGS", "UPB-20260901-0700-CLINICAL", "CRK-20260901-1104-MA"],
-    "intraday_ledger_routing_repairs": ["LMB-20260901-0900-MA", "VRTX-20260901-0903-MA-CLOSE", "HMR-20260901-0745-EARNINGS"]
+    "window_start_utc": "2026-09-01T16:02:42Z",
+    "window_end_utc": "2026-09-01T18:09:58Z",
+    "new_verified_material_event_count": 1,
+    "event_ids": ["YEXT-20260901-0802-EARNINGS"]
   },
   "source_coverage": {
-    "SEC_EDGAR": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T16:02:42Z","window_end_utc":"2026-09-01T16:02:42Z","result_count":2,"event_ids":["CRK-20260901-1104-MA","UPB-20260901-0700-CLINICAL"]},
-    "ISSUER_IR_NEWSROOMS": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T16:02:42Z","window_end_utc":"2026-09-01T16:02:42Z","result_count":2,"event_ids":["RZLV-20260901-0800-EARNINGS","MDT-20260901-0645-EARNINGS"]},
-    "GLOBENEWSWIRE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T16:02:42Z","window_end_utc":"2026-09-01T16:02:42Z","result_count":2,"event_ids":["RZLV-20260901-0800-EARNINGS","UPB-20260901-0700-CLINICAL"]},
-    "PRNEWSWIRE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T16:02:42Z","window_end_utc":"2026-09-01T16:02:42Z","result_count":1,"event_ids":["MDT-20260901-0645-EARNINGS"]},
-    "BUSINESS_WIRE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T16:02:42Z","window_end_utc":"2026-09-01T16:02:42Z","result_count":0},
-    "ACCESS_NEWSWIRE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T16:02:42Z","window_end_utc":"2026-09-01T16:02:42Z","result_count":0},
-    "FDA_REGULATORY_CLINICAL": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T16:02:42Z","window_end_utc":"2026-09-01T16:02:42Z","result_count":1,"event_ids":["UPB-20260901-0700-CLINICAL"]},
-    "DIRECT_EARNINGS_GUIDANCE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T16:02:42Z","window_end_utc":"2026-09-01T16:02:42Z","result_count":2,"event_ids":["RZLV-20260901-0800-EARNINGS","MDT-20260901-0645-EARNINGS"]}
+    "SEC_EDGAR": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":1,"event_ids":["YEXT-20260901-0802-EARNINGS"]},
+    "ISSUER_IR_NEWSROOMS": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":1,"event_ids":["YEXT-20260901-0802-EARNINGS"]},
+    "GLOBENEWSWIRE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":0},
+    "PRNEWSWIRE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":0},
+    "BUSINESS_WIRE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":1,"event_ids":["YEXT-20260901-0802-EARNINGS"]},
+    "ACCESS_NEWSWIRE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":3,"reviewed_nonappended_count":3},
+    "FDA_REGULATORY_CLINICAL": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":0},
+    "DIRECT_EARNINGS_GUIDANCE": {"status":"ATTEMPTED","scanned_at_utc":"2026-09-01T18:09:58Z","window_end_utc":"2026-09-01T18:09:58Z","result_count":1,"event_ids":["YEXT-20260901-0802-EARNINGS"]}
   },
   "source_coverage_status": "PASS",
   "state_commit": {
-    "source_commit_sha": "c49bc3bd59090e684295e2652a0da9c3963098a0",
+    "source_commit_sha": "57245026ffec3129f60559c36bab2d65a8737afb",
     "commit_contains_ci_suppression_token": false,
-    "state_as_of_utc": "2026-09-01T16:02:42Z"
+    "state_as_of_utc": "2026-09-01T18:09:58Z"
   },
   "exact_run": {
     "workflow": "HASOL Live Candidate Quant",
-    "run_id": 33529983277,
-    "source_commit_sha": "c49bc3bd59090e684295e2652a0da9c3963098a0",
-    "conclusion": "FAILURE",
-    "failure_step": "Build effective live snapshot",
-    "failure_reason": "INTRADAY_EVENT snapshot builder rejected existing PREMARKET materiality decision runtime/web_candidates/decisions/2026-09-01/DEC-DFDV-20260901-PREFERRED-DROP.json.",
-    "state_asof_validation": "NOT_REACHED",
+    "run_id": null,
+    "source_commit_sha": "57245026ffec3129f60559c36bab2d65a8737afb",
+    "conclusion": "PENDING_OR_UNOBSERVED",
+    "state_asof_validation": "NOT_YET_VERIFIED",
     "ledger_manifest_input_sha256": null,
     "run_manifest_input_sha256": null
   },
