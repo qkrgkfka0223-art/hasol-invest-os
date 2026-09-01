@@ -1,7 +1,7 @@
 {
   "schema": "HASOL-HEALTH-PREMARKET-CONTROLLER-v1",
   "prediction_date_et": "2026-09-01",
-  "checked_at_utc": "2026-09-01T08:10:00Z",
+  "checked_at_utc": "2026-09-01T09:06:42Z",
   "status": "TOP20_INCOMPLETE",
   "promotion_contract": "HASOL-TOP20-EXACT-v1",
   "required_top20_count": 20,
@@ -15,7 +15,7 @@
   "current_contract_commit_sha": "da3ba30bb39a520615a8c9e397795c72f80c2768",
   "market_clock": {
     "is_open": false,
-    "checked_at_et": "2026-09-01T04:09:59.885404-04:00",
+    "checked_at_et": "2026-09-01T05:06:42.017409-04:00",
     "next_regular_open_et": "2026-09-01T09:30:00-04:00",
     "calendar_confirmed": true
   },
@@ -28,19 +28,25 @@
     "mutation": "NONE_NO_VERIFIED_NEW_PREDICTION_INPUT"
   },
   "source_recall": {
-    "scanned_at_utc": "2026-09-01T08:10:00Z",
-    "window_end_utc": "2026-09-01T08:10:00Z",
+    "scanned_at_utc": "2026-09-01T09:06:42Z",
+    "window_end_utc": "2026-09-01T09:06:42Z",
     "families": ["SEC_EDGAR","ISSUER_IR_NEWSROOMS","GLOBENEWSWIRE","PRNEWSWIRE","BUSINESS_WIRE","ACCESS_NEWSWIRE","FDA_REGULATORY_CLINICAL","DIRECT_EARNINGS_GUIDANCE"],
     "new_verified_material_event_count": 0,
-    "note": "Fresh bounded direct-source recall completed across all required families. BMNR Aug-31 08:30 ET treasury update remains the latest already-known material US common-stock item recovered by search; newly surfaced Access Newswire items were non-US/OTCQX or otherwise outside the eligible US common-stock event set. No new eligible event admitted and no breadth fabricated."
+    "note": "Fresh bounded recall found no new verified eligible material US common-stock event that can be admitted under the event evidence gate. Search noise and non-material/legal-calendar items were not admitted; breadth was not fabricated."
   },
   "market_feed": {
-    "validated_at_utc": "2026-09-01T08:10:00Z",
+    "validated_at_utc": "2026-09-01T09:06:42Z",
     "primary": "ALPACA_IEX",
     "primary_status": "PASS_20_OF_20_SNAPSHOT_READ",
     "fallback": "ALPACA_DELAYED_SIP",
-    "fallback_status": "PASS_20_OF_20_SNAPSHOT_READ",
+    "fallback_status": "PASS_20_OF_20_SNAPSHOT_READ_WITH_PREMARKET_QUOTES",
     "completed_session_asof": "2026-08-31"
+  },
+  "security_type": {
+    "validated_at_utc": "2026-09-01T09:06:42Z",
+    "status": "PASS_20_OF_20_ACTIVE_TRADABLE_US_EQUITY_COMMON_FORM",
+    "verified_symbols": ["SLB","BMNR","IDYA","JAZZ","ARWR","AON","ELF","SRPT","ANF","APGE","DELL","KURA","RXRX","ABSI","SDGR","ANET","CEG","SMCI","MRNA","AVGO"],
+    "exclusions": []
   },
   "backstop_attempt": {
     "event_ranked_count": 6,
@@ -48,15 +54,16 @@
     "candidate_watchlist": ["SLB","BMNR","IDYA","JAZZ","ARWR","AON","ELF","SRPT","ANF","APGE","DELL","KURA","RXRX","ABSI","SDGR","ANET","CEG","SMCI","MRNA","AVGO"],
     "candidate_watchlist_snapshot_coverage_iex": "20_OF_20",
     "candidate_watchlist_snapshot_coverage_delayed_sip": "20_OF_20",
+    "security_type_freshness": "PASS_20_OF_20_WITHIN_60M",
     "exact_full_market_quant_lineage": "NOT_VERIFIED_EXACT_RUN",
-    "security_type_freshness": "INCOMPLETE_FOR_ALL_BACKSTOP_NAMES",
+    "github_full_market_alpaca_path": "DEPRECATED_DISABLED_BY_CODE",
     "new_checkpoint_created": false,
-    "reason": "Fresh Alpaca IEX and delayed-SIP market-data paths are healthy for the 20-name event+backstop watchlist, but an exact reproducible FULL-MARKET/LIQUID-WATCHLIST Quant run and <=60m security-type verification for every backstop name are still absent. The current exact Live Candidate Quant lineage covers only the 6 event-ranked names. Arbitrary padding is forbidden."
+    "reason": "All 20 watchlist securities now pass fresh Alpaca active/tradable US-equity/common-form checks and both IEX and delayed-SIP reads succeed. However the repository's direct full-market Alpaca runner is explicitly deprecated, while HASOL Live Candidate Quant still provides exact lineage only for the six event-ranked names. There is no current reproducible promotion-grade FULL_MARKET/LIQUID-WATCHLIST backstop artifact/run lineage for the additional 14 names. Arbitrary padding is forbidden."
   },
   "top5_from_legacy_checkpoint": ["SLB", "BMNR", "IDYA", "JAZZ", "ARWR"],
   "action": "PRESERVE_PREVIOUS_POINTER_NO_NEW_CHECKPOINT",
   "failure": {
     "code": "TOP20_INCOMPLETE",
-    "detail": "No new verified prediction input was found in the fresh source recall. The preserved checkpoint still contains 6 ranked names, not exactly 20. Alpaca IEX and delayed-SIP reads succeeded for all 20 watchlist names, but exact deterministic backstop Quant lineage and fresh security-type validation for all 14 backstop candidates remain incomplete, so no promotion-eligible checkpoint was created and the existing pointer remains unchanged."
+    "detail": "Market/feed/security verification is now complete for the 20-name event+backstop watchlist, but exact deterministic backstop Quant lineage is still absent. No promotion-eligible exact-Top20 checkpoint was created and the previous pointer remains unchanged."
   }
 }
