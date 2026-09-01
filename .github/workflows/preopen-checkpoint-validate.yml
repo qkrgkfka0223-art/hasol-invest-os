@@ -33,7 +33,9 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
+      - name: Install validation dependency
+        run: python -m pip install pytest
       - name: Run checkpoint and schema tests
-        run: pytest -q tests/test_preopen_checkpoint_validation.py tests/test_web_event_model.py
+        run: python -m pytest -q tests/test_preopen_checkpoint_validation.py tests/test_web_event_model.py
       - name: Validate all committed preopen checkpoints
         run: python -m scripts.validate_preopen_checkpoint runtime/preopen_checkpoints
