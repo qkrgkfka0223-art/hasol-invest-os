@@ -1,13 +1,13 @@
 {
   "session_schema": "HASOL-WEB-SESSION-v1",
-  "prediction_date_et": "2026-09-01",
-  "run_type": "INTRADAY_EVENT",
-  "eligible_for_prediction": false,
-  "as_of_utc": "2026-09-01T18:09:58Z",
-  "cutoff_et": "2026-09-01T09:30:00-04:00",
-  "rollover_from_prediction_date_et": "2026-08-31",
-  "rollover_policy": "OPEN_SESSION_INTRADAY_NONPREDICTIVE",
+  "prediction_date_et": "2026-09-02",
+  "run_type": "PREMARKET",
+  "eligible_for_prediction": true,
+  "as_of_utc": "2026-09-01T20:14:54Z",
+  "cutoff_et": "2026-09-02T09:30:00-04:00",
+  "rollover_from_prediction_date_et": "2026-09-01",
+  "rollover_policy": "POSTCLOSE_TO_NEXT_PREMARKET_ALPACA_CLOCK",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
-  "stage_marker": "WEB_WATCH_TOP20_EXACT_INTRADAY",
-  "notes": "Alpaca clock confirms the Sep 1 regular session remains open. Recovered YEXT earnings was published pre-open but discovered post-open, so it is recorded as non-predictive INTRADAY_EVENT only and must not alter any pre-open checkpoint or frozen cohort. Legacy thin checkpoints remain audit-only TOP20_CONTRACT_STALE."
+  "stage_marker": "PREMARKET_CONTROLLER_TOP20_EXACT",
+  "notes": "Alpaca clock confirmed 2026-09-01 regular session closed and next regular open 2026-09-02T09:30:00-04:00. Controller rolled canonical session to next-session PREMARKET. Information barrier is the regular open; no fixed-minute cutoff."
 }
