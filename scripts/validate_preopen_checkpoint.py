@@ -20,7 +20,6 @@ REQUIRED_SOURCE_FAMILIES = (
     "FDA_REGULATORY",
     "EARNINGS_GUIDANCE_DIRECT",
 )
-ALLOWED_SOURCE_STATUS = {"ATTEMPTED", "NOT_APPLICABLE"}
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 TICKER = re.compile(r"^[A-Z][A-Z0-9.\-]{0,9}$")
@@ -43,6 +42,11 @@ def _require_sha64(raw: dict[str, Any], field: str) -> None:
     value = str(raw.get(field, "")).strip().lower()
     if not SHA64.fullmatch(value):
         raise ValueError(f"{field} must be a 64-char sha256")
+
+
+def _source_status_valid(value: Any) -> bool:
+    status = str(value or "").upper().strip()
+    return status == "NOT_APPLICABLE" or status.startswith("ATTEMPTED")
 
 
 def _validate_ranked_names(raw: dict[str, Any]) -> list[str]:
@@ -129,9 +133,8 @@ def _validate_common(raw: dict[str, Any], *, path: Path | None) -> tuple[str, da
     if not isinstance(source_coverage, dict):
         raise ValueError("source_coverage must be an object")
     for family in REQUIRED_SOURCE_FAMILIES:
-        status = str(source_coverage.get(family, "")).upper().strip()
-        if status not in ALLOWED_SOURCE_STATUS:
-            raise ValueError(f"source_coverage {family} must be ATTEMPTED or NOT_APPLICABLE")
+        if not _source_status_valid(source_coverage.get(family)):
+            raise ValueError(f"source_coverage {family} must be ATTEMPTED* or NOT_APPLICABLE")
 
     if "PASS" not in str(raw.get("security_type_status", "")).upper():
         raise ValueError("security_type_status must prove PASS")
