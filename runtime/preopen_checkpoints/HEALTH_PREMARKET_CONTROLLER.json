@@ -1,0 +1,22 @@
+{
+  "schema": "HASOL-HEALTH-PREMARKET-CONTROLLER-v1",
+  "prediction_date_et": "2026-09-01",
+  "checked_at_utc": "2026-09-01T01:44:04.143754Z",
+  "status": "PASS_RECOVERED_RECALL_MISS",
+  "latest_valid_checkpoint": "runtime/preopen_checkpoints/2026-09-01/2026-09-01T01-44-04Z-ecf4f54a96b759a02370a43572149b71303269d4736521cecd209e1b3db01fd0.json",
+  "latest_input_sha256": "ecf4f54a96b759a02370a43572149b71303269d4736521cecd209e1b3db01fd0",
+  "live_quant_run_id": 33459814029,
+  "artifact_id": 9782760966,
+  "state_asof_valid": true,
+  "market_data_coverage_pct": 100.0,
+  "eligible_count": 6,
+  "ranked_count": 6,
+  "breadth_warning": true,
+  "recovery": {
+    "missed_events_added": ["SLB-20260831-0650-MA", "MOBX-20260831-0940-MAJOR"],
+    "top5_changed": true,
+    "new_top5": ["SLB", "BMNR", "IDYA", "JAZZ", "ARWR"],
+    "displaced_from_top5": ["AON"]
+  },
+  "failure": null
+}
