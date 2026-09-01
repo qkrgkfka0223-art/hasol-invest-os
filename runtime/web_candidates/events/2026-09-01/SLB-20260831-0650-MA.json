@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T01:40:29Z",
+  "event": {
+    "ticker": "SLB",
+    "event_id": "SLB-20260831-0650-MA",
+    "event_type": "M&A",
+    "event_published_at_utc": "2026-08-31T10:50:00Z",
+    "axis": "KELVION_4P1B_DATA_CENTER_ACQUISITION",
+    "headline": "SLB agrees to acquire Kelvion for $3.4B cash plus $0.7B assumed debt",
+    "flow_path": "$4.1B enterprise-value acquisition -> adds thermal-management platform to fast-growing data-center infrastructure business -> targets >$2B pro-forma 2026 data-center revenue, $120M annual EBITDA synergies and EPS/FCF accretion -> capital repricing",
+    "official_source_url": "https://investorcenter.slb.com/news-releases/news-release-details/slb-acquire-kelvion-expanding-its-role-across-data-center/",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: SLB Limited; us_equity; NYSE; active/tradable",
+    "lineage": {"discovery_class":"controller_direct_source_recall_recovery","source_session_et":"2026-08-31","carryover_reason":"material same-day M&A event was missed by prior recall and remains valid for Sep 1 pre-open prediction"}
+  }
+}

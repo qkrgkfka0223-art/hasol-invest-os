@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T01:40:29Z",
+  "event": {
+    "ticker": "MOBX",
+    "event_id": "MOBX-20260831-0940-MAJOR",
+    "event_type": "MAJOR_NEWS",
+    "event_published_at_utc": "2026-08-31T13:40:00Z",
+    "axis": "VISION_AERIAL_VULCAN_ORDERS_93PCT_2027_GROWTH",
+    "headline": "Mobix Labs highlights Vision Aerial Vulcan orders and projected 93% revenue growth in 2027",
+    "flow_path": "pending acquisition target opens Vulcan drone orders + projects ~46% 2026 and ~93% 2027 revenue growth + established defense/government customers -> strengthens strategic and revenue case for pending acquisition -> potential equity repricing",
+    "official_source_url": "https://investors.mobixlabs.com/investor-relations/",
+    "official_verified": true,
+    "security_type": "CLASS_A_COMMON_STOCK",
+    "security_type_source": "Alpaca asset metadata: Mobix Labs, Inc. Class A Common Stock; us_equity; NASDAQ; active/tradable",
+    "lineage": {"discovery_class":"controller_direct_source_recall_recovery","source_session_et":"2026-08-31","carryover_reason":"material same-day commercial update at pending acquisition target was missed by prior recall and remains valid for Sep 1 pre-open prediction"}
+  }
+}
