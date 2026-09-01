@@ -3,11 +3,11 @@
   "prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-09-01T04:36:19Z",
+  "as_of_utc": "2026-09-01T09:34:04Z",
   "cutoff_et": "2026-09-01T09:30:00-04:00",
   "rollover_from_prediction_date_et": "2026-08-31",
   "rollover_policy": "PREOPEN_RECENCY_CARRYOVER_PLUS_NEW_EVENTS",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
-  "stage_marker": "PREMARKET_BACKUP_REFRESH",
-  "notes": "Alpaca clock confirms market closed with Sep 1 regular open 09:30 ET. Backup freshness gate found prior source/feed/security evidence stale and performed one bounded direct-source recall through 04:36Z. No new verified eligible common-stock event was admitted; KZIA public-offering item was observed but is ADS/security-ineligible and was not fabricated into candidate breadth. Existing append-only event/decision ledger remains unchanged; refresh commit intentionally triggers exact Live Candidate Quant validation."
+  "stage_marker": "PREMARKET_BACKUP_TOP20_EXACT_REFRESH",
+  "notes": "Alpaca clock at 05:34:04 ET confirms market closed with Sep 1 regular open 09:30 ET. Backup refreshed bounded direct-source recall after prior evidence exceeded freshness limits. No new verified eligible US common-stock event was admitted. A current Novartis Phase III remibrutinib release was observed but NVS is an ADR and therefore not eligible for the exact common-stock Top20. Existing append-only event/decision ledger remains unchanged. This unsuppressed prediction-state commit intentionally triggers exact HASOL Live Candidate Quant lineage validation; no checkpoint or preferred pointer is changed unless an exact 20-name contract can be satisfied and checkpoint validation passes."
 }
