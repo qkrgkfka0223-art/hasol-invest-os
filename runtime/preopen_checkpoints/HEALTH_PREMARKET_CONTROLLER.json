@@ -1,7 +1,7 @@
 {
   "schema": "HASOL-HEALTH-PREMARKET-CONTROLLER-v1",
   "prediction_date_et": "2026-09-01",
-  "checked_at_utc": "2026-09-01T05:21:15Z",
+  "checked_at_utc": "2026-09-01T07:17:30Z",
   "status": "TOP20_INCOMPLETE",
   "promotion_contract": "HASOL-TOP20-EXACT-v1",
   "required_top20_count": 20,
@@ -13,21 +13,47 @@
   "legacy_validation_run_id": 33461733522,
   "legacy_validation_status": "SUCCESS_UNDER_PRIOR_THIN_CONTRACT",
   "current_contract_commit_sha": "da3ba30bb39a520615a8c9e397795c72f80c2768",
-  "contract_ci": {
-    "preopen_checkpoint_validate": "PASS",
-    "quant_unit_tests": "PASS",
-    "web_candidate_quant_ci": "PASS",
-    "mover_backtest": "PASS",
-    "live_mover_smoke": "PASS"
-  },
   "market_clock": {
     "is_open": false,
-    "checked_at_et": "2026-09-01T01:21:14.970679-04:00",
-    "next_regular_open_et": "2026-09-01T09:30:00-04:00"
+    "checked_at_et": "2026-09-01T03:16:57.150394-04:00",
+    "next_regular_open_et": "2026-09-01T09:30:00-04:00",
+    "calendar_confirmed": true
+  },
+  "session_state": {
+    "prediction_date_et": "2026-09-01",
+    "run_type": "PREMARKET",
+    "eligible_for_prediction": true,
+    "cutoff_et": "2026-09-01T09:30:00-04:00",
+    "state_asof_utc": "2026-09-01T04:36:19Z",
+    "mutation": "NONE_NO_VERIFIED_NEW_PREDICTION_INPUT"
+  },
+  "source_recall": {
+    "scanned_at_utc": "2026-09-01T07:17:00Z",
+    "window_end_utc": "2026-09-01T07:17:00Z",
+    "families": ["SEC_EDGAR","ISSUER_IR_NEWSROOMS","GLOBENEWSWIRE","PRNEWSWIRE","BUSINESS_WIRE","ACCESS_NEWSWIRE","FDA_REGULATORY_CLINICAL","DIRECT_EARNINGS_GUIDANCE"],
+    "new_verified_material_event_count": 0,
+    "note": "Bounded direct-source recall performed. Search surfaced previously-known BMNR Aug-31 08:30 ET treasury update and non-US/non-eligible items; no new eligible common-stock prediction event was admitted."
+  },
+  "market_feed": {
+    "validated_at_utc": "2026-09-01T07:17:20Z",
+    "primary": "ALPACA_IEX",
+    "status": "PASS_20_OF_20_SNAPSHOT_READ",
+    "completed_session_asof": "2026-08-31",
+    "fallback": "ALPACA_DELAYED_SIP_IF_NEEDED"
+  },
+  "backstop_attempt": {
+    "event_ranked_count": 6,
+    "backstop_needed": 14,
+    "candidate_watchlist_snapshot_coverage": "20_OF_20_IEX_READ_SUCCESS",
+    "exact_full_market_quant_lineage": "NOT_VERIFIED_EXACT_RUN",
+    "security_type_freshness": "INCOMPLETE_FOR_ALL_BACKSTOP_NAMES",
+    "new_checkpoint_created": false,
+    "reason": "Market data path is healthy, but an exact reproducible FULL-MARKET/LIQUID-WATCHLIST Quant run with <=60m security-type verification and exact Live Candidate Quant source/input lineage is still absent. No arbitrary padding permitted."
   },
   "top5_from_legacy_checkpoint": ["SLB", "BMNR", "IDYA", "JAZZ", "ARWR"],
+  "action": "PRESERVE_PREVIOUS_POINTER_NO_NEW_CHECKPOINT",
   "failure": {
     "code": "TOP20_INCOMPLETE",
-    "detail": "Latest preserved checkpoint contains 6 verified ranked names, not exactly 20. Under HASOL-TOP20-EXACT-v1 it is audit-only and cannot be promoted. No arbitrary padding or fabricated events were used."
+    "detail": "Latest preserved checkpoint contains 6 verified ranked names, not exactly 20. Fresh source recall found no new eligible event breadth. Alpaca IEX snapshot reads succeeded for a 20-name event+backstop watchlist, but exact full-market Quant lineage and fresh security-type validation for all backstop names are not yet complete; therefore no new promotion-eligible checkpoint was created."
   }
 }
