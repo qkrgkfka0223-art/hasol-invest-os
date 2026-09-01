@@ -17,6 +17,7 @@ REQUIRED_SOURCE_FAMILIES = (
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 TICKER = re.compile(r"^[A-Z][A-Z0-9.\-]{0,9}$")
+DATE_DIR = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 def _parse_aware(value: Any, field: str) -> datetime:
@@ -213,7 +214,13 @@ def validate_checkpoint(raw: dict[str, Any], *, path: Path | None = None) -> dic
 
 
 def validate_path(path: Path) -> list[dict[str, Any]]:
-    files = [path] if path.is_file() else sorted(path.rglob("*.json"))
+    if path.is_file():
+        files = [path]
+    else:
+        files = sorted(
+            file for file in path.rglob("*.json")
+            if file.is_file() and DATE_DIR.fullmatch(file.parent.name)
+        )
     if not files:
         raise ValueError(f"no checkpoint JSON files found: {path}")
     results = []
