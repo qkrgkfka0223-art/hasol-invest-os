@@ -18,7 +18,7 @@ def _session(as_of: str) -> dict:
         "run_type": "PREMARKET",
         "eligible_for_prediction": True,
         "as_of_utc": as_of,
-        "cutoff_et": "2026-08-31T09:25:00-04:00",
+        "cutoff_et": "2026-08-31T09:30:00-04:00",
     }
 
 
