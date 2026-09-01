@@ -185,7 +185,6 @@ def test_exact_contract_rejects_19_names():
     raw["top20_provenance"].pop(removed)
     raw["top20_count"] = 19
     raw["backstop_count"] = 9
-    raw["ranked_count"] = 19
     with pytest.raises(ValueError, match="exactly 20"): validate_checkpoint(raw)
 
 
