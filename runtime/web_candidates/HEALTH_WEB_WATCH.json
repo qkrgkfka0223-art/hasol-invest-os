@@ -1,6 +1,6 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T06:08:53Z",
+  "updated_at_utc": "2026-09-01T07:55:28.604276Z",
   "target_prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
@@ -12,29 +12,36 @@
   "status": "TOP20_CONTRACT_STALE",
   "alpaca": {
     "clock_status": "ATTEMPTED_OK",
-    "calendar_status": "ATTEMPTED_OK",
     "is_open": false,
-    "checked_at_et": "2026-09-01T02:08:53.004746-04:00",
+    "checked_at_et": "2026-09-01T03:55:28.604276-04:00",
     "next_regular_open_et": "2026-09-01T09:30:00-04:00",
     "next_regular_close_et": "2026-09-01T16:00:00-04:00"
   },
   "source_scan_window": {
-    "window_start_utc": "2026-09-01T03:57:41.238433Z",
-    "window_end_utc": "2026-09-01T06:08:53Z",
+    "window_start_utc": "2026-09-01T06:08:53Z",
+    "window_end_utc": "2026-09-01T07:55:28.604276Z",
     "new_verified_material_event_count": 0
   },
   "source_coverage": {
-    "SEC_EDGAR": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T06:08:53Z", "window_end_utc": "2026-09-01T06:08:53Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
-    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T06:08:53Z", "window_end_utc": "2026-09-01T06:08:53Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
-    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T06:08:53Z", "window_end_utc": "2026-09-01T06:08:53Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
-    "PRNEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T06:08:53Z", "window_end_utc": "2026-09-01T06:08:53Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
-    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T06:08:53Z", "window_end_utc": "2026-09-01T06:08:53Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
-    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T06:08:53Z", "window_end_utc": "2026-09-01T06:08:53Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
-    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T06:08:53Z", "window_end_utc": "2026-09-01T06:08:53Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
-    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T06:08:53Z", "window_end_utc": "2026-09-01T06:08:53Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"}
+    "SEC_EDGAR": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW", "note": "Recent SEC results included previously-known IPEX business-combination deadline extension and FEED reverse split; no new eligible material event admitted."},
+    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
+    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
+    "PRNEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW", "note": "Search surfaced previously-known Three Lions IPO item; unit security remains non-eligible."},
+    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
+    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW", "note": "Current items included non-US/non-material conference and financial-release items; none admitted to the US common-stock prediction ledger."},
+    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"},
+    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T07:55:28.604276Z", "window_end_utc": "2026-09-01T07:55:28.604276Z", "result_count": 0, "count_scope": "VERIFIED_NEW_ELIGIBLE_EVENTS_IN_WINDOW"}
   },
   "source_coverage_status": "PASS",
-  "state_change": "NO_PREDICTION_STATE_CHANGE",
+  "state_change": "CHECKPOINT_POINTER_CONTRACT_NORMALIZATION_ONLY",
+  "session_state": {
+    "prediction_date_et": "2026-09-01",
+    "run_type": "PREMARKET",
+    "eligible_for_prediction": true,
+    "cutoff_et": "2026-09-01T09:30:00-04:00",
+    "as_of_utc": "2026-09-01T04:36:19Z",
+    "mutation": "NONE"
+  },
   "top20_contract": {
     "required_contract": "HASOL-TOP20-EXACT-v1",
     "required_top20_count": 20,
@@ -47,22 +54,14 @@
     "checkpoint_status": "TOP20_CONTRACT_STALE",
     "checkpoint_role": "AUDIT_ONLY",
     "promotion_eligible": false,
-    "reason": "Preferred legacy checkpoint has only 6 unique ranked names and no complete top20_provenance. It cannot satisfy HASOL-TOP20-EXACT-v1 and must not be used as healthy production lineage or an official cohort source."
+    "reason": "Preferred legacy checkpoint has only 6 unique ranked names and incomplete top20_provenance. Pointer normalized to explicit audit-only stale status; underlying immutable checkpoint content and historical lineage were not rewritten."
   },
-  "live_quant": {
-    "status": "SUCCESS_EXACT_SESSION_STATE_LINEAGE_ONLY",
-    "run_id": 33470494077,
-    "source_commit_sha": "6028f478480629825e1b071fb92d95b9f5798680",
-    "state_asof_validation_valid": true,
-    "note": "This exact run validates the current PREMARKET session state only; it does not validate or promote the legacy thin pre-open checkpoint under HASOL-TOP20-EXACT-v1."
+  "healthy_production_lineage": {
+    "checkpoint_available": false,
+    "reason": "NO_EXACT_TOP20_VALIDATED_PREOPEN_CHECKPOINT",
+    "legacy_thin_checkpoint_allowed": false
   },
-  "review_recovery": {
-    "closed_session_date_et": "2026-08-31",
-    "status": "PIPELINE_FAILURE_REVIEW_ALREADY_RECORDED",
-    "reason": "NO_VALID_PREOPEN_CHECKPOINT_FOUND_IN_IMMUTABLE_RUNTIME_LINEAGE",
-    "official_frozen_cohort_verified": false,
-    "duplicate_review_created": false
-  },
+  "official_prediction_created": false,
   "failures": [
     "TOP20_CONTRACT_STALE:PREOPEN-20260901-021200Z-7170f820a812a096:COUNT_6_OF_20",
     "TOP20_PROVENANCE_INCOMPLETE:PREOPEN-20260901-021200Z-7170f820a812a096"

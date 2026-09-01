@@ -8,9 +8,17 @@
   "input_sha256": "7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43",
   "captured_at_utc": "2026-09-01T02:12:00Z",
   "next_regular_open_et": "2026-09-01T09:30:00-04:00",
-  "validation_contract": "HASOL-PREOPEN-STRICT-v1",
-  "validation_workflow": "HASOL Preopen Checkpoint Validate",
-  "validation_run_id": 33461733522,
-  "validation_status": "SUCCESS",
-  "status": "STRICT_VALID"
+  "legacy_validation_contract": "HASOL-PREOPEN-STRICT-v1",
+  "legacy_validation_workflow": "HASOL Preopen Checkpoint Validate",
+  "legacy_validation_run_id": 33461733522,
+  "legacy_validation_status": "SUCCESS_UNDER_PRIOR_THIN_CONTRACT",
+  "production_contract": "HASOL-TOP20-EXACT-v1",
+  "status": "TOP20_CONTRACT_STALE",
+  "checkpoint_role": "AUDIT_ONLY",
+  "promotion_eligible": false,
+  "top20_count": 6,
+  "unique_top20_count": 6,
+  "top5_matches_ranks_1_5": true,
+  "top20_provenance_complete": false,
+  "reason": "Preferred legacy checkpoint does not contain exactly 20 unique Top20 names and lacks complete top20_provenance; preserved for audit only and prohibited from healthy production lineage or official cohort promotion."
 }
