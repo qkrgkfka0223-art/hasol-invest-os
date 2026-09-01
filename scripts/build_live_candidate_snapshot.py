@@ -16,6 +16,13 @@ LEDGER_MANIFEST_SCHEMA = "HASOL-WEB-LEDGER-MANIFEST-v1"
 MATERIALITY_DROP = "MATERIALITY_DROP"
 MATERIALITY_KEEP = "MATERIALITY_KEEP"
 ALLOWED_DECISIONS = {MATERIALITY_DROP, MATERIALITY_KEEP}
+RUN_TYPE_ALIASES = {
+    "PREMARKET": "PREMARKET",
+    "INTRADAY_EVENT": "INTRADAY_EVENT",
+    # Historical writers used INTRADAY. Accept it at the boundary and
+    # canonicalize immediately so a harmless enum drift cannot kill Live Quant.
+    "INTRADAY": "INTRADAY_EVENT",
+}
 
 
 def _canonical_json(value: Any) -> str:
@@ -50,6 +57,14 @@ def _parse_aware_dt(value: str, *, field: str, path: Path) -> datetime:
     return dt.astimezone(timezone.utc)
 
 
+def _canonical_run_type(value: object, *, field: str, path: Path) -> str:
+    raw = str(value or "").upper().strip()
+    canonical = RUN_TYPE_ALIASES.get(raw)
+    if canonical is None:
+        raise ValueError(f"unsupported {field} in {path}: {raw}")
+    return canonical
+
+
 def _json_files(root: Path, prediction_date_et: str) -> list[Path]:
     target = root / prediction_date_et
     if not target.exists():
@@ -73,7 +88,7 @@ def _load_event(path: Path, *, prediction_date_et: str, run_type: str) -> dict[s
         target_date = str(raw.get("prediction_date_et", "")).strip()
         if target_date != prediction_date_et:
             raise ValueError(f"event ledger target date mismatch in {path}: {target_date}")
-        target_run_type = str(raw.get("run_type", run_type)).upper().strip()
+        target_run_type = _canonical_run_type(raw.get("run_type", run_type), field="event run_type", path=path)
         if target_run_type != run_type:
             raise ValueError(f"event ledger run_type mismatch in {path}: {target_run_type}")
         event = raw.get("event")
@@ -93,7 +108,7 @@ def _load_decision(path: Path, *, prediction_date_et: str, run_type: str) -> dic
     target_date = str(raw.get("prediction_date_et", "")).strip()
     if target_date != prediction_date_et:
         raise ValueError(f"decision target date mismatch in {path}: {target_date}")
-    target_run_type = str(raw.get("run_type", run_type)).upper().strip()
+    target_run_type = _canonical_run_type(raw.get("run_type", run_type), field="decision run_type", path=path)
     if target_run_type != run_type:
         raise ValueError(f"decision run_type mismatch in {path}: {target_run_type}")
     event_id = str(raw.get("event_id", "")).strip()
@@ -109,6 +124,7 @@ def _load_decision(path: Path, *, prediction_date_et: str, run_type: str) -> dic
     out["decision_id"] = decision_id
     out["event_id"] = event_id
     out["action"] = action
+    out["run_type"] = target_run_type
     out["decided_at_utc"] = decided_at.isoformat().replace("+00:00", "Z")
     out["_decided_at_sort"] = decided_at.timestamp()
     return out
@@ -130,15 +146,15 @@ def build_snapshot(
     if not prediction_date_et:
         raise ValueError("prediction_date_et is required")
 
-    run_type = str(session.get("run_type", "")).upper().strip()
+    raw_run_type = str(session.get("run_type", "")).upper().strip()
+    run_type = _canonical_run_type(raw_run_type, field="session run_type", path=session_path)
     if run_type == "PREMARKET":
         root = premarket_root
-    elif run_type == "INTRADAY_EVENT":
-        root = intraday_root
     else:
-        raise ValueError("live ledger supports PREMARKET or INTRADAY_EVENT only")
+        root = intraday_root
 
     prediction_eligible = bool(session.get("eligible_for_prediction", False))
+    session_as_of = _parse_aware_dt(str(session.get("as_of_utc", "")), field="as_of_utc", path=session_path)
     cutoff_utc: datetime | None = None
     if run_type == "PREMARKET" and prediction_eligible:
         cutoff_utc = _parse_aware_dt(str(session.get("cutoff_et", "")), field="cutoff_et", path=session_path)
@@ -148,6 +164,21 @@ def build_snapshot(
         (path, _load_event(path, prediction_date_et=prediction_date_et, run_type=run_type))
         for path in event_paths
     ]
+    for path, event in loaded:
+        published_at = _parse_aware_dt(
+            str(event.get("event_published_at_utc", "")), field="event_published_at_utc", path=path
+        )
+        if published_at > session_as_of:
+            raise ValueError(
+                "event publication is newer than session as_of_utc: "
+                f"event_id={event.get('event_id')} published={published_at.isoformat()} session={session_as_of.isoformat()}"
+            )
+        if cutoff_utc is not None and published_at > cutoff_utc:
+            raise ValueError(
+                "premarket event publication is after prediction information barrier: "
+                f"event_id={event.get('event_id')} published={published_at.isoformat()} cutoff={cutoff_utc.isoformat()}"
+            )
+
     loaded.sort(
         key=lambda pair: (
             str(pair[1].get("event_published_at_utc", "")),
@@ -175,6 +206,12 @@ def build_snapshot(
         seen_decision_ids.add(decision_id)
         if str(decision["event_id"]) not in loaded_event_ids:
             raise ValueError(f"materiality decision references unknown event_id in {path}: {decision['event_id']}")
+        decided_at_utc = datetime.fromtimestamp(float(decision["_decided_at_sort"]), tz=timezone.utc)
+        if decided_at_utc > session_as_of:
+            raise ValueError(
+                "materiality decision is newer than session as_of_utc: "
+                f"decision_id={decision_id} decided={decided_at_utc.isoformat()} session={session_as_of.isoformat()}"
+            )
 
     decisions.sort(
         key=lambda pair: (
@@ -283,6 +320,8 @@ def build_snapshot(
         "session_sha256": _sha256_json(session),
         "prediction_date_et": prediction_date_et,
         "run_type": run_type,
+        "run_type_input": raw_run_type,
+        "run_type_canonicalized": raw_run_type != run_type,
         "eligible_for_prediction": prediction_eligible,
         "event_root": (root / prediction_date_et).as_posix(),
         "event_file_count": len(event_paths),
