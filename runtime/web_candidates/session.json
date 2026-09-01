@@ -1,11 +1,13 @@
 {
   "session_schema": "HASOL-WEB-SESSION-v1",
-  "prediction_date_et": "2026-08-31",
-  "run_type": "INTRADAY",
-  "eligible_for_prediction": false,
-  "as_of_utc": "2026-08-31T17:34:45Z",
-  "cutoff_et": "2026-08-31T09:25:00-04:00",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "eligible_for_prediction": true,
+  "as_of_utc": "2026-09-01T00:28:00Z",
+  "cutoff_et": "2026-09-01T09:25:00-04:00",
+  "rollover_from_prediction_date_et": "2026-08-31",
+  "rollover_policy": "POST_CLOSE_NEXT_ALPACA_SESSION",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
-  "stage_marker": "POST_CUTOFF_AUDIT_ADVANCE",
-  "notes": "Verified 2026-08-31 freeze outcome remains NO_PREDICTION. Post-cutoff Web Watch appended SAIC Q2 FY2027 earnings/guidance and TNON private-placement closing as audit-only intraday state. Official frozen history is immutable. Session run_type remains INTRADAY and official prediction eligibility remains false."
+  "stage_marker": "POST_CLOSE_ROLLOVER_RECOVERED",
+  "notes": "Recovered stale/noncanonical closed-session routing after the 2026-08-31 loop. Target is the Alpaca-confirmed 2026-09-01 session. Canonical live run types are PREMARKET and INTRADAY_EVENT only. Still-material prior-session events must be reconciled append-only into this session before cutoff."
 }
