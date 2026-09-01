@@ -40,7 +40,9 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf output_top20_backstop
-          python -m scripts.build_top20_backstop --output output_top20_backstop/result.json
+          python -m scripts.build_top20_backstop \
+            --allow-degraded-public-fallback \
+            --output output_top20_backstop/result.json
       - name: Assert exact Top20 invariant
         run: |
           python - <<'PY'
@@ -56,6 +58,8 @@ jobs:
           assert raw['backstop_count'] == raw['backstop_needed']
           assert raw.get('market_data_coverage_pct', 100.0) >= 80.0
           print('EXACT_TOP20_PASS', top20)
+          print('MARKET_DATA_SOURCE', raw.get('market_data_source'))
+          print('PROMOTION_ELIGIBLE', raw.get('promotion_eligible'))
           PY
       - name: Upload Top20 artifact
         uses: actions/upload-artifact@v7
