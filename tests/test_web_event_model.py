@@ -19,7 +19,7 @@ def _event(**overrides):
     return row
 
 
-def _payload(run_type="PREMARKET", eligible=True, candidates=None, cutoff="2026-08-24T09:25:00-04:00"):
+def _payload(run_type="PREMARKET", eligible=True, candidates=None, cutoff="2026-08-24T09:30:00-04:00"):
     return {
         "schema_version": SCHEMA_VERSION,
         "run_type": run_type,
@@ -44,7 +44,13 @@ def test_dedupes_headline_url_variants_but_preserves_multi_event_ticker():
 
 def test_rejects_future_leakage_for_prediction_eligible_snapshot():
     with pytest.raises(ValueError, match="future leakage"):
-        normalize_payload(_payload(run_type="E2E_SIM", candidates=[_event(event_published_at_utc="2026-08-24T14:00:00Z")]))
+        normalize_payload(
+            _payload(
+                run_type="E2E_SIM",
+                cutoff="2026-08-24T09:25:00-04:00",
+                candidates=[_event(event_published_at_utc="2026-08-24T14:00:00Z")],
+            )
+        )
 
 
 def test_production_requires_verified_primary_source():
@@ -52,9 +58,9 @@ def test_production_requires_verified_primary_source():
         normalize_payload(_payload(candidates=[_event(official_verified=False)]))
 
 
-def test_prediction_cutoff_must_be_exactly_0925_et():
+def test_live_prediction_cutoff_must_equal_regular_open():
     with pytest.raises(ValueError, match="exactly"):
-        normalize_payload(_payload(cutoff="2026-08-24T09:24:00-04:00"))
+        normalize_payload(_payload(cutoff="2026-08-24T09:29:00-04:00"))
 
 
 def test_intraday_event_can_never_modify_prediction():
@@ -73,7 +79,7 @@ def test_intraday_event_published_after_cutoff_is_valid_observation():
         _payload(
             run_type="INTRADAY_EVENT",
             eligible=False,
-            cutoff="2026-08-24T09:25:00-04:00",
+            cutoff="2026-08-24T09:30:00-04:00",
             candidates=[
                 _event(
                     ticker="ROIV",
@@ -93,7 +99,7 @@ def test_intraday_event_still_requires_verified_primary_source():
             _payload(
                 run_type="INTRADAY_EVENT",
                 eligible=False,
-                cutoff="2026-08-24T09:25:00-04:00",
+                cutoff="2026-08-24T09:30:00-04:00",
                 candidates=[
                     _event(
                         event_published_at_utc="2026-08-24T15:00:00Z",
@@ -120,6 +126,12 @@ def test_live_web_watch_run_type_alias_normalizes_to_premarket():
     out = normalize_payload(_payload(run_type="PREMARKET_WATCH"))
     assert out["run_type"] == "PREMARKET"
     assert out["run_type_raw"] == "PREMARKET_WATCH"
+
+
+def test_legacy_intraday_alias_normalizes_to_intraday_event():
+    out = normalize_payload(_payload(run_type="INTRADAY", eligible=False, cutoff=None))
+    assert out["run_type"] == "INTRADAY_EVENT"
+    assert out["run_type_raw"] == "INTRADAY"
 
 
 @pytest.mark.parametrize(
