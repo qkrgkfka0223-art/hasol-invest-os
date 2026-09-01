@@ -140,6 +140,11 @@ def test_legacy_intraday_alias_normalizes_to_intraday_event():
         ("FDA_APPROVAL", "FDA"),
         ("EARNINGS_GUIDANCE", "GUIDANCE"),
         ("LICENSING_FINANCING", "FINANCING"),
+        ("MA", "M&A"),
+        ("M_A", "M&A"),
+        ("MERGER_ACQUISITION", "M&A"),
+        ("MERGER_AND_ACQUISITION", "M&A"),
+        ("MERGERS_ACQUISITIONS", "M&A"),
     ],
 )
 def test_live_web_watch_event_type_aliases_normalize(raw_type, canonical):
