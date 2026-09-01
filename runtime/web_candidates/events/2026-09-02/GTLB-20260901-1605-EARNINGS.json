@@ -1,0 +1,25 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-02",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T21:03:34Z",
+  "event": {
+    "ticker": "GTLB",
+    "event_id": "GTLB-20260901-1605-EARNINGS",
+    "event_type": "EARNINGS",
+    "event_published_at_utc": "2026-09-01T20:05:00Z",
+    "axis": "Q2_FY2027_RESULTS_REVENUE_GROWTH_RETENTION_AND_FY2027_GUIDANCE",
+    "headline": "GitLab reports Q2 FY2027 revenue of $286.3M, 21% growth, 117% DBNRR and FY2027 revenue guidance of $1.129B-$1.133B",
+    "flow_path": "post-close earnings + 21% revenue growth + 117% retention + full-year guidance -> next-session premarket repricing potential",
+    "official_source_url": "https://finance.yahoo.com/markets/stocks/articles/gitlab-reports-second-quarter-fiscal-200500631.html",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: GitLab Inc. Class A Common Stock; us_equity; NASDAQ; active/tradable",
+    "lineage": {
+      "discovery_class": "postclose_to_next_premarket_source_recall",
+      "source_session_et": "2026-09-01",
+      "target_prediction_date_et": "2026-09-02",
+      "source_family": "BUSINESS_WIRE_DIRECT_EARNINGS_REPUBLICATION"
+    }
+  }
+}
