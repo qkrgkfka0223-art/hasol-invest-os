@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "INTRADAY_EVENT",
+  "recorded_at_utc": "2026-09-01T18:09:58Z",
+  "event": {
+    "ticker": "YEXT",
+    "event_id": "YEXT-20260901-0802-EARNINGS",
+    "event_type": "EARNINGS",
+    "event_published_at_utc": "2026-09-01T12:02:31Z",
+    "axis": "Q2_EARNINGS_PROFITABILITY_ENTERPRISE_MOMENTUM",
+    "headline": "Yext reports Q2 FY2027 revenue of $111.1M, non-GAAP EPS of $0.21, record $34.0M adjusted EBITDA and accelerating enterprise ARR cohort momentum",
+    "flow_path": "Q2 earnings + record adjusted EBITDA + improving enterprise retention/expansion + completed GoShine acquisition -> earnings and operating-momentum read-through",
+    "official_source_url": "https://www.sec.gov/Archives/edgar/data/1614178/000162828026059706/ex991q2fy27earningsrelease.htm",
+    "official_verified": true,
+    "security_type": "COMMON_STOCK",
+    "security_type_source": "Alpaca asset metadata: Yext, Inc.; us_equity; NYSE; active/tradable",
+    "lineage": {"discovery_class":"post_open_recovery_of_missed_preopen_release","source_session_et":"2026-09-01","target_prediction_date_et":"2026-09-01","source_family":"SEC_EDGAR_ISSUER_IR_BUSINESS_WIRE_DIRECT_EARNINGS","eligible_for_prediction":false,"preopen_checkpoint_mutation":false,"carry_to_next_session_if_still_material":true}
+  }
+}
