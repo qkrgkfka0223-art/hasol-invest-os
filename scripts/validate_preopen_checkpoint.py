@@ -9,6 +9,7 @@ from typing import Any
 
 SCHEMA = "HASOL-PREOPEN-CHECKPOINT-v1"
 STRICT_CONTRACT = "HASOL-PREOPEN-STRICT-v1"
+TOP20_CONTRACT = "HASOL-TOP20-EXACT-v1"
 INFORMATION_BARRIER = "ALPACA_REGULAR_OPEN"
 REQUIRED_SOURCE_FAMILIES = (
     "SEC_EDGAR", "ISSUER_IR", "GLOBENEWSWIRE", "PRNEWSWIRE",
@@ -54,14 +55,21 @@ def _require_fresh_before_capture(value: Any, field: str, captured: datetime, ma
     return stamp
 
 
-def _validate_ranked_names(raw: dict[str, Any]) -> list[str]:
+def _validate_ranked_names(raw: dict[str, Any], *, exact_top20: bool) -> tuple[list[str], list[str]]:
     top5 = raw.get("top5")
     top20 = raw.get("top20")
     if not isinstance(top5, list) or len(top5) != 5:
         raise ValueError("top5 must contain exactly five rows")
-    if not isinstance(top20, list) or len(top20) < 5:
-        raise ValueError("top20 must contain at least five tickers")
+    if not isinstance(top20, list):
+        raise ValueError("top20 must be a list")
+    if exact_top20 and len(top20) != 20:
+        raise ValueError("top20 must contain exactly 20 tickers")
+    if not exact_top20 and len(top20) < 5:
+        raise ValueError("legacy top20 must contain at least five tickers")
     top20_tickers = [str(x).upper().strip() for x in top20]
+    for ticker in top20_tickers:
+        if not TICKER.fullmatch(ticker):
+            raise ValueError(f"invalid top20 ticker: {ticker}")
     if len(top20_tickers) != len(set(top20_tickers)):
         raise ValueError("top20 tickers must be unique")
     seen: set[str] = set()
@@ -78,18 +86,60 @@ def _validate_ranked_names(raw: dict[str, Any]) -> list[str]:
             raise ValueError("top5 tickers must be unique")
         seen.add(ticker)
         ranked_tickers.append(ticker)
-        if not str(row.get("event_id", "")).strip():
-            raise ValueError(f"top5 event_id required for {ticker}")
         try:
             float(row.get("quant_score"))
         except (TypeError, ValueError) as exc:
             raise ValueError(f"top5 quant_score required for {ticker}") from exc
+        if exact_top20:
+            provenance = str(row.get("provenance", "")).strip().upper()
+            if provenance == "EVENT" and not str(row.get("event_id", "")).strip():
+                raise ValueError(f"top5 event_id required for EVENT ticker {ticker}")
+            if provenance not in {"EVENT", "FULL_MARKET_QUANT_BACKSTOP"}:
+                raise ValueError(f"top5 provenance required for {ticker}")
+        elif not str(row.get("event_id", "")).strip():
+            raise ValueError(f"legacy top5 event_id required for {ticker}")
     if top20_tickers[:5] != ranked_tickers:
         raise ValueError("top20 first five tickers must match top5 rank order")
-    return ranked_tickers
+    return ranked_tickers, top20_tickers
 
 
-def _validate_common(raw: dict[str, Any], *, path: Path | None) -> tuple[str, datetime, datetime, list[str], int, int, float]:
+def _validate_top20_contract(raw: dict[str, Any], *, captured: datetime, top20_tickers: list[str]) -> None:
+    if raw.get("top20_contract") != TOP20_CONTRACT:
+        raise ValueError(f"top20_contract must be {TOP20_CONTRACT}")
+    if int(raw.get("top20_count", -1)) != 20:
+        raise ValueError("top20_count must equal 20")
+    if len(top20_tickers) != 20:
+        raise ValueError("top20 must contain exactly 20 tickers")
+    provenance = raw.get("top20_provenance")
+    if not isinstance(provenance, dict):
+        raise ValueError("top20_provenance must be an object")
+    if set(provenance) != set(top20_tickers):
+        raise ValueError("top20_provenance keys must match all Top20 tickers exactly")
+    backstop_count = 0
+    for ticker in top20_tickers:
+        row = provenance.get(ticker)
+        if not isinstance(row, dict):
+            raise ValueError(f"top20_provenance {ticker} must be an object")
+        source = str(row.get("source", "")).upper().strip()
+        if source not in {"EVENT", "FULL_MARKET_QUANT_BACKSTOP"}:
+            raise ValueError(f"invalid top20 provenance source for {ticker}")
+        try:
+            float(row.get("score"))
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"top20 provenance score required for {ticker}") from exc
+        if not str(row.get("evidence_ref", "")).strip():
+            raise ValueError(f"top20 provenance evidence_ref required for {ticker}")
+        if source == "FULL_MARKET_QUANT_BACKSTOP":
+            backstop_count += 1
+    if int(raw.get("backstop_count", -1)) != backstop_count:
+        raise ValueError("backstop_count must equal Top20 backstop provenance count")
+    if backstop_count:
+        backstop_asof = _parse_aware(raw.get("backstop_asof_utc"), "backstop_asof_utc")
+        if backstop_asof > captured:
+            raise ValueError("backstop_asof_utc cannot be after checkpoint capture")
+
+
+def _validate_common(raw: dict[str, Any], *, path: Path | None, exact_top20: bool) -> tuple[str, datetime, datetime, list[str], list[str], int, int, int, float]:
     if not isinstance(raw, dict):
         raise ValueError("checkpoint must be a JSON object")
     if raw.get("schema") != SCHEMA:
@@ -134,22 +184,21 @@ def _validate_common(raw: dict[str, Any], *, path: Path | None) -> tuple[str, da
         raise ValueError("security_type_status must prove PASS")
     feed_status = str(raw.get("market_feed_status", "")).upper().strip()
     if not feed_status or not any(token in feed_status for token in ("IEX", "SIP", "BOATS", "OVERNIGHT")):
-        raise ValueError("market_feed_status must identify a validated Alpaca feed")
+        raise ValueError("market_feed_status must identify a validated market feed")
     candidate_count = int(raw.get("candidate_count", -1))
     eligible_count = int(raw.get("eligible_count", -1))
     ranked_count = int(raw.get("ranked_count", -1))
     coverage = float(raw.get("market_data_coverage_pct", -1))
-    if candidate_count < 5:
-        raise ValueError("candidate_count must be at least 5")
-    if eligible_count < 5 or ranked_count < 5:
-        raise ValueError("eligible_count and ranked_count must be at least 5")
+    minimum = 20 if exact_top20 else 5
+    if candidate_count < minimum or eligible_count < minimum or ranked_count < minimum:
+        raise ValueError(f"candidate_count, eligible_count and ranked_count must be at least {minimum}")
     if candidate_count < eligible_count or eligible_count < ranked_count:
         raise ValueError("candidate/eligible/ranked counts are inconsistent")
     if coverage < 80.0:
         raise ValueError("market_data_coverage_pct must be at least 80")
     if raw.get("freeze_ready") is not True:
         raise ValueError("freeze_ready must be true")
-    ranked_tickers = _validate_ranked_names(raw)
+    ranked_tickers, top20_tickers = _validate_ranked_names(raw, exact_top20=exact_top20)
     judgment = raw.get("hasol_judgment")
     if not isinstance(judgment, dict) or judgment.get("status") != "VALID_PREOPEN_CHECKPOINT":
         raise ValueError("hasol_judgment.status must be VALID_PREOPEN_CHECKPOINT")
@@ -159,13 +208,16 @@ def _validate_common(raw: dict[str, Any], *, path: Path | None) -> tuple[str, da
         parent_date = path.parent.name
         if parent_date and parent_date != prediction_date:
             raise ValueError(f"checkpoint path date {parent_date} != prediction_date_et {prediction_date}")
-    return prediction_date, captured, regular_open, ranked_tickers, candidate_count, eligible_count, coverage
+    return prediction_date, captured, regular_open, ranked_tickers, top20_tickers, candidate_count, eligible_count, ranked_count, coverage
 
 
 def validate_checkpoint(raw: dict[str, Any], *, path: Path | None = None) -> dict[str, Any]:
-    prediction_date, captured, regular_open, ranked_tickers, candidate_count, eligible_count, coverage = _validate_common(raw, path=path)
-    strict = str(raw.get("validation_contract", "")).strip() == STRICT_CONTRACT
-    if strict:
+    strict_declared = str(raw.get("validation_contract", "")).strip() == STRICT_CONTRACT
+    exact_top20 = raw.get("top20_contract") == TOP20_CONTRACT
+    prediction_date, captured, regular_open, ranked_tickers, top20_tickers, candidate_count, eligible_count, ranked_count, coverage = _validate_common(
+        raw, path=path, exact_top20=exact_top20
+    )
+    if strict_declared:
         if raw.get("information_barrier") != INFORMATION_BARRIER:
             raise ValueError(f"information_barrier must be {INFORMATION_BARRIER}")
         _require_sha64(raw, "ledger_manifest_sha256")
@@ -198,18 +250,30 @@ def validate_checkpoint(raw: dict[str, Any], *, path: Path | None = None) -> dic
             raise ValueError("market_feed_validation is required")
         _require_fresh_before_capture(raw.get("market_feed_validated_at_utc"), "market_feed_validated_at_utc", captured, 1800)
         _require_fresh_before_capture(raw.get("security_type_validated_at_utc"), "security_type_validated_at_utc", captured, 3600)
+    promotion_eligible = strict_declared and exact_top20
+    if exact_top20:
+        if not strict_declared:
+            raise ValueError("exact Top20 checkpoint must also declare strict contract")
+        _validate_top20_contract(raw, captured=captured, top20_tickers=top20_tickers)
+    strict_valid = promotion_eligible
+    archive_class = "PROMOTION_ELIGIBLE_EXACT_TOP20" if promotion_eligible else "LEGACY_IMMUTABLE_ARCHIVE"
     return {
         "checkpoint_id": str(raw["checkpoint_id"]),
         "prediction_date_et": prediction_date,
         "captured_at_utc": captured.isoformat(),
         "regular_open_utc": regular_open.isoformat(),
         "top5": ranked_tickers,
+        "top20_count": len(top20_tickers),
         "candidate_count": candidate_count,
         "eligible_count": eligible_count,
+        "ranked_count": ranked_count,
         "coverage": coverage,
         "valid": True,
-        "strict_valid": strict,
-        "validation_contract": STRICT_CONTRACT if strict else "LEGACY_IMMUTABLE_ARCHIVE",
+        "strict_valid": strict_valid,
+        "promotion_eligible": promotion_eligible,
+        "top20_contract": TOP20_CONTRACT if exact_top20 else None,
+        "validation_contract": STRICT_CONTRACT if strict_declared else "LEGACY_IMMUTABLE_ARCHIVE",
+        "archive_class": archive_class,
     }
 
 
@@ -236,10 +300,10 @@ def main() -> None:
     args = parser.parse_args()
     results = validate_path(Path(args.path))
     print(json.dumps({
-        "schema": "HASOL-PREOPEN-CHECKPOINT-VALIDATION-v1",
+        "schema": "HASOL-PREOPEN-CHECKPOINT-VALIDATION-v2",
         "count": len(results),
-        "strict_count": sum(1 for row in results if row["strict_valid"]),
-        "legacy_count": sum(1 for row in results if not row["strict_valid"]),
+        "promotion_eligible_count": sum(1 for row in results if row["promotion_eligible"]),
+        "legacy_archive_count": sum(1 for row in results if not row["promotion_eligible"]),
         "valid": True,
         "checkpoints": results,
     }, indent=2))
