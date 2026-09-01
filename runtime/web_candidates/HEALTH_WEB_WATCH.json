@@ -1,6 +1,6 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T02:07:48Z",
+  "updated_at_utc": "2026-09-01T02:54:24.979274Z",
   "target_prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
@@ -8,32 +8,51 @@
   "session_rollover_status": "HEALTHY_CURRENT_NEXT_SESSION",
   "schema_name": "HASOL-BRAIN-SCHEMA-v3.1",
   "schema_header_hash": "47fcf952df6179e0284b124a3b7d0439542921a57acaebe7f162e907126d446b",
+  "source_scan_window": {
+    "window_start_utc": "2026-09-01T02:05:01Z",
+    "window_end_utc": "2026-09-01T02:54:24.979274Z",
+    "new_verified_material_event_count": 0
+  },
   "source_coverage": {
-    "SEC_EDGAR": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 0},
-    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 2},
-    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "event_ids": ["SSM-20260831-1721-MA", "DFDV-20260831-1745-FINANCING", "IHT-20260831-1742-FINANCING"]},
-    "PRNEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 1},
-    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 2},
-    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 1},
-    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 1},
-    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:05:01Z", "window_end_utc": "2026-09-01T02:05:01Z", "result_count": 2}
+    "SEC_EDGAR": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:54:24.979274Z", "window_end_utc": "2026-09-01T02:54:24.979274Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
+    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:54:24.979274Z", "window_end_utc": "2026-09-01T02:54:24.979274Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
+    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:54:24.979274Z", "window_end_utc": "2026-09-01T02:54:24.979274Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
+    "PRNEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:54:24.979274Z", "window_end_utc": "2026-09-01T02:54:24.979274Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
+    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:54:24.979274Z", "window_end_utc": "2026-09-01T02:54:24.979274Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
+    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:54:24.979274Z", "window_end_utc": "2026-09-01T02:54:24.979274Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
+    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:54:24.979274Z", "window_end_utc": "2026-09-01T02:54:24.979274Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"},
+    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T02:54:24.979274Z", "window_end_utc": "2026-09-01T02:54:24.979274Z", "result_count": 0, "count_scope": "VERIFIED_NEW_EVENTS_IN_WINDOW"}
   },
   "source_coverage_status": "PASS",
-  "state_change": "SOURCE_RECALL_RECOVERY_SSM_DFDV_IHT",
+  "state_change": "NO_PREDICTION_STATE_CHANGE",
   "review_recovery": {
     "closed_session_date_et": "2026-08-31",
-    "status": "PIPELINE_FAILURE_REVIEW",
+    "status": "PIPELINE_FAILURE_REVIEW_ALREADY_RECORDED",
     "reason": "NO_VALID_PREOPEN_CHECKPOINT_FOUND_IN_IMMUTABLE_RUNTIME_LINEAGE",
     "official_frozen_cohort_verified": false,
     "duplicate_review_created": false
   },
   "live_quant": {
-    "status": "SUCCESS_EXACT_LINEAGE",
+    "status": "SUCCESS_EXACT_LINEAGE_LAST_VALID",
     "run_id": 33461340656,
     "source_commit_sha": "dd3e8db13a397bd3fcafd78505760f431dc55a46",
     "input_sha256": "7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43",
     "ledger_snapshot_input_sha256": "7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43",
     "run_manifest_input_sha256": "7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43",
     "state_asof_validation_valid": true
-  }
+  },
+  "checkpoint_lineage_check": {
+    "status": "DEGRADED_EXACT_RUN_MISSING",
+    "checkpoint_source_commit_sha": "782c3ebb7b8d580ebf8c075a9fe4201fcfe9ee51",
+    "checkpoint_commit_message": "Add strict preopen checkpoint for Sep 1 exact input",
+    "preopen_checkpoint_validate_run_id": 33461733522,
+    "preopen_checkpoint_validate_status": "SUCCESS",
+    "exact_live_candidate_quant_for_checkpoint_commit": "MISSING",
+    "promotable_as_latest_valid_checkpoint": false,
+    "healthy_lineage_pointer_replaced": false,
+    "reason": "RUNTIME_STATE_SAFETY_REQUIRES_EXACT_HASOL_LIVE_CANDIDATE_QUANT_SUCCESS_FOR_CHECKPOINT_SOURCE_COMMIT"
+  },
+  "failures": [
+    "PREOPEN_CHECKPOINT_EXACT_LIVE_QUANT_MISSING:782c3ebb7b8d580ebf8c075a9fe4201fcfe9ee51"
+  ]
 }
