@@ -1,12 +1,12 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T13:53:07Z",
+  "updated_at_utc": "2026-09-01T13:58:56Z",
   "target_prediction_date_et": "2026-09-01",
   "run_type": "INTRADAY_EVENT",
   "eligible_for_prediction": false,
   "cutoff_et": "2026-09-01T09:30:00-04:00",
   "production_contract": "HASOL-TOP20-EXACT-v1",
-  "status": "HEALTHY_INTRADAY_LEGACY_CHECKPOINT_AUDIT_ONLY",
+  "status": "DEGRADED_EXACT_RUN_FAILED",
   "alpaca": {
     "clock_status": "ATTEMPTED_OK",
     "is_open": true,
@@ -18,25 +18,32 @@
     "window_start_utc": "2026-09-01T12:56:22Z",
     "window_end_utc": "2026-09-01T13:53:07Z",
     "new_verified_material_event_count": 3,
-    "event_ids": ["LMB-20260901-0900-MA", "VRTX-20260901-0903-MA-CLOSE", "HMR-20260901-0745-EARNINGS"],
-    "note": "HMR was a missed pre-open release discovered after open; LMB and VRTX were released after the prior 08:56 ET scan and before the regular open. All are recorded now as non-predictive intraday observations and may be carried only to the next session if still material."
-  },
-  "source_coverage": {
-    "SEC_EDGAR": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 1, "event_ids": ["LMB-20260901-0900-MA"]},
-    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 1, "event_ids": ["VRTX-20260901-0903-MA-CLOSE"]},
-    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 1, "event_ids": ["HMR-20260901-0745-EARNINGS"]},
-    "PRNEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 0},
-    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 2, "event_ids": ["LMB-20260901-0900-MA", "VRTX-20260901-0903-MA-CLOSE"]},
-    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 0},
-    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 0},
-    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 1, "event_ids": ["HMR-20260901-0745-EARNINGS"]}
+    "event_ids": ["LMB-20260901-0900-MA", "VRTX-20260901-0903-MA-CLOSE", "HMR-20260901-0745-EARNINGS"]
   },
   "source_coverage_status": "PASS",
-  "session_state": {
-    "prediction_date_et": "2026-09-01",
-    "run_type": "INTRADAY_EVENT",
-    "eligible_for_prediction": false,
-    "as_of_utc": "2026-09-01T13:53:07Z"
+  "state_commit": {
+    "source_commit_sha": "5ddbf1a29c7205976e74a1e60a47050a0c2bbb41",
+    "commit_contains_ci_suppression_token": false,
+    "state_as_of_utc": "2026-09-01T13:53:07Z"
+  },
+  "exact_run": {
+    "workflow": "HASOL Live Candidate Quant",
+    "run_id": 33516644717,
+    "source_commit_sha": "5ddbf1a29c7205976e74a1e60a47050a0c2bbb41",
+    "conclusion": "FAILURE",
+    "failure_step": "Build effective live snapshot",
+    "failure_reason": "INTRADAY_EVENT snapshot builder rejected an existing PREMARKET materiality decision: runtime/web_candidates/decisions/2026-09-01/DEC-DFDV-20260901-PREFERRED-DROP.json run_type=PREMARKET.",
+    "state_asof_validation": "NOT_REACHED",
+    "ledger_manifest_input_sha256": null,
+    "run_manifest_input_sha256": null
+  },
+  "healthy_lineage": {
+    "new_state_healthy": false,
+    "latest_valid_pointer_replaced": false,
+    "prior_healthy_source_commit_sha": "41631ea6a1775bcae43aee6492d2566b32e7031d",
+    "prior_healthy_live_quant_run_id": 33510845296,
+    "prior_healthy_input_sha256": "799b439427dcf9a95b419ed178a62e1082ea50264e4c696167962c9c22d03b60",
+    "prior_healthy_state_asof_valid": true
   },
   "top20_contract": {
     "preferred_checkpoint_status": "TOP20_CONTRACT_STALE",
