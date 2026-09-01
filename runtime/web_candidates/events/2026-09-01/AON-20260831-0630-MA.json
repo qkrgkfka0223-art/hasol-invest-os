@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-08-31T13:14:59Z",
+  "event": {
+    "ticker": "AON",
+    "event_id": "AON-20260831-0630-MA",
+    "event_type": "M&A",
+    "event_published_at_utc": "2026-08-31T10:30:00Z",
+    "axis": "USI_17B_ACQUISITION",
+    "headline": "Aon to acquire USI for $17.0 billion",
+    "flow_path": "$17B USI acquisition -> materially expands U.S. middle-market brokerage scale + $395M targeted run-rate EBITDA impact + near-term leverage increase -> capital repricing",
+    "official_source_url": "https://www.prnewswire.com/news-releases/aon-to-acquire-usi-to-establish-the-premier-us-middle-market-platform-302864628.html",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Aon plc Class A; us_equity; NYSE; active/tradable",
+    "lineage": {"discovery_class":"next_session_carryover","source_session_et":"2026-08-31","carryover_reason":"material M&A event remains within the next-session pre-open recency window"}
+  }
+}

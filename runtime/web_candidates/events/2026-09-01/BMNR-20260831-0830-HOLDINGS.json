@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-08-31T13:14:59Z",
+  "event": {
+    "ticker": "BMNR",
+    "event_id": "BMNR-20260831-0830-HOLDINGS",
+    "event_type": "OTHER_OFFICIAL",
+    "event_published_at_utc": "2026-08-31T12:30:00Z",
+    "axis": "ETH_TREASURY_5P90M_TOKENS",
+    "headline": "BitMine reports ETH holdings of 5.90 million tokens and $15.6 billion total crypto/cash/marketable holdings",
+    "flow_path": "treasury accumulation reaches 4.9% of ETH supply + 5.07M staked ETH -> materially changes crypto-treasury exposure and staking economics -> equity NAV/capital-flow repricing",
+    "official_source_url": "https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-90-million-tokens-and-total-crypto-and-total-cash-holdings-of-15-6-billion-302864579.html",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: BitMine Immersion Technologies, Inc.; us_equity; NYSE; active/tradable operating-company listing",
+    "lineage": {"discovery_class":"next_session_carryover","source_session_et":"2026-08-31","carryover_reason":"material event remains within the next-session pre-open recency window"}
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-08-31T08:25:55Z",
+  "event": {
+    "ticker": "ARWR",
+    "event_id": "ARWR-20260830-1130-CLINICAL",
+    "event_type": "CLINICAL",
+    "event_published_at_utc": "2026-08-30T15:30:00Z",
+    "axis": "PLOZASIRAN_PHASE3_SHASTA_DETAILED_12M_RESULTS",
+    "headline": "Arrowhead Pharmaceuticals Presents Phase 3 SHASTA-3 and SHASTA-4 Data Demonstrating Plozasiran Reduced Acute Pancreatitis Events in Patients with Severe Hypertriglyceridemia",
+    "flow_path": "detailed pivotal Phase 3 12-month data -> 79%/81% median triglyceride reductions + 78% lower cumulative acute pancreatitis events + favorable safety + planned U.S. sNDA before end-2026 -> incremental regulatory/commercial evidence -> capital repricing",
+    "official_source_url": "https://ir.arrowheadpharma.com/news-releases/news-release-details/arrowhead-pharmaceuticals-presents-phase-3-shasta-3-and-shasta-4",
+    "official_verified": true,
+    "security_type": "COMMON_STOCK",
+    "security_type_source": "Alpaca asset metadata: Arrowhead Pharmaceuticals, Inc. Common Stock; us_equity; NASDAQ; active",
+    "lineage": {"discovery_class":"next_session_carryover","source_session_et":"2026-08-31","carryover_reason":"weekend Phase 3 event remains within the next-session pre-open recency window"}
+  }
+}

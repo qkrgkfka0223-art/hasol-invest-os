@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-08-31T13:14:59Z",
+  "event": {
+    "ticker": "JAZZ",
+    "event_id": "JAZZ-20260831-0600-CLINICAL",
+    "event_type": "CLINICAL",
+    "event_published_at_utc": "2026-08-31T10:00:00Z",
+    "axis": "ZIIHERA_PHASE3_OS_BENEFIT",
+    "headline": "Ziihera plus chemotherapy shows statistically significant overall-survival benefit in first-line HER2+ advanced GEA",
+    "flow_path": "Phase 3 second-interim OS benefit -> reinforces recently approved Ziihera first-line backbone positioning -> commercial uptake/de-risking -> capital repricing",
+    "official_source_url": "https://www.prnewswire.com/news-releases/ziihera-zanidatamab-hrii-plus-chemotherapy-demonstrates-statistically-significant-overall-survival-benefit-versus-trastuzumab-plus-chemotherapy-in-first-line-her2-advanced-gea-302864427.html",
+    "official_verified": true,
+    "security_type": "COMMON_STOCK",
+    "security_type_source": "Alpaca asset metadata: Jazz Pharmaceuticals plc Common Stock (Ireland); us_equity; NASDAQ; active/tradable",
+    "lineage": {"discovery_class":"next_session_carryover","source_session_et":"2026-08-31","carryover_reason":"material Phase 3 event remains within the next-session pre-open recency window"}
+  }
+}

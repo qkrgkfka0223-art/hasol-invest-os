@@ -3,11 +3,11 @@
   "prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-09-01T00:32:53Z",
+  "as_of_utc": "2026-09-01T00:35:33Z",
   "cutoff_et": "2026-09-01T09:25:00-04:00",
   "rollover_from_prediction_date_et": "2026-08-31",
-  "rollover_policy": "POST_CLOSE_NEXT_ALPACA_SESSION",
+  "rollover_policy": "PREOPEN_RECENCY_CARRYOVER_PLUS_NEW_EVENTS",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
-  "stage_marker": "SESSION_ROLLOVER_RECOVERED",
-  "notes": "Canonical routing restored to the Alpaca-confirmed 2026-09-01 PREMARKET session. Reconciled the verified PXS 2026-08-31 16:15 ET after-close earnings event into the next-session append-only premarket ledger. Frozen 2026-08-31 prediction history remains immutable."
+  "stage_marker": "PREMARKET_CONTROLLER_REFRESH",
+  "notes": "Controller retained verified next-session material events with preserved discovery timestamps and added no fabricated breadth. Current Sep 1 premarket ledger includes PXS plus BMNR, IDYA, AON, JAZZ and ARWR carryover for a valid liquidity-screened candidate base."
 }
