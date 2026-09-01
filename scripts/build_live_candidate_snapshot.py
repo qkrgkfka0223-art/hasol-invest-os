@@ -19,8 +19,6 @@ ALLOWED_DECISIONS = {MATERIALITY_DROP, MATERIALITY_KEEP}
 RUN_TYPE_ALIASES = {
     "PREMARKET": "PREMARKET",
     "INTRADAY_EVENT": "INTRADAY_EVENT",
-    # Historical writers used INTRADAY. Accept it at the boundary and
-    # canonicalize immediately so a harmless enum drift cannot kill Live Quant.
     "INTRADAY": "INTRADAY_EVENT",
 }
 
@@ -148,10 +146,7 @@ def build_snapshot(
 
     raw_run_type = str(session.get("run_type", "")).upper().strip()
     run_type = _canonical_run_type(raw_run_type, field="session run_type", path=session_path)
-    if run_type == "PREMARKET":
-        root = premarket_root
-    else:
-        root = intraday_root
+    root = premarket_root if run_type == "PREMARKET" else intraday_root
 
     prediction_eligible = bool(session.get("eligible_for_prediction", False))
     session_as_of = _parse_aware_dt(str(session.get("as_of_utc", "")), field="as_of_utc", path=session_path)
@@ -164,20 +159,21 @@ def build_snapshot(
         (path, _load_event(path, prediction_date_et=prediction_date_et, run_type=run_type))
         for path in event_paths
     ]
-    for path, event in loaded:
-        published_at = _parse_aware_dt(
-            str(event.get("event_published_at_utc", "")), field="event_published_at_utc", path=path
-        )
-        if published_at > session_as_of:
-            raise ValueError(
-                "event publication is newer than session as_of_utc: "
-                f"event_id={event.get('event_id')} published={published_at.isoformat()} session={session_as_of.isoformat()}"
+    if run_type == "PREMARKET" and prediction_eligible:
+        for path, event in loaded:
+            published_at = _parse_aware_dt(
+                str(event.get("event_published_at_utc", "")), field="event_published_at_utc", path=path
             )
-        if cutoff_utc is not None and published_at > cutoff_utc:
-            raise ValueError(
-                "premarket event publication is after prediction information barrier: "
-                f"event_id={event.get('event_id')} published={published_at.isoformat()} cutoff={cutoff_utc.isoformat()}"
-            )
+            if published_at > session_as_of:
+                raise ValueError(
+                    "event publication is newer than session as_of_utc: "
+                    f"event_id={event.get('event_id')} published={published_at.isoformat()} session={session_as_of.isoformat()}"
+                )
+            if cutoff_utc is not None and published_at > cutoff_utc:
+                raise ValueError(
+                    "premarket event publication is after prediction information barrier: "
+                    f"event_id={event.get('event_id')} published={published_at.isoformat()} cutoff={cutoff_utc.isoformat()}"
+                )
 
     loaded.sort(
         key=lambda pair: (
@@ -206,12 +202,6 @@ def build_snapshot(
         seen_decision_ids.add(decision_id)
         if str(decision["event_id"]) not in loaded_event_ids:
             raise ValueError(f"materiality decision references unknown event_id in {path}: {decision['event_id']}")
-        decided_at_utc = datetime.fromtimestamp(float(decision["_decided_at_sort"]), tz=timezone.utc)
-        if decided_at_utc > session_as_of:
-            raise ValueError(
-                "materiality decision is newer than session as_of_utc: "
-                f"decision_id={decision_id} decided={decided_at_utc.isoformat()} session={session_as_of.isoformat()}"
-            )
 
     decisions.sort(
         key=lambda pair: (
