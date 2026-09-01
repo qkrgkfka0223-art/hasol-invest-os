@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import yfinance as yf
 
 from hasol_quant.alpaca_client import AlpacaClient
 from hasol_quant.config import Settings
@@ -17,7 +19,6 @@ from hasol_quant.universe import is_common_equity_security_name
 
 SCHEMA = "HASOL-TOP20-BACKSTOP-v1"
 TOP20_CONTRACT = "HASOL-TOP20-EXACT-v1"
-DEFAULT_EVENT_COUNT = 6
 MIN_HISTORY_BARS = 61
 MIN_PRICE = 3.0
 MIN_ADV20_USD = 10_000_000.0
@@ -38,29 +39,26 @@ def _latest_checkpoint(pointer_path: Path) -> tuple[dict[str, Any], str]:
 def _event_rows(checkpoint: dict[str, Any]) -> list[dict[str, Any]]:
     top20 = [str(x).upper().strip() for x in checkpoint.get("top20", []) if str(x).strip()]
     provenance = checkpoint.get("top20_provenance")
-    rows: list[dict[str, Any]] = []
     if isinstance(provenance, dict):
         event_tickers = [t for t in top20 if str((provenance.get(t) or {}).get("source", "")).upper() == "EVENT"]
     else:
-        # Legacy thin pre-open checkpoints were event-only ranked lists.
-        event_tickers = top20
+        event_tickers = top20  # legacy thin checkpoints were event-only lists
     top5_by_ticker = {
         str(row.get("ticker", "")).upper().strip(): row
         for row in checkpoint.get("top5", [])
         if isinstance(row, dict)
     }
+    rows: list[dict[str, Any]] = []
     for rank, ticker in enumerate(event_tickers[:20], start=1):
         top5 = top5_by_ticker.get(ticker, {})
-        rows.append(
-            {
-                "ticker": ticker,
-                "rank": rank,
-                "source": "EVENT",
-                "score": top5.get("quant_score"),
-                "event_id": top5.get("event_id"),
-                "evidence_ref": f"checkpoint:{checkpoint.get('checkpoint_id')}:{ticker}",
-            }
-        )
+        rows.append({
+            "ticker": ticker,
+            "rank": rank,
+            "source": "EVENT",
+            "score": top5.get("quant_score"),
+            "event_id": top5.get("event_id"),
+            "evidence_ref": f"checkpoint:{checkpoint.get('checkpoint_id')}:{ticker}",
+        })
     return rows
 
 
@@ -76,39 +74,88 @@ def _load_watchlist(path: Path) -> pd.DataFrame:
     return frame.loc[allowed & group_ok & frame["ticker"].ne("")].drop_duplicates("ticker").copy()
 
 
+def _has_alpaca_credentials() -> bool:
+    return bool(os.getenv("ALPACA_API_KEY_ID", "").strip() and os.getenv("ALPACA_API_SECRET_KEY", "").strip())
+
+
 def _security_verified_watchlist(client: AlpacaClient, watchlist: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     assets = client.list_active_assets()
     if assets.empty:
         raise RuntimeError("Alpaca active asset list is empty")
     assets["ticker"] = assets["ticker"].astype(str).str.upper().str.strip()
     assets["name_common_equity"] = assets["name"].map(is_common_equity_security_name)
-    mask = (
-        assets["tradable"].eq(True)
-        & assets["name_common_equity"].eq(True)
-        & ~assets["exchange"].astype(str).str.upper().isin({"OTC"})
-    )
+    mask = assets["tradable"].eq(True) & assets["name_common_equity"].eq(True) & ~assets["exchange"].astype(str).str.upper().isin({"OTC"})
     verified = watchlist.merge(assets.loc[mask], on="ticker", how="inner")
     rejected = watchlist.loc[~watchlist["ticker"].isin(set(verified["ticker"]))].copy()
     return verified, rejected
 
 
-def _fetch_bars_with_fallback(symbols: list[str], start_iso: str, end_iso: str) -> tuple[pd.DataFrame, str, dict[str, str]]:
+def _fetch_alpaca_bars(symbols: list[str], start_iso: str, end_iso: str) -> tuple[pd.DataFrame, str, dict[str, str]]:
     errors: dict[str, str] = {}
     for feed in ("sip", "iex"):
         try:
             settings = replace(Settings.from_env(feed=feed), timeout_seconds=30, max_retries=3, batch_size=50)
-            client = AlpacaClient(settings)
-            bars = client.fetch_daily_bars(symbols, start_iso, end_iso)
+            bars = AlpacaClient(settings).fetch_daily_bars(symbols, start_iso, end_iso)
             if bars.empty:
                 errors[feed] = "EMPTY_BARS"
                 continue
-            return bars, feed, errors
-        except Exception as exc:  # failover evidence is persisted in the artifact
+            return bars, feed.upper(), errors
+        except Exception as exc:
             errors[feed] = f"{type(exc).__name__}: {exc}"[:500]
     raise RuntimeError(f"all Alpaca historical feeds failed: {errors}")
 
 
-def build(pointer_path: Path, watchlist_path: Path) -> dict[str, Any]:
+def _fetch_yfinance_bars(symbols: list[str]) -> pd.DataFrame:
+    raw = yf.download(
+        tickers=" ".join(symbols),
+        period="6mo",
+        interval="1d",
+        group_by="ticker",
+        auto_adjust=False,
+        threads=True,
+        progress=False,
+    )
+    if raw.empty:
+        raise RuntimeError("public degraded market-data fallback returned no bars")
+    rows: list[dict[str, Any]] = []
+    multi = isinstance(raw.columns, pd.MultiIndex)
+    for ticker in symbols:
+        try:
+            frame = raw[ticker].copy() if multi else raw.copy()
+        except (KeyError, TypeError):
+            continue
+        frame = frame.dropna(how="all")
+        if frame.empty or "Close" not in frame.columns:
+            continue
+        for stamp, row in frame.iterrows():
+            close = row.get("Close")
+            if pd.isna(close):
+                continue
+            ts = pd.Timestamp(stamp)
+            if ts.tzinfo is None:
+                ts = ts.tz_localize("UTC")
+            else:
+                ts = ts.tz_convert("UTC")
+            rows.append({
+                "ticker": ticker,
+                "timestamp": ts,
+                "open": row.get("Open"),
+                "high": row.get("High"),
+                "low": row.get("Low"),
+                "close": close,
+                "volume": row.get("Volume"),
+                "trade_count": float("nan"),
+                "vwap": float("nan"),
+            })
+    bars = pd.DataFrame(rows)
+    if bars.empty:
+        raise RuntimeError("public degraded fallback could not normalize bars")
+    for col in ["open", "high", "low", "close", "volume", "trade_count", "vwap"]:
+        bars[col] = pd.to_numeric(bars[col], errors="coerce")
+    return bars.sort_values(["ticker", "timestamp"]).reset_index(drop=True)
+
+
+def build(pointer_path: Path, watchlist_path: Path, allow_degraded_public_fallback: bool) -> dict[str, Any]:
     generated = datetime.now(timezone.utc)
     checkpoint, checkpoint_path = _latest_checkpoint(pointer_path)
     event_rows = _event_rows(checkpoint)
@@ -127,26 +174,52 @@ def build(pointer_path: Path, watchlist_path: Path) -> dict[str, Any]:
             "event_count": 20,
             "backstop_needed": 0,
             "backstop_count": 0,
-            "feed": "NOT_NEEDED",
+            "market_data_source": "NOT_NEEDED",
             "fused_top20": fused,
             "event_rows": event_rows[:20],
             "backstop_rows": [],
             "valid_exact_top20": len(fused) == 20 and len(set(fused)) == 20,
+            "promotion_eligible": True,
         }
 
     watchlist = _load_watchlist(watchlist_path)
-    # Do not let a structural backstop duplicate the event-first cohort.
     watchlist = watchlist.loc[~watchlist["ticker"].isin(set(event_tickers))].copy()
 
-    asset_client = AlpacaClient(replace(Settings.from_env(feed="iex"), timeout_seconds=30, max_retries=3))
-    verified, rejected = _security_verified_watchlist(asset_client, watchlist)
+    security_mode = "ALPACA_CONNECTED_IN_ACTION"
+    rejected = pd.DataFrame(columns=watchlist.columns)
+    if _has_alpaca_credentials():
+        asset_client = AlpacaClient(replace(Settings.from_env(feed="iex"), timeout_seconds=30, max_retries=3))
+        verified, rejected = _security_verified_watchlist(asset_client, watchlist)
+    else:
+        if not allow_degraded_public_fallback:
+            raise RuntimeError("missing Alpaca credentials and degraded public fallback is disabled")
+        # Candidate-universe rows are pre-curated; final selected names still require connected Alpaca asset revalidation.
+        verified = watchlist.copy()
+        security_mode = "PENDING_CONNECTED_ALPACA_REVALIDATION"
+
     if len(verified) < backstop_needed:
-        raise RuntimeError(f"security-verified watchlist too small: {len(verified)} < {backstop_needed}")
+        raise RuntimeError(f"watchlist too small after security gate: {len(verified)} < {backstop_needed}")
 
     symbols = ["SPY"] + sorted(set(verified["ticker"]))
     start_iso = (generated - timedelta(days=180)).isoformat().replace("+00:00", "Z")
     end_iso = generated.isoformat().replace("+00:00", "Z")
-    bars, feed, feed_errors = _fetch_bars_with_fallback(symbols, start_iso, end_iso)
+    feed_errors: dict[str, str] = {}
+    promotion_eligible = True
+    if _has_alpaca_credentials():
+        try:
+            bars, market_source, feed_errors = _fetch_alpaca_bars(symbols, start_iso, end_iso)
+        except Exception as exc:
+            if not allow_degraded_public_fallback:
+                raise
+            feed_errors["alpaca_all"] = f"{type(exc).__name__}: {exc}"[:500]
+            bars = _fetch_yfinance_bars(symbols)
+            market_source = "YFINANCE_DEGRADED_TEST_ONLY"
+            promotion_eligible = False
+    else:
+        bars = _fetch_yfinance_bars(symbols)
+        market_source = "YFINANCE_DEGRADED_TEST_ONLY"
+        promotion_eligible = False
+
     features = build_features(bars)
     if features.empty or "SPY" not in set(features["ticker"]):
         raise RuntimeError("feature build missing SPY benchmark")
@@ -161,27 +234,23 @@ def build(pointer_path: Path, watchlist_path: Path) -> dict[str, Any]:
     ranked = ranked[ranked["quant_score"].notna()].copy()
     ranked = ranked[~ranked["ticker"].isin(set(event_tickers))].copy()
     if len(ranked) < backstop_needed:
-        raise RuntimeError(
-            f"ranked backstop too small after history/liquidity/score gates: {len(ranked)} < {backstop_needed}"
-        )
+        raise RuntimeError(f"ranked backstop too small after history/liquidity/score gates: {len(ranked)} < {backstop_needed}")
 
     selected = ranked.head(backstop_needed).copy()
     backstop_rows: list[dict[str, Any]] = []
     for _, row in selected.iterrows():
         ticker = str(row["ticker"])
-        backstop_rows.append(
-            {
-                "ticker": ticker,
-                "source": "FULL_MARKET_QUANT_BACKSTOP",
-                "quant_rank": int(row["quant_rank"]),
-                "score": float(row["quant_score"]),
-                "close": float(row["close"]),
-                "adv20_usd": float(row["adv20_usd"]),
-                "history_bars": int(row["history_bars"]),
-                "as_of_timestamp": pd.Timestamp(row["as_of_timestamp"]).isoformat(),
-                "evidence_ref": f"HASOL-QR-v1.0:{feed}:{ticker}",
-            }
-        )
+        backstop_rows.append({
+            "ticker": ticker,
+            "source": "FULL_MARKET_QUANT_BACKSTOP",
+            "quant_rank": int(row["quant_rank"]),
+            "score": float(row["quant_score"]),
+            "close": float(row["close"]),
+            "adv20_usd": float(row["adv20_usd"]),
+            "history_bars": int(row["history_bars"]),
+            "as_of_timestamp": pd.Timestamp(row["as_of_timestamp"]).isoformat(),
+            "evidence_ref": f"HASOL-QR-v1.0:{market_source}:{ticker}",
+        })
 
     fused = event_tickers + [row["ticker"] for row in backstop_rows]
     if len(fused) != 20 or len(set(fused)) != 20:
@@ -190,6 +259,11 @@ def build(pointer_path: Path, watchlist_path: Path) -> dict[str, Any]:
     covered = set(bars["ticker"].astype(str).str.upper())
     requested_market = set(symbols)
     coverage = len(covered & requested_market) / max(1, len(requested_market)) * 100.0
+    if coverage < 80.0:
+        raise RuntimeError(f"market-data coverage too low: {coverage:.2f}%")
+    if security_mode != "ALPACA_CONNECTED_IN_ACTION":
+        promotion_eligible = False
+
     return {
         "schema": SCHEMA,
         "top20_contract": TOP20_CONTRACT,
@@ -200,10 +274,11 @@ def build(pointer_path: Path, watchlist_path: Path) -> dict[str, Any]:
         "event_count": len(event_tickers),
         "backstop_needed": backstop_needed,
         "backstop_count": len(backstop_rows),
-        "feed": feed.upper(),
-        "feed_failover_errors": feed_errors,
+        "market_data_source": market_source,
+        "market_data_failover_errors": feed_errors,
+        "security_validation_mode": security_mode,
         "watchlist_count": int(len(watchlist)),
-        "security_verified_count": int(len(verified)),
+        "security_candidate_count": int(len(verified)),
         "security_rejected": sorted(set(rejected["ticker"])) if not rejected.empty else [],
         "market_symbol_count_requested": len(requested_market),
         "market_symbol_count_covered": len(covered & requested_market),
@@ -213,6 +288,7 @@ def build(pointer_path: Path, watchlist_path: Path) -> dict[str, Any]:
         "backstop_rows": backstop_rows,
         "fused_top20": fused,
         "valid_exact_top20": True,
+        "promotion_eligible": promotion_eligible,
     }
 
 
@@ -221,9 +297,9 @@ def main() -> None:
     parser.add_argument("--pointer", default="runtime/preopen_checkpoints/LATEST_VALID_PREOPEN_CHECKPOINT.json")
     parser.add_argument("--watchlist", default="data/candidate_universe.csv")
     parser.add_argument("--output", default="output_top20_backstop/result.json")
+    parser.add_argument("--allow-degraded-public-fallback", action="store_true")
     args = parser.parse_args()
-
-    result = build(Path(args.pointer), Path(args.watchlist))
+    result = build(Path(args.pointer), Path(args.watchlist), args.allow_degraded_public_fallback)
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
