@@ -1,47 +1,61 @@
 {
   "schema": "HASOL-HEALTH-PREMARKET-BACKUP-v1",
-  "prediction_date_et": "2026-09-01",
-  "checked_at_utc": "2026-09-01T06:27:13Z",
+  "prediction_date_et": "2026-09-02",
+  "checked_at_utc": "2026-09-01T20:25:56Z",
   "status": "TOP20_INCOMPLETE",
   "production_contract": "HASOL-TOP20-EXACT-v1",
   "session_state": {
-    "prediction_date_et": "2026-09-01",
+    "prediction_date_et": "2026-09-02",
     "run_type": "PREMARKET",
     "eligible_for_prediction": true,
-    "cutoff_et": "2026-09-01T09:30:00-04:00"
+    "cutoff_et": "2026-09-02T09:30:00-04:00",
+    "state_asof_utc": "2026-09-01T20:14:54Z"
   },
   "alpaca": {
     "clock_status": "PASS",
     "is_open": false,
-    "checked_at_et": "2026-09-01T02:27:13.690105-04:00",
-    "next_regular_open_et": "2026-09-01T09:30:00-04:00",
-    "next_regular_close_et": "2026-09-01T16:00:00-04:00",
-    "historical_data_status": "PARTIAL_CONNECTED_READ_SUCCESS"
-  },
-  "source_evidence": {
-    "latest_complete_scan_at_utc": "2026-09-01T06:08:53Z",
-    "fresh_within_60_minutes": true,
-    "new_verified_material_event_count": 0
+    "checked_at_et": "2026-09-01T16:25:56.146058-04:00",
+    "next_regular_open_et": "2026-09-02T09:30:00-04:00",
+    "next_regular_close_et": "2026-09-02T16:00:00-04:00",
+    "calendar_confirmed": true
   },
   "latest_pointer": {
+    "prediction_date_et": "2026-09-01",
     "checkpoint_id": "PREOPEN-20260901-021200Z-7170f820a812a096",
-    "checkpoint_path": "runtime/preopen_checkpoints/2026-09-01/2026-09-01T02-12-00Z-7170f820a812a0965cc65f1f3e6498bde3185570a8ef57fa79e6a40ad31fdc43.json",
     "legacy_top20_count": 6,
     "role_under_exact_contract": "AUDIT_ONLY",
     "promotion_eligible": false,
     "pointer_changed": false
   },
-  "backstop_attempt": {
-    "approved_universe": "data/candidate_universe.csv groups A/B execution_allowed yes|conditional",
-    "event_ranked_count": 6,
-    "backstop_needed": 14,
-    "full_quant_lineage_status": "NOT_VERIFIED_EXACT_RUN",
-    "new_checkpoint_created": false,
-    "reason": "Connected Alpaca market data recovered, but the approved liquid-watchlist/full-market Quant backstop has not completed as one exact reproducible run with all common-stock, liquidity, data, security, freshness and source/input lineage gates. Degraded/test rankings are non-promotable."
+  "target_state": {
+    "target_prediction_date_et": "2026-09-02",
+    "strict_checkpoint_exists": false,
+    "target_event_ledger_exists": false,
+    "target_source_coverage_fresh": false,
+    "target_security_validation_fresh": false,
+    "target_market_feed_validation_fresh": false,
+    "exact_live_quant_verified": false,
+    "exact_top20_verified": false,
+    "checkpoint_validation_pass": false
+  },
+  "code_integrity": {
+    "open_hardening_pr": 31,
+    "purpose": "PREMARKET/INTRADAY shared-decision-ledger isolation and restore contract",
+    "head_sha": "0c90f8ef86e31cfa0da022cbecb17fff8ede5f99",
+    "ci": {
+      "HASOL Live Candidate Quant": "SUCCESS",
+      "HASOL Web Candidate Quant CI": "SUCCESS",
+      "HASOL Quant Unit Tests": "SUCCESS",
+      "HASOL live mover smoke": "SUCCESS",
+      "HASOL mover backtest": "SUCCESS"
+    },
+    "on_main": false
   },
   "action": "PRESERVE_PREVIOUS_POINTER_NO_NEW_CHECKPOINT",
   "failures": [
-    "TOP20_INCOMPLETE:EVENT_6_BACKSTOP_14_NOT_EXACT_LINEAGE_VERIFIED",
-    "LEGACY_CHECKPOINT_AUDIT_ONLY:PREOPEN-20260901-021200Z-7170f820a812a096"
-  ]
+    "TOP20_INCOMPLETE:NO_2026-09-02_STRICT_CHECKPOINT_YET",
+    "TARGET_SOURCE_SECURITY_FEED_LINEAGE_NOT_YET_VERIFIED",
+    "LEGACY_2026-09-01_CHECKPOINT_AUDIT_ONLY"
+  ],
+  "note": "Alpaca confirmed the 2026-09-01 regular session is closed and the next regular open is 2026-09-02 09:30 ET. Canonical session has rolled to 2026-09-02 PREMARKET, but no target-date strict checkpoint or complete target-date source/security/feed/exact-Quant lineage exists yet. Fail closed; do not fabricate Top20 and do not mutate the legacy pointer."
 }
