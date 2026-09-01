@@ -1,6 +1,6 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T00:39:26Z",
+  "updated_at_utc": "2026-09-01T00:41:12Z",
   "target_prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
@@ -21,10 +21,13 @@
   "source_coverage_status": "PASS",
   "state_change": "TLACU_SOURCE_RECALL_SECURITY_TYPE_DROP",
   "live_quant": {
-    "status": "PENDING_CURRENT_COMMIT_RUN",
-    "last_verified_run_id": 33455224996,
-    "last_verified_source_commit_sha": "06951ecf8af9dc85930f6f352120712be92b14eb",
-    "last_verified_input_sha256": "d678aa2920fabbdbb5808b6dcdcdfc136741cbab7235ca0b99cec45be8a8e3af",
-    "last_verified_state_asof_validation_valid": true
+    "status": "VERIFIED",
+    "run_id": 33455698769,
+    "source_commit_sha": "1e66a9c074a31b2fe51f5511dc6104b5e402b180",
+    "input_sha256": "1005cdaaf3632836df9cc4d6629208c34856492905ceaf261c345a347283f752",
+    "ledger_snapshot_input_sha256": "1005cdaaf3632836df9cc4d6629208c34856492905ceaf261c345a347283f752",
+    "run_manifest_input_sha256": "1005cdaaf3632836df9cc4d6629208c34856492905ceaf261c345a347283f752",
+    "state_asof_validation_valid": true,
+    "quality_status": "NO_PREDICTION"
   }
 }
