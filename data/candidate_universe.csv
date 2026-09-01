@@ -35,7 +35,7 @@ RXRX,B,biotech_ai,clinical_partner,AI drug discovery catalyst,liquid,high,condit
 SDGR,B,biotech_ai,clinical_partner,AI drug discovery platform catalyst,medium,high,conditional
 CRVO,B,biotech,clinical_sec,clinical/SEC cluster watch,medium,high,conditional
 PRTA,B,biotech,clinical,neuro biotech event watch,medium,high,conditional
-ABVX,B,biotech,clinical,biotech momentum/event validation,liquid,high,conditional
+ABVX,B,biotech,clinical,ADS excluded from common-stock production backstop,liquid,high,no
 APGE,B,biotech,clinical,biotech clinical event validation,medium,high,conditional
 ABSI,B,biotech_ai,partnership,AI biotech partnership/momentum,medium,high,conditional
 ARQQ,C,review,mover,recurring mover review only,medium,high,no
