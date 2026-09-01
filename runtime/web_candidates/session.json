@@ -3,11 +3,11 @@
   "prediction_date_et": "2026-09-02",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-09-01T21:05:38Z",
+  "as_of_utc": "2026-09-01T21:23:14Z",
   "cutoff_et": "2026-09-02T09:30:00-04:00",
   "rollover_from_prediction_date_et": "2026-09-01",
   "rollover_policy": "POSTCLOSE_TO_NEXT_PREMARKET_ALPACA_CLOCK",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
-  "stage_marker": "PREMARKET_WEB_WATCH_SOURCE_RECOVERY_TOP20_EXACT",
-  "notes": "Alpaca clock at 2026-09-01T17:05:38-04:00 confirmed market closed and next regular open 2026-09-02T09:30:00-04:00. Web Watch appended verified post-close Sep. 1 events for PANW, GTLB and RRGB to the Sep. 2 PREMARKET ledger. No official prediction or checkpoint promotion created; legacy thin checkpoints remain non-production lineage."
+  "stage_marker": "PREMARKET_TOP20_EXACT_COMMON_STOCK_REBUILD",
+  "notes": "Alpaca clock at 2026-09-01T17:23:14-04:00 confirmed market closed and next regular open 2026-09-02T09:30:00-04:00. Exact run 33559131474 produced 20 names but ABVX failed the common-stock gate because Alpaca identifies it as American Depositary Shares. ABVX was removed from the approved production backstop and this session revision triggers an exact rerun. No checkpoint or pointer promotion is allowed until the rerun and all downstream gates pass."
 }
