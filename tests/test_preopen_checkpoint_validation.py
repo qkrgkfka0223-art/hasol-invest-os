@@ -10,6 +10,7 @@ from scripts.validate_preopen_checkpoint import validate_checkpoint
 def _checkpoint():
     return {
         "schema": "HASOL-PREOPEN-CHECKPOINT-v1",
+        "validation_contract": "HASOL-PREOPEN-STRICT-v1",
         "checkpoint_id": "PREOPEN-20260901-012710Z-" + "a" * 16,
         "prediction_date_et": "2026-09-01",
         "captured_at_utc": "2026-09-01T01:27:10Z",
@@ -61,10 +62,25 @@ def _checkpoint():
     }
 
 
-def test_valid_checkpoint_passes():
+def test_valid_checkpoint_passes_strict_contract():
     result = validate_checkpoint(_checkpoint())
     assert result["valid"] is True
+    assert result["strict_valid"] is True
     assert result["top5"] == ["AAA", "BBB", "CCC", "DDD", "EEE"]
+
+
+def test_legacy_immutable_checkpoint_remains_auditable_but_not_strict():
+    raw = _checkpoint()
+    raw.pop("validation_contract")
+    raw.pop("information_barrier")
+    raw.pop("ledger_manifest_sha256")
+    raw.pop("state_asof_valid")
+    raw.pop("source_coverage_basis")
+    raw.pop("market_feed_validation")
+    result = validate_checkpoint(raw)
+    assert result["valid"] is True
+    assert result["strict_valid"] is False
+    assert result["validation_contract"] == "LEGACY_IMMUTABLE_ARCHIVE"
 
 
 def test_checkpoint_at_or_after_open_is_rejected():
@@ -95,6 +111,20 @@ def test_unavailable_required_source_is_rejected():
         validate_checkpoint(raw)
 
 
+def test_strict_contract_requires_information_barrier():
+    raw = _checkpoint()
+    raw.pop("information_barrier")
+    with pytest.raises(ValueError, match="information_barrier"):
+        validate_checkpoint(raw)
+
+
+def test_strict_contract_requires_state_asof_proof():
+    raw = _checkpoint()
+    raw.pop("state_asof_valid")
+    with pytest.raises(ValueError, match="state_asof_valid"):
+        validate_checkpoint(raw)
+
+
 def test_duplicate_top5_is_rejected():
     raw = _checkpoint()
     raw["top5"][4]["ticker"] = "AAA"
@@ -115,4 +145,4 @@ def test_thin_but_valid_five_name_checkpoint_passes():
     raw["eligible_count"] = 5
     raw["ranked_count"] = 5
     raw["top20"] = raw["top20"][:5]
-    assert validate_checkpoint(raw)["valid"] is True
+    assert validate_checkpoint(raw)["strict_valid"] is True
