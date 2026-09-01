@@ -10,6 +10,11 @@ from typing import Any
 SESSION_SCHEMA = "HASOL-WEB-SESSION-v1"
 DECISION_SCHEMA = "HASOL-WEB-DECISION-v1"
 EVENT_SCHEMA = "HASOL-WEB-EVENT-v1"
+RUN_TYPE_ALIASES = {
+    "PREMARKET": "PREMARKET",
+    "INTRADAY_EVENT": "INTRADAY_EVENT",
+    "INTRADAY": "INTRADAY_EVENT",
+}
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -30,6 +35,14 @@ def _parse_aware(value: object, *, field: str, path: Path) -> datetime:
     if dt.tzinfo is None:
         raise ValueError(f"{field} must be timezone-aware in {path}")
     return dt.astimezone(timezone.utc)
+
+
+def _canonical_run_type(value: object, *, field: str, path: Path) -> str:
+    raw = str(value or "").upper().strip()
+    canonical = RUN_TYPE_ALIASES.get(raw)
+    if canonical is None:
+        raise ValueError(f"unsupported {field} in {path}: {raw}")
+    return canonical
 
 
 def _iso(dt: datetime | None) -> str | None:
@@ -62,9 +75,8 @@ def validate_state_asof(
     prediction_date_et = str(session.get("prediction_date_et", "")).strip()
     if not prediction_date_et:
         raise ValueError("prediction_date_et is required")
-    run_type = str(session.get("run_type", "")).upper().strip()
-    if run_type not in {"PREMARKET", "INTRADAY_EVENT"}:
-        raise ValueError(f"unsupported run_type: {run_type}")
+    raw_run_type = str(session.get("run_type", "")).upper().strip()
+    run_type = _canonical_run_type(raw_run_type, field="session run_type", path=session_path)
 
     session_as_of = _parse_aware(session.get("as_of_utc"), field="as_of_utc", path=session_path)
     cutoff: datetime | None = None
@@ -72,6 +84,9 @@ def validate_state_asof(
         cutoff = _parse_aware(session.get("cutoff_et"), field="cutoff_et", path=session_path)
 
     effective = _read_json(effective_input_path)
+    effective_run_type = _canonical_run_type(effective.get("run_type"), field="effective run_type", path=effective_input_path)
+    if effective_run_type != run_type:
+        raise ValueError(f"effective input run_type does not match session: effective={effective_run_type} session={run_type}")
     effective_as_of = _parse_aware(effective.get("as_of_utc"), field="as_of_utc", path=effective_input_path)
     if effective_as_of != session_as_of:
         raise ValueError(
@@ -85,8 +100,16 @@ def validate_state_asof(
         raw = _read_json(path)
         if raw.get("decision_schema") != DECISION_SCHEMA:
             raise ValueError(f"decision_schema must be {DECISION_SCHEMA} in {path}")
+        decision_run_type = _canonical_run_type(raw.get("run_type", run_type), field="decision run_type", path=path)
+        if decision_run_type != run_type:
+            raise ValueError(f"decision run_type mismatch in {path}: {decision_run_type}")
         decision_id = str(raw.get("decision_id", "")).strip()
         decided_at = _parse_aware(raw.get("decided_at_utc"), field="decided_at_utc", path=path)
+        if decided_at > session_as_of:
+            raise ValueError(
+                "session as_of_utc predates a materiality decision: "
+                f"decision_id={decision_id} decided={_iso(decided_at)} session={_iso(session_as_of)}"
+            )
         applies = cutoff is None or decided_at <= cutoff
         if applies:
             applicable_decisions.append((decision_id, decided_at))
@@ -94,22 +117,35 @@ def validate_state_asof(
             ignored_post_cutoff.append(decision_id)
 
     max_decision = max((dt for _, dt in applicable_decisions), default=None)
-    if max_decision is not None and max_decision > session_as_of:
-        raise ValueError(
-            "session as_of_utc predates an applicable materiality decision: "
-            f"session={_iso(session_as_of)} latest_decision={_iso(max_decision)}"
-        )
 
     event_root = premarket_root if run_type == "PREMARKET" else intraday_root
     event_files = _files(event_root, prediction_date_et)
     recorded_events: list[tuple[str, datetime]] = []
+    published_events: list[tuple[str, datetime]] = []
     late_recorded_event_ids: list[str] = []
     for path in event_files:
         raw = _read_json(path)
+        if raw.get("ledger_schema") == EVENT_SCHEMA or "event" in raw:
+            event_run_type = _canonical_run_type(raw.get("run_type", run_type), field="event run_type", path=path)
+            if event_run_type != run_type:
+                raise ValueError(f"event run_type mismatch in {path}: {event_run_type}")
         event = raw.get("event") if raw.get("ledger_schema") == EVENT_SCHEMA or "event" in raw else raw
         if not isinstance(event, dict):
             raise ValueError(f"event object required in {path}")
         event_id = str(event.get("event_id", "")).strip()
+        published_at = _parse_aware(event.get("event_published_at_utc"), field="event_published_at_utc", path=path)
+        published_events.append((event_id, published_at))
+        if published_at > session_as_of:
+            raise ValueError(
+                "session as_of_utc predates event publication: "
+                f"event_id={event_id} published={_iso(published_at)} session={_iso(session_as_of)}"
+            )
+        if cutoff is not None and published_at > cutoff:
+            raise ValueError(
+                "premarket event publication is after prediction information barrier: "
+                f"event_id={event_id} published={_iso(published_at)} cutoff={_iso(cutoff)}"
+            )
+
         lineage = event.get("lineage") if isinstance(event.get("lineage"), dict) else {}
         recorded_value = raw.get("recorded_at_utc") or lineage.get("discovered_at_utc")
         if recorded_value:
@@ -124,11 +160,14 @@ def validate_state_asof(
                 late_recorded_event_ids.append(event_id)
 
     max_event_recorded = max((dt for _, dt in recorded_events), default=None)
+    max_event_published = max((dt for _, dt in published_events), default=None)
     report = {
-        "schema": "HASOL-LIVE-STATE-ASOF-v1",
+        "schema": "HASOL-LIVE-STATE-ASOF-v2",
         "valid": True,
         "prediction_date_et": prediction_date_et,
         "run_type": run_type,
+        "run_type_input": raw_run_type,
+        "run_type_canonicalized": raw_run_type != run_type,
         "session_as_of_utc": _iso(session_as_of),
         "effective_input_as_of_utc": _iso(effective_as_of),
         "cutoff_utc": _iso(cutoff),
@@ -137,6 +176,8 @@ def validate_state_asof(
         "ignored_post_cutoff_decision_ids": sorted(ignored_post_cutoff),
         "max_applicable_decision_at_utc": _iso(max_decision),
         "event_file_count": len(event_files),
+        "published_event_count": len(published_events),
+        "max_published_event_at_utc": _iso(max_event_published),
         "recorded_event_count": len(recorded_events),
         "max_recorded_event_at_utc": _iso(max_event_recorded),
         "late_recorded_event_ids": sorted(set(late_recorded_event_ids)),
