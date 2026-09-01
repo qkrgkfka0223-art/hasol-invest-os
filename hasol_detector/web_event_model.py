@@ -12,6 +12,7 @@ NY = ZoneInfo("America/New_York")
 
 RUN_TYPE_ALIASES = {
     "PREMARKET_WATCH": "PREMARKET",
+    "INTRADAY": "INTRADAY_EVENT",
 }
 ALLOWED_RUN_TYPES = {"PREMARKET", "INTRADAY_EVENT", "E2E_SIM", "SYSTEM_TEST"}
 
@@ -83,7 +84,10 @@ def _validate_run_cutoff(payload: dict[str, Any], run_type: str, production: boo
         raise ValueError("prediction_date_et required for prediction-eligible run")
     prediction_date = datetime.fromisoformat(str(raw_date)).date()
     cutoff_et = cutoff.astimezone(NY)
-    expected = datetime.combine(prediction_date, time(9, 25), tzinfo=NY)
+    # Live PREMARKET now uses the regular market open as the information barrier.
+    # Historical E2E fixtures retain the legacy 09:25 barrier for reproducibility.
+    expected_clock = time(9, 30) if run_type == "PREMARKET" else time(9, 25)
+    expected = datetime.combine(prediction_date, expected_clock, tzinfo=NY)
     if cutoff_et != expected:
         raise ValueError(f"prediction cutoff must be exactly {expected.isoformat()}")
 
@@ -112,9 +116,6 @@ def _validate_event(
     published = _parse_dt(item.get("event_published_at_utc"))
     if require_official and published is None:
         raise ValueError(f"event_published_at_utc required for official candidate {ticker}")
-    # The information barrier applies only to prediction-eligible snapshots.
-    # INTRADAY_EVENT is explicitly non-predictive and may contain events published
-    # after the 09:25 cutoff; rejecting those observations breaks the live watch loop.
     if prediction_eligible and cutoff is not None and published is not None and published > cutoff:
         raise ValueError(f"future leakage: {ticker} event published after cutoff")
 
