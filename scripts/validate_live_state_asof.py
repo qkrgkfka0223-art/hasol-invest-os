@@ -84,7 +84,7 @@ def validate_state_asof(
         cutoff = _parse_aware(session.get("cutoff_et"), field="cutoff_et", path=session_path)
 
     effective = _read_json(effective_input_path)
-    effective_run_type = _canonical_run_type(effective.get("run_type"), field="effective run_type", path=effective_input_path)
+    effective_run_type = _canonical_run_type(effective.get("run_type", run_type), field="effective run_type", path=effective_input_path)
     if effective_run_type != run_type:
         raise ValueError(f"effective input run_type does not match session: effective={effective_run_type} session={run_type}")
     effective_as_of = _parse_aware(effective.get("as_of_utc"), field="as_of_utc", path=effective_input_path)
@@ -105,13 +105,13 @@ def validate_state_asof(
             raise ValueError(f"decision run_type mismatch in {path}: {decision_run_type}")
         decision_id = str(raw.get("decision_id", "")).strip()
         decided_at = _parse_aware(raw.get("decided_at_utc"), field="decided_at_utc", path=path)
-        if decided_at > session_as_of:
-            raise ValueError(
-                "session as_of_utc predates a materiality decision: "
-                f"decision_id={decision_id} decided={_iso(decided_at)} session={_iso(session_as_of)}"
-            )
         applies = cutoff is None or decided_at <= cutoff
         if applies:
+            if decided_at > session_as_of:
+                raise ValueError(
+                    "session as_of_utc predates an applicable materiality decision: "
+                    f"session={_iso(session_as_of)} latest_decision={_iso(decided_at)}"
+                )
             applicable_decisions.append((decision_id, decided_at))
         else:
             ignored_post_cutoff.append(decision_id)
@@ -133,18 +133,21 @@ def validate_state_asof(
         if not isinstance(event, dict):
             raise ValueError(f"event object required in {path}")
         event_id = str(event.get("event_id", "")).strip()
-        published_at = _parse_aware(event.get("event_published_at_utc"), field="event_published_at_utc", path=path)
-        published_events.append((event_id, published_at))
-        if published_at > session_as_of:
-            raise ValueError(
-                "session as_of_utc predates event publication: "
-                f"event_id={event_id} published={_iso(published_at)} session={_iso(session_as_of)}"
-            )
-        if cutoff is not None and published_at > cutoff:
-            raise ValueError(
-                "premarket event publication is after prediction information barrier: "
-                f"event_id={event_id} published={_iso(published_at)} cutoff={_iso(cutoff)}"
-            )
+
+        published_value = event.get("event_published_at_utc")
+        if published_value:
+            published_at = _parse_aware(published_value, field="event_published_at_utc", path=path)
+            published_events.append((event_id, published_at))
+            if published_at > session_as_of:
+                raise ValueError(
+                    "session as_of_utc predates event publication: "
+                    f"event_id={event_id} published={_iso(published_at)} session={_iso(session_as_of)}"
+                )
+            if cutoff is not None and published_at > cutoff:
+                raise ValueError(
+                    "premarket event publication is after prediction information barrier: "
+                    f"event_id={event_id} published={_iso(published_at)} cutoff={_iso(cutoff)}"
+                )
 
         lineage = event.get("lineage") if isinstance(event.get("lineage"), dict) else {}
         recorded_value = raw.get("recorded_at_utc") or lineage.get("discovered_at_utc")
