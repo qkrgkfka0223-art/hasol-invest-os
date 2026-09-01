@@ -1,0 +1,26 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T01:31:00Z",
+  "event": {
+    "ticker": "IPEX",
+    "event_id": "IPEX-20260831-1729-MA",
+    "event_type": "MA",
+    "event_published_at_utc": "2026-08-31T21:29:07Z",
+    "axis": "BUSINESS_COMBINATION_AGREEMENT_AMENDMENT",
+    "headline": "Inflection Point Acquisition Corp. V files an 8-K reporting amendments to its business combination agreement and related support arrangements ahead of the September 3 shareholder vote",
+    "flow_path": "after-close SEC merger-agreement amendment + near-term shareholder vote -> next-session transaction repricing potential",
+    "official_source_url": "https://www.sec.gov/Archives/edgar/data/2028355/000121390026095807/0001213900-26-095807-index.htm",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Inflection Point Acquisition Corp. V Class A Ordinary Shares; us_equity; NASDAQ; active/tradable; units and rights trade separately",
+    "lineage": {
+      "discovery_class": "after_close_next_session_reconciliation",
+      "source_session_et": "2026-08-31",
+      "target_prediction_date_et": "2026-09-01",
+      "source_close_et": "2026-08-31T16:00:00-04:00",
+      "source_family": "SEC_EDGAR"
+    }
+  }
+}

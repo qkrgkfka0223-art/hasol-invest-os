@@ -3,11 +3,11 @@
   "prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-09-01T00:39:26Z",
+  "as_of_utc": "2026-09-01T01:31:00Z",
   "cutoff_et": "2026-09-01T09:30:00-04:00",
   "rollover_from_prediction_date_et": "2026-08-31",
   "rollover_policy": "PREOPEN_RECENCY_CARRYOVER_PLUS_NEW_EVENTS",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
-  "stage_marker": "PREMARKET_CONTROLLER_REFRESH",
-  "notes": "Regular market open is the prediction information barrier. Controller carryover state preserved. Web Watch added source-recall TLACU after-close IPO audit plus append-only unit-security MATERIALITY_DROP; frozen prior-session cohorts remain immutable."
+  "stage_marker": "WEB_WATCH_REFRESH",
+  "notes": "Regular market open is the prediction information barrier. Existing Sep 1 preopen checkpoints remain immutable. Added after-close SEC M&A amendment evidence for IPEX; prior-session frozen history remains immutable."
 }

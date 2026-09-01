@@ -1,33 +1,38 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T00:41:12Z",
+  "updated_at_utc": "2026-09-01T01:31:00Z",
   "target_prediction_date_et": "2026-09-01",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "cutoff_et": "2026-09-01T09:25:00-04:00",
-  "session_rollover_status": "SESSION_ROLLOVER_RECOVERED",
+  "cutoff_et": "2026-09-01T09:30:00-04:00",
+  "session_rollover_status": "HEALTHY_CURRENT_NEXT_SESSION",
   "schema_name": "HASOL-BRAIN-SCHEMA-v3.1",
   "schema_header_hash": "47fcf952df6179e0284b124a3b7d0439542921a57acaebe7f162e907126d446b",
   "source_coverage": {
-    "SEC_EDGAR": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
-    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
-    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
-    "PRNEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
-    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
-    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
-    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"},
-    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T00:39:26Z"}
+    "SEC_EDGAR": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
+    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
+    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
+    "PRNEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
+    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
+    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
+    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"},
+    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scan_at_utc": "2026-09-01T01:30:26Z"}
   },
   "source_coverage_status": "PASS",
-  "state_change": "TLACU_SOURCE_RECALL_SECURITY_TYPE_DROP",
+  "state_change": "IPEX_AFTER_CLOSE_SEC_MA_APPEND",
+  "review_recovery": {
+    "closed_session_date_et": "2026-08-31",
+    "status": "PIPELINE_FAILURE_REVIEW",
+    "reason": "NO_VALID_PREOPEN_CHECKPOINT_FOUND_IN_IMMUTABLE_RUNTIME_LINEAGE",
+    "official_frozen_cohort_verified": false,
+    "duplicate_review_created": false
+  },
   "live_quant": {
-    "status": "VERIFIED",
-    "run_id": 33455698769,
-    "source_commit_sha": "1e66a9c074a31b2fe51f5511dc6104b5e402b180",
-    "input_sha256": "1005cdaaf3632836df9cc4d6629208c34856492905ceaf261c345a347283f752",
-    "ledger_snapshot_input_sha256": "1005cdaaf3632836df9cc4d6629208c34856492905ceaf261c345a347283f752",
-    "run_manifest_input_sha256": "1005cdaaf3632836df9cc4d6629208c34856492905ceaf261c345a347283f752",
-    "state_asof_validation_valid": true,
-    "quality_status": "NO_PREDICTION"
+    "status": "PENDING",
+    "source_commit_sha": null,
+    "input_sha256": null,
+    "ledger_snapshot_input_sha256": null,
+    "run_manifest_input_sha256": null,
+    "state_asof_validation_valid": null
   }
 }
