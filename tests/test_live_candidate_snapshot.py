@@ -14,7 +14,7 @@ def _session(*, run_type="PREMARKET", eligible=True):
         "run_type": run_type,
         "eligible_for_prediction": eligible,
         "as_of_utc": "2026-08-31T13:20:00Z",
-        "cutoff_et": "2026-08-31T09:25:00-04:00",
+        "cutoff_et": "2026-08-31T09:30:00-04:00",
     }
 
 
