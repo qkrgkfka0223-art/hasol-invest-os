@@ -1,92 +1,54 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T13:01:09Z",
+  "updated_at_utc": "2026-09-01T13:53:07Z",
   "target_prediction_date_et": "2026-09-01",
-  "run_type": "PREMARKET",
-  "eligible_for_prediction": true,
+  "run_type": "INTRADAY_EVENT",
+  "eligible_for_prediction": false,
   "cutoff_et": "2026-09-01T09:30:00-04:00",
-  "session_rollover_status": "HEALTHY_CURRENT_SESSION_PREOPEN",
   "production_contract": "HASOL-TOP20-EXACT-v1",
-  "status": "TOP20_CONTRACT_STALE",
+  "status": "HEALTHY_INTRADAY_LEGACY_CHECKPOINT_AUDIT_ONLY",
   "alpaca": {
     "clock_status": "ATTEMPTED_OK",
-    "is_open": false,
-    "checked_at_et": "2026-09-01T08:56:22.016146-04:00",
-    "next_regular_open_et": "2026-09-01T09:30:00-04:00",
+    "is_open": true,
+    "checked_at_et": "2026-09-01T09:53:07.805081-04:00",
+    "next_regular_open_et": "2026-09-02T09:30:00-04:00",
     "next_regular_close_et": "2026-09-01T16:00:00-04:00"
   },
   "source_scan_window": {
-    "window_start_utc": "2026-09-01T11:58:59Z",
-    "window_end_utc": "2026-09-01T12:56:22Z",
+    "window_start_utc": "2026-09-01T12:56:22Z",
+    "window_end_utc": "2026-09-01T13:53:07Z",
     "new_verified_material_event_count": 3,
-    "recovered_event_ids": [
-      "MMED-20260901-0645-EARNINGS",
-      "ENOV-20260901-0645-MA",
-      "ACET-20260901-0700-CLINICAL"
-    ],
-    "prior_scan_assessment": "FALSE_PASS_SOURCE_RECALL_GAP_RECOVERED"
+    "event_ids": ["LMB-20260901-0900-MA", "VRTX-20260901-0903-MA-CLOSE", "HMR-20260901-0745-EARNINGS"],
+    "note": "HMR was a missed pre-open release discovered after open; LMB and VRTX were released after the prior 08:56 ET scan and before the regular open. All are recorded now as non-predictive intraday observations and may be carried only to the next session if still material."
   },
   "source_coverage": {
-    "SEC_EDGAR": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T12:56:22Z", "window_end_utc": "2026-09-01T12:56:22Z", "result_count": 2, "event_ids": ["ENOV-20260901-0645-MA", "ACET-20260901-0700-CLINICAL"]},
-    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T12:56:22Z", "window_end_utc": "2026-09-01T12:56:22Z", "result_count": 2, "event_ids": ["ENOV-20260901-0645-MA", "ACET-20260901-0700-CLINICAL"]},
-    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T12:56:22Z", "window_end_utc": "2026-09-01T12:56:22Z", "result_count": 1, "event_ids": ["ENOV-20260901-0645-MA"]},
-    "PRNEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T12:56:22Z", "window_end_utc": "2026-09-01T12:56:22Z", "result_count": 1, "event_ids": ["MMED-20260901-0645-EARNINGS"]},
-    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T12:56:22Z", "window_end_utc": "2026-09-01T12:56:22Z", "result_count": 1, "event_ids": ["ACET-20260901-0700-CLINICAL"]},
-    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T12:56:22Z", "window_end_utc": "2026-09-01T12:56:22Z", "result_count": 0},
-    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T12:56:22Z", "window_end_utc": "2026-09-01T12:56:22Z", "result_count": 1, "event_ids": ["ACET-20260901-0700-CLINICAL"]},
-    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T12:56:22Z", "window_end_utc": "2026-09-01T12:56:22Z", "result_count": 1, "event_ids": ["MMED-20260901-0645-EARNINGS"]}
+    "SEC_EDGAR": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 1, "event_ids": ["LMB-20260901-0900-MA"]},
+    "ISSUER_IR_NEWSROOMS": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 1, "event_ids": ["VRTX-20260901-0903-MA-CLOSE"]},
+    "GLOBENEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 1, "event_ids": ["HMR-20260901-0745-EARNINGS"]},
+    "PRNEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 0},
+    "BUSINESS_WIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 2, "event_ids": ["LMB-20260901-0900-MA", "VRTX-20260901-0903-MA-CLOSE"]},
+    "ACCESS_NEWSWIRE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 0},
+    "FDA_REGULATORY_CLINICAL": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 0},
+    "DIRECT_EARNINGS_GUIDANCE": {"status": "ATTEMPTED", "scanned_at_utc": "2026-09-01T13:53:07Z", "window_end_utc": "2026-09-01T13:53:07Z", "result_count": 1, "event_ids": ["HMR-20260901-0745-EARNINGS"]}
   },
-  "source_coverage_status": "PASS_AFTER_RECOVERY",
-  "state_change": "PREDICTION_EVENT_STATE_MUTATED_SINGLE_UNSUPPRESSED_COMMIT",
+  "source_coverage_status": "PASS",
   "session_state": {
     "prediction_date_et": "2026-09-01",
-    "run_type": "PREMARKET",
-    "eligible_for_prediction": true,
-    "cutoff_et": "2026-09-01T09:30:00-04:00",
-    "as_of_utc": "2026-09-01T12:56:22Z",
-    "source_commit_sha": "41631ea6a1775bcae43aee6492d2566b32e7031d"
-  },
-  "session_lineage": {
-    "live_quant_run_id": 33510845296,
-    "live_quant_conclusion": "SUCCESS",
-    "source_commit_sha": "41631ea6a1775bcae43aee6492d2566b32e7031d",
-    "ledger_snapshot_input_sha256": "799b439427dcf9a95b419ed178a62e1082ea50264e4c696167962c9c22d03b60",
-    "run_manifest_input_sha256": "799b439427dcf9a95b419ed178a62e1082ea50264e4c696167962c9c22d03b60",
-    "candidate_input_sha256": "799b439427dcf9a95b419ed178a62e1082ea50264e4c696167962c9c22d03b60",
-    "state_asof_valid": true
-  },
-  "live_quant_top20_preview": {
-    "contract": "HASOL-TOP20-EXACT-v1",
-    "top20_count": 20,
-    "unique_top20_count": 20,
-    "top5_matches_ranks_1_5": true,
-    "top20_provenance_complete": true,
-    "top5": ["BMNR", "SLB", "MMED", "IDYA", "JAZZ"],
-    "note": "Exact-20 Live Quant output is detection/validation output only. Web Watch did not create or promote a checkpoint or official prediction."
+    "run_type": "INTRADAY_EVENT",
+    "eligible_for_prediction": false,
+    "as_of_utc": "2026-09-01T13:53:07Z"
   },
   "top20_contract": {
-    "required_contract": "HASOL-TOP20-EXACT-v1",
-    "preferred_checkpoint_pointer": "runtime/preopen_checkpoints/LATEST_VALID_PREOPEN_CHECKPOINT.json",
-    "pointed_checkpoint_id": "PREOPEN-20260901-021200Z-7170f820a812a096",
-    "pointed_checkpoint_top20_count": 6,
-    "pointed_checkpoint_unique_top20_count": 6,
-    "top5_matches_ranks_1_5": true,
-    "top20_provenance_complete": false,
-    "checkpoint_status": "TOP20_CONTRACT_STALE",
+    "preferred_checkpoint_status": "TOP20_CONTRACT_STALE",
     "checkpoint_role": "AUDIT_ONLY",
     "promotion_eligible": false,
-    "reason": "Live Quant now emits exact Top20 for the current verified state, but no controller/backup-created exact-Top20 validated pre-open checkpoint has replaced the legacy thin preferred checkpoint."
-  },
-  "healthy_production_lineage": {
-    "session_event_state_exact": true,
-    "live_quant_exact_top20_output": true,
-    "checkpoint_available": false,
-    "reason": "NO_EXACT_TOP20_VALIDATED_PREOPEN_CHECKPOINT_PROMOTED_BY_CHECKPOINT_OWNER",
-    "legacy_thin_checkpoint_allowed": false
+    "top20_count": 6,
+    "unique_top20_count": 6,
+    "top5_matches_ranks_1_5": true,
+    "top20_provenance_complete": false,
+    "legacy_thin_checkpoint_allowed_as_healthy_lineage": false
   },
   "official_prediction_created": false,
-  "failures": [
-    "TOP20_CONTRACT_STALE:PREOPEN-20260901-021200Z-7170f820a812a096:COUNT_6_OF_20",
-    "TOP20_PROVENANCE_INCOMPLETE:PREOPEN-20260901-021200Z-7170f820a812a096"
-  ]
+  "preopen_checkpoint_mutated": false,
+  "frozen_cohort_mutated": false
 }
