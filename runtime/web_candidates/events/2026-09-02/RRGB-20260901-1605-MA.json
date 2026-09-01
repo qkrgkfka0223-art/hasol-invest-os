@@ -1,0 +1,25 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-02",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T21:03:34Z",
+  "event": {
+    "ticker": "RRGB",
+    "event_id": "RRGB-20260901-1605-MA",
+    "event_type": "MA",
+    "event_published_at_utc": "2026-09-01T20:05:00Z",
+    "axis": "108_RESTAURANT_REFRANCHISING_CLOSE_AND_DEBT_REDUCTION",
+    "headline": "Red Robin completes sale of 108 company-owned restaurants for approximately $89.4M, with proceeds directed to debt reduction and refinancing",
+    "flow_path": "post-close asset-sale completion + material cash proceeds + debt reduction/refinancing -> next-session balance-sheet repricing potential",
+    "official_source_url": "https://www.prnewswire.com/news-releases/red-robin-gourmet-burgers-inc-completes-sale-of-108-restaurants-for-89-4-million-302866759.html",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Red Robin Gourmet Burgers, Inc. Common Stock; us_equity; NASDAQ; active/tradable",
+    "lineage": {
+      "discovery_class": "postclose_to_next_premarket_source_recall",
+      "source_session_et": "2026-09-01",
+      "target_prediction_date_et": "2026-09-02",
+      "source_family": "PRNEWSWIRE_DIRECT_MA"
+    }
+  }
+}
