@@ -1,0 +1,25 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-02",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-01T21:03:34Z",
+  "event": {
+    "ticker": "PANW",
+    "event_id": "PANW-20260901-1605-EARNINGS",
+    "event_type": "EARNINGS",
+    "event_published_at_utc": "2026-09-01T20:05:00Z",
+    "axis": "FY2026_Q4_RESULTS_AND_FY2027_GUIDANCE_WITH_NGS_ARR_ACCELERATION",
+    "headline": "Palo Alto Networks reports fiscal Q4 revenue of $3.41B, NGS ARR of $9.10B, and issues FY2027 outlook after the Sep. 1 close",
+    "flow_path": "post-close earnings + 34% revenue growth + 63% NGS ARR growth + forward guidance -> next-session premarket repricing potential",
+    "official_source_url": "https://www.prnewswire.com/news-releases/palo-alto-networks-reports-fiscal-fourth-quarter-and-fiscal-year-2026-financial-results-302866744.html",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Palo Alto Networks, Inc. Common Stock; us_equity; NASDAQ; active/tradable",
+    "lineage": {
+      "discovery_class": "postclose_to_next_premarket_source_recall",
+      "source_session_et": "2026-09-01",
+      "target_prediction_date_et": "2026-09-02",
+      "source_family": "PRNEWSWIRE_DIRECT_EARNINGS"
+    }
+  }
+}
