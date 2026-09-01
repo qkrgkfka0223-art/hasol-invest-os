@@ -3,11 +3,11 @@
   "prediction_date_et": "2026-09-01",
   "run_type": "INTRADAY_EVENT",
   "eligible_for_prediction": false,
-  "as_of_utc": "2026-09-01T13:53:07Z",
+  "as_of_utc": "2026-09-01T16:02:42Z",
   "cutoff_et": "2026-09-01T09:30:00-04:00",
   "rollover_from_prediction_date_et": "2026-08-31",
   "rollover_policy": "OPEN_SESSION_INTRADAY_NONPREDICTIVE",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
   "stage_marker": "WEB_WATCH_TOP20_EXACT_INTRADAY",
-  "notes": "Alpaca clock confirms the Sep 1 regular session is open. Web Watch is therefore routed to INTRADAY_EVENT and non-predictive for Sep 1. Post-open discovery must not mutate any pre-open checkpoint or frozen cohort. Legacy thin checkpoints remain audit-only TOP20_CONTRACT_STALE."
+  "notes": "Alpaca clock confirms the Sep 1 regular session remains open. New and recovered observations are non-predictive INTRADAY_EVENT only and must not alter any pre-open checkpoint or frozen cohort. Legacy thin checkpoints remain audit-only TOP20_CONTRACT_STALE."
 }

@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "INTRADAY_EVENT",
+  "recorded_at_utc": "2026-09-01T13:53:07Z",
+  "event": {
+    "ticker": "VRTX",
+    "event_id": "VRTX-20260901-0903-MA-CLOSE",
+    "event_type": "M&A",
+    "event_published_at_utc": "2026-09-01T13:03:00Z",
+    "axis": "CRINETICS_ACQUISITION_COMPLETION",
+    "headline": "Vertex completes approximately $10B Crinetics acquisition and expands executive leadership",
+    "flow_path": "large strategic acquisition close + endocrine growth-pillar integration + disclosed long-term accretion timing -> post-open valuation/integration read-through",
+    "official_source_url": "https://news.vrtx.com/news-releases/news-release-details/vertex-completes-acquisition-crinetics-pharmaceuticals-and",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Vertex Pharmaceuticals Incorporated Common Stock; us_equity; NASDAQ; active/tradable",
+    "lineage": {"discovery_class":"post_open_source_recall","source_session_et":"2026-09-01","target_prediction_date_et":"2026-09-01","source_family":"ISSUER_IR_BUSINESS_WIRE","eligible_for_prediction":false,"preopen_checkpoint_mutation":false,"carry_to_next_session_if_still_material":true}
+  }
+}

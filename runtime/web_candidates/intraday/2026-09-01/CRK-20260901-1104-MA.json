@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "INTRADAY_EVENT",
+  "recorded_at_utc": "2026-09-01T16:02:42Z",
+  "event": {
+    "ticker": "CRK",
+    "event_id": "CRK-20260901-1104-MA",
+    "event_type": "M&A",
+    "event_published_at_utc": "2026-09-01T15:04:22Z",
+    "axis": "SOCAR_STRATEGIC_PARTNERSHIP_HAYNESVILLE",
+    "headline": "Comstock announces $1.65B strategic partnership with SOCAR and a $450M Haynesville drilling joint venture",
+    "flow_path": "$1.65B asset-interest transaction LOI + $450M drilling funding structure -> balance-sheet, development-capital and valuation read-through",
+    "official_source_url": "https://www.sec.gov/Archives/edgar/data/23194/000119312526377822/crk-20260901.htm",
+    "official_verified": true,
+    "security_type": "COMMON_STOCK",
+    "security_type_source": "SEC 8-K identifies Common Stock, ticker CRK, NYSE/NYSE Texas; Alpaca metadata: active tradable us_equity",
+    "lineage": {"discovery_class":"post_open_source_recall","source_session_et":"2026-09-01","target_prediction_date_et":"2026-09-01","source_family":"SEC_EDGAR_ISSUER_RELEASE","eligible_for_prediction":false,"preopen_checkpoint_mutation":false,"carry_to_next_session_if_still_material":true}
+  }
+}

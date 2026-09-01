@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "INTRADAY_EVENT",
+  "recorded_at_utc": "2026-09-01T16:02:42Z",
+  "event": {
+    "ticker": "UPB",
+    "event_id": "UPB-20260901-0700-CLINICAL",
+    "event_type": "CLINICAL",
+    "event_published_at_utc": "2026-09-01T11:00:00Z",
+    "axis": "VEREKITUG_PHASE3_FDA_ALIGNED_PLAN",
+    "headline": "Upstream Bio details FDA-aligned pivotal Phase 3 plans for verekitug in severe asthma and CRSwNP",
+    "flow_path": "productive FDA discussions + defined 400mg quarterly pivotal design + Q1 2027 Phase 3 starts -> late-stage clinical and regulatory de-risking read-through",
+    "official_source_url": "https://www.globenewswire.com/news-release/2026/09/01/3353967/0/en/upstream-bio-announces-pivotal-phase-3-development-plans-for-verekitug-in-both-severe-asthma-and-crswnp.html",
+    "official_verified": true,
+    "security_type": "COMMON_STOCK",
+    "security_type_source": "Alpaca asset metadata: Upstream Bio, Inc. Common Stock; us_equity; NASDAQ; active/tradable",
+    "lineage": {"discovery_class":"post_open_recovery_of_missed_preopen_release","source_session_et":"2026-09-01","target_prediction_date_et":"2026-09-01","source_family":"GLOBENEWSWIRE_SEC_8K_FDA_CLINICAL","eligible_for_prediction":false,"preopen_checkpoint_mutation":false,"carry_to_next_session_if_still_material":true}
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "INTRADAY_EVENT",
+  "recorded_at_utc": "2026-09-01T13:53:07Z",
+  "event": {
+    "ticker": "LMB",
+    "event_id": "LMB-20260901-0900-MA",
+    "event_type": "M&A",
+    "event_published_at_utc": "2026-09-01T13:00:00Z",
+    "axis": "ACQUISITION_1901_MIDWEST_SCALE",
+    "headline": "Limbach acquires 1901 Inc. for $63M plus up to $6M earn-outs, expanding Midwest MEPC scale",
+    "flow_path": "acquisition close + disclosed purchase price + 2027 revenue/EBITDA contribution -> integration and estimate-revision potential",
+    "official_source_url": "https://www.businesswire.com/news/home/20260901295925/en/Limbach-Acquires-Wisconsin-Based-MEP-Contractor-1901-Inc.",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Limbach Holdings, Inc. Common Stock; us_equity; NASDAQ; active/tradable",
+    "lineage": {"discovery_class":"post_open_source_recall","source_session_et":"2026-09-01","target_prediction_date_et":"2026-09-01","source_family":"BUSINESS_WIRE_SEC_8K","eligible_for_prediction":false,"preopen_checkpoint_mutation":false,"carry_to_next_session_if_still_material":true}
+  }
+}

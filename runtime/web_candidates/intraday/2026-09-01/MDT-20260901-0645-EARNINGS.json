@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "INTRADAY_EVENT",
+  "recorded_at_utc": "2026-09-01T16:02:42Z",
+  "event": {
+    "ticker": "MDT",
+    "event_id": "MDT-20260901-0645-EARNINGS",
+    "event_type": "GUIDANCE",
+    "event_published_at_utc": "2026-09-01T10:45:00Z",
+    "axis": "Q1_FY27_BEAT_GUIDANCE_RAISE",
+    "headline": "Medtronic reports strong Q1 FY2027 results and raises organic revenue growth and adjusted EPS guidance",
+    "flow_path": "broad-based Q1 outperformance + raised FY27 organic growth/EPS outlook + portfolio catalysts -> estimate-revision read-through",
+    "official_source_url": "https://news.medtronic.com/2026-09-01-Medtronic-reports-first-quarter-fiscal-2027-results-delivers-broad-based-portfolio-performance-and-raises-fiscal-2027-guidance",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Medtronic plc; us_equity; NYSE; active/tradable",
+    "lineage": {"discovery_class":"post_open_recovery_of_missed_preopen_release","source_session_et":"2026-09-01","target_prediction_date_et":"2026-09-01","source_family":"ISSUER_IR_PRNEWSWIRE_DIRECT_EARNINGS","eligible_for_prediction":false,"preopen_checkpoint_mutation":false,"carry_to_next_session_if_still_material":true}
+  }
+}

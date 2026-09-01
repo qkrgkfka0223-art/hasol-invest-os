@@ -1,0 +1,20 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-01",
+  "run_type": "INTRADAY_EVENT",
+  "recorded_at_utc": "2026-09-01T16:02:42Z",
+  "event": {
+    "ticker": "RZLV",
+    "event_id": "RZLV-20260901-0800-EARNINGS",
+    "event_type": "EARNINGS",
+    "event_published_at_utc": "2026-09-01T12:00:00Z",
+    "axis": "H1_REVENUE_SCALE_GUIDANCE_REAFFIRMED",
+    "headline": "Rezolve Ai reports $130.8M H1 revenue, up nearly 21-fold, and reaffirms approximately $360M FY2026 revenue guidance",
+    "flow_path": "extreme H1 revenue acceleration + customer expansion + FY2026 revenue/ARR targets reaffirmed -> earnings and estimate-revision read-through",
+    "official_source_url": "https://investor.rezolve.com/news-releases/news-release-details/rezolve-ai-reports-1308-million-h1-revenue-nearly-21-fold-google",
+    "official_verified": true,
+    "security_type": "ORDINARY_SHARES",
+    "security_type_source": "Alpaca asset metadata: Rezolve AI PLC Ordinary Shares; us_equity; NASDAQ; active/tradable",
+    "lineage": {"discovery_class":"post_open_recovery_of_missed_preopen_release","source_session_et":"2026-09-01","target_prediction_date_et":"2026-09-01","source_family":"ISSUER_IR_GLOBENEWSWIRE_DIRECT_EARNINGS","eligible_for_prediction":false,"preopen_checkpoint_mutation":false,"carry_to_next_session_if_still_material":true}
+  }
+}
