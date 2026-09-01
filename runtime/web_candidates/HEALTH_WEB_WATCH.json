@@ -1,18 +1,25 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T21:05:38Z",
+  "updated_at_utc": "2026-09-01T21:23:14Z",
   "target_prediction_date_et": "2026-09-02",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
   "cutoff_et": "2026-09-02T09:30:00-04:00",
   "production_contract": "HASOL-TOP20-EXACT-v1",
-  "status": "PREMARKET_SOURCE_RECOVERED_EXACT_RUN_UNVERIFIED",
+  "status": "TOP20_INCOMPLETE",
   "alpaca": {
     "clock_status": "PASS",
     "is_open": false,
-    "checked_at_et": "2026-09-01T17:05:38.682817-04:00",
+    "checked_at_et": "2026-09-01T17:23:14.117769-04:00",
     "next_regular_open_et": "2026-09-02T09:30:00-04:00",
-    "next_regular_close_et": "2026-09-02T16:00:00-04:00"
+    "next_regular_close_et": "2026-09-02T16:00:00-04:00",
+    "market_feed_validation": {
+      "feed": "IEX",
+      "validated_at_utc": "2026-09-01T21:23:14Z",
+      "requested_top20": 20,
+      "snapshot_records": 20,
+      "status": "PASS"
+    }
   },
   "source_scan_window": {
     "window_start_utc": "2026-09-01T20:00:00Z",
@@ -32,12 +39,24 @@
   },
   "exact_run": {
     "workflow": "HASOL Live Candidate Quant",
-    "run_id": null,
+    "run_id": 33559131474,
     "source_commit_sha": "6b0af25e69f3ba54274729a0d0775241d203b51e",
-    "conclusion": "NOT_TRIGGERED_OR_NOT_YET_VISIBLE",
-    "state_asof_validation": "NOT_RUN",
-    "ledger_manifest_input_sha256": null,
-    "run_manifest_input_sha256": null
+    "conclusion": "SUCCESS",
+    "state_asof_validation": "PASS",
+    "ledger_manifest_input_sha256": "5cf095d109cc286dd7288de2d6a52126d8caca9a8dd94b562f3b632f41ca3693",
+    "run_manifest_input_sha256": "5cf095d109cc286dd7288de2d6a52126d8caca9a8dd94b562f3b632f41ca3693",
+    "candidate_count": 41,
+    "eligible_count": 37,
+    "ranked_count": 37,
+    "top20_preview_count": 20
+  },
+  "top20_security_gate": {
+    "status": "FAIL",
+    "failed_tickers": ["ABVX"],
+    "failure_reason": "COMMON_STOCK_REQUIRED",
+    "alpaca_asset_name": "Abivax SA American Depositary Shares",
+    "remediation_commit_sha": "9d8013f738a25cc63a29710ecbd82c8288ef41e1",
+    "remediation": "ABVX execution_allowed changed to no in approved liquid-watchlist; exact rerun required before any checkpoint promotion"
   },
   "healthy_lineage": {
     "new_state_healthy": false,
@@ -51,10 +70,11 @@
     "preferred_checkpoint_status": "TOP20_CONTRACT_STALE",
     "checkpoint_role": "AUDIT_ONLY",
     "promotion_eligible": false,
-    "top20_count": 6,
-    "unique_top20_count": 6,
+    "top20_count": 20,
+    "unique_top20_count": 20,
     "top5_matches_ranks_1_5": true,
-    "top20_provenance_complete": false,
+    "top20_provenance_complete": true,
+    "all_common_stock_verified": false,
     "legacy_thin_checkpoint_allowed_as_healthy_lineage": false,
     "target_date_exact_checkpoint_exists": false
   },
