@@ -1,6 +1,6 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-02T00:06:15Z",
+  "updated_at_utc": "2026-09-02T01:06:20Z",
   "target_prediction_date_et": "2026-09-02",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
@@ -10,47 +10,47 @@
   "alpaca": {
     "clock_status": "PASS",
     "is_open": false,
-    "checked_at_et": "2026-09-01T20:06:15.447682-04:00",
+    "checked_at_et": "2026-09-01T21:06:20.666771-04:00",
     "next_regular_open_et": "2026-09-02T09:30:00-04:00",
     "next_regular_close_et": "2026-09-02T16:00:00-04:00"
   },
   "source_scan_window": {
-    "window_start_utc": "2026-09-01T23:06:41Z",
-    "window_end_utc": "2026-09-02T00:06:15Z",
+    "window_start_utc": "2026-09-02T00:06:15Z",
+    "window_end_utc": "2026-09-02T01:06:20Z",
     "new_verified_material_event_count": 1,
-    "event_ids": ["DELL-20260901-1606-EARNINGS"]
+    "event_ids": ["PACS-20260901-1615-MA"]
   },
   "source_coverage_status": "PARTIAL_VERIFIED_RECALL",
   "recovered_event_security_gate": {
-    "ticker": "DELL",
-    "alpaca_asset_name": "Dell Technologies Inc.",
+    "ticker": "PACS",
+    "alpaca_asset_name": "PACS Group, Inc.",
     "common_stock_gate_eligible": true,
-    "security_evidence": "Alpaca active/tradable US equity plus SEC registered Class C Common Stock, par value $0.01 per share",
+    "security_evidence": "Alpaca active/tradable NYSE US equity plus SEC Q2 2026 Form 10-Q common-stock disclosure",
     "treatment": "PRESERVE_EVENT_ALLOW_COMMON_STOCK_TOP20_GATE"
   },
   "prior_exact_rerun": {
     "workflow": "HASOL Live Candidate Quant",
-    "run_id": 33569534953,
-    "source_commit_sha": "17cba73dbe88c1aa6a64185425cce0ee2324bf99",
+    "run_id": 33573982150,
+    "source_commit_sha": "ddcb3d721145b3b668194a35fd3e1f135d3440d8",
     "conclusion": "SUCCESS",
     "build_effective_live_snapshot": "PASS",
     "state_asof_validation": "PASS",
     "quant": "PASS",
     "exact_candidate_lineage": "PASS",
-    "input_sha256": "871c9a0b710e804e9d0822bd5a7598bc2543d005dfd8fde322f3b0199ffb8fc0",
+    "input_sha256": "28382907c2cec8db6f197e153c85fe3359fb4d739818f332e4631925ef04005b",
     "state_asof_valid": true
   },
   "healthy_lineage": {
     "new_state_healthy": false,
     "latest_valid_pointer_replaced": false,
-    "reason": "DELL event and session state-as-of were advanced after exact run 33569534953; the revised source state requires its own exact rerun and lineage validation."
+    "reason": "PACS event and session state-as-of were advanced after exact run 33573982150; the revised source state requires its own exact rerun and lineage validation."
   },
   "top20_contract": {
     "preferred_checkpoint_status": "TOP20_CONTRACT_STALE",
     "checkpoint_role": "AUDIT_ONLY",
     "promotion_eligible": false,
-    "top20_count": 6,
-    "unique_top20_count": 6,
+    "top20_count": 5,
+    "unique_top20_count": 5,
     "top5_matches_ranks_1_5": true,
     "top20_provenance_complete": false,
     "legacy_thin_checkpoint_allowed_as_healthy_lineage": false,

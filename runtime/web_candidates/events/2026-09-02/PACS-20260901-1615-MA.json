@@ -1,0 +1,25 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-02",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-02T01:06:20Z",
+  "event": {
+    "ticker": "PACS",
+    "event_id": "PACS-20260901-1615-MA",
+    "event_type": "M&A",
+    "event_published_at_utc": "2026-09-01T20:15:00Z",
+    "axis": "FLORIDA_32_FACILITY_OPERATIONS_ACQUISITION_AND_EDURO_11_FACILITY_CLOSE",
+    "headline": "PACS Group agrees to acquire operations of 32 Florida skilled nursing facilities and closes 11 additional Eduro facilities",
+    "flow_path": "post-close statewide Florida expansion + 4,049 licensed beds + 11 additional Eduro facility closings + expansion into three new states -> next-session growth and footprint repricing potential",
+    "official_source_url": "https://www.businesswire.com/news/home/20260901927007/en/PACS-Group-to-Acquire-Operations-of-32-Facilities-Across-Florida-and-Closes-on-Additional-Previously-Announced-Eduro-Facilities",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: PACS Group, Inc.; us_equity; NYSE; active/tradable. SEC Q2 2026 Form 10-Q states common stock, par value $0.001 per share, outstanding.",
+    "lineage": {
+      "discovery_class": "postclose_to_next_premarket_source_recall",
+      "source_session_et": "2026-09-01",
+      "target_prediction_date_et": "2026-09-02",
+      "source_family": "BUSINESS_WIRE_DIRECT_MA_AND_SEC_SECURITY_VERIFICATION"
+    }
+  }
+}
