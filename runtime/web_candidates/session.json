@@ -3,11 +3,11 @@
   "prediction_date_et": "2026-09-02",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
-  "as_of_utc": "2026-09-01T23:06:41Z",
+  "as_of_utc": "2026-09-02T00:06:15Z",
   "cutoff_et": "2026-09-02T09:30:00-04:00",
   "rollover_from_prediction_date_et": "2026-09-01",
   "rollover_policy": "POSTCLOSE_TO_NEXT_PREMARKET_ALPACA_CLOCK",
   "source_recall_policy": "DIRECT_SOURCE_RECONCILIATION_V3_SOURCE_COVERAGE",
   "stage_marker": "PREMARKET_WEB_WATCH_SOURCE_RECOVERY_TOP20_EXACT",
-  "notes": "Alpaca clock at 2026-09-01T19:06:41-04:00 confirmed market closed and next regular open 2026-09-02T09:30:00-04:00. Exact Live Candidate Quant run 33564852216 succeeded on source commit e4291f618437efda317cb503d78fcdbe32fc1b6b with state-as-of validation and exact candidate lineage passing. AHR's post-close Kensington acquisition completion, published at 2026-09-01T20:16:00Z, was subsequently recovered into the Sep. 2 PREMARKET ledger; therefore this revised state requires a new exact rerun before any healthy-lineage or checkpoint promotion."
+  "notes": "Alpaca clock at 2026-09-01T20:06:15-04:00 confirmed market closed and next regular open 2026-09-02T09:30:00-04:00. Exact Live Candidate Quant run 33569534953 succeeded on source commit 17cba73dbe88c1aa6a64185425cce0ee2324bf99 with input SHA 871c9a0b710e804e9d0822bd5a7598bc2543d005dfd8fde322f3b0199ffb8fc0 and state-as-of validation passing. Dell Technologies Q2 FY27 post-close earnings, published at 2026-09-01T20:06:00Z, was subsequently recovered into the Sep. 2 PREMARKET ledger; therefore this revised source state requires its own exact rerun before any healthy-lineage or checkpoint promotion."
 }

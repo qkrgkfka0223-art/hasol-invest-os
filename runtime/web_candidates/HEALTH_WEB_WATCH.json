@@ -1,6 +1,6 @@
 {
   "health_name": "HEALTH_WEB_WATCH",
-  "updated_at_utc": "2026-09-01T23:06:41Z",
+  "updated_at_utc": "2026-09-02T00:06:15Z",
   "target_prediction_date_et": "2026-09-02",
   "run_type": "PREMARKET",
   "eligible_for_prediction": true,
@@ -10,40 +10,40 @@
   "alpaca": {
     "clock_status": "PASS",
     "is_open": false,
-    "checked_at_et": "2026-09-01T19:06:41.166909-04:00",
+    "checked_at_et": "2026-09-01T20:06:15.447682-04:00",
     "next_regular_open_et": "2026-09-02T09:30:00-04:00",
     "next_regular_close_et": "2026-09-02T16:00:00-04:00"
   },
   "source_scan_window": {
-    "window_start_utc": "2026-09-01T22:07:16Z",
-    "window_end_utc": "2026-09-01T23:06:41Z",
+    "window_start_utc": "2026-09-01T23:06:41Z",
+    "window_end_utc": "2026-09-02T00:06:15Z",
     "new_verified_material_event_count": 1,
-    "event_ids": ["AHR-20260901-1616-MA"]
+    "event_ids": ["DELL-20260901-1606-EARNINGS"]
   },
   "source_coverage_status": "PARTIAL_VERIFIED_RECALL",
   "recovered_event_security_gate": {
-    "ticker": "AHR",
-    "alpaca_asset_name": "American Healthcare REIT, Inc.",
+    "ticker": "DELL",
+    "alpaca_asset_name": "Dell Technologies Inc.",
     "common_stock_gate_eligible": true,
-    "security_evidence": "Alpaca active/tradable US equity plus SEC registered Common Stock, $0.01 par value per share",
+    "security_evidence": "Alpaca active/tradable US equity plus SEC registered Class C Common Stock, par value $0.01 per share",
     "treatment": "PRESERVE_EVENT_ALLOW_COMMON_STOCK_TOP20_GATE"
   },
   "prior_exact_rerun": {
     "workflow": "HASOL Live Candidate Quant",
-    "run_id": 33564852216,
-    "source_commit_sha": "e4291f618437efda317cb503d78fcdbe32fc1b6b",
+    "run_id": 33569534953,
+    "source_commit_sha": "17cba73dbe88c1aa6a64185425cce0ee2324bf99",
     "conclusion": "SUCCESS",
     "build_effective_live_snapshot": "PASS",
     "state_asof_validation": "PASS",
     "quant": "PASS",
     "exact_candidate_lineage": "PASS",
-    "input_sha256": "2eb7dc41cd89fa7f56126bdcc25beda1594b7fcab666ce8889043eaea3efecda",
+    "input_sha256": "871c9a0b710e804e9d0822bd5a7598bc2543d005dfd8fde322f3b0199ffb8fc0",
     "state_asof_valid": true
   },
   "healthy_lineage": {
     "new_state_healthy": false,
     "latest_valid_pointer_replaced": false,
-    "reason": "AHR event and session state-as-of were advanced after exact run 33564852216; the revised source state requires its own exact rerun and lineage validation."
+    "reason": "DELL event and session state-as-of were advanced after exact run 33569534953; the revised source state requires its own exact rerun and lineage validation."
   },
   "top20_contract": {
     "preferred_checkpoint_status": "TOP20_CONTRACT_STALE",

@@ -1,0 +1,26 @@
+{
+  "ledger_schema": "HASOL-WEB-EVENT-v1",
+  "prediction_date_et": "2026-09-02",
+  "run_type": "PREMARKET",
+  "recorded_at_utc": "2026-09-02T00:06:15Z",
+  "event": {
+    "ticker": "DELL",
+    "event_id": "DELL-20260901-1606-EARNINGS",
+    "event_type": "EARNINGS",
+    "event_published_at_utc": "2026-09-01T20:06:00Z",
+    "axis": "Q2_FY27_RECORD_REVENUE_EPS_AND_FY27_GUIDANCE_RAISE",
+    "headline": "Dell Technologies reports record Q2 FY27 revenue of $47.0B and non-GAAP EPS of $7.04, raises FY27 revenue outlook to $192B and AI-optimized server revenue outlook to $74B",
+    "flow_path": "post-close earnings + record AI server orders/backlog + large FY27 revenue and EPS guidance raise -> next-session earnings and AI infrastructure repricing potential",
+    "official_source_url": "https://investors.delltechnologies.com/news-releases/news-release-details/dell-technologies-delivers-second-quarter-fiscal-2027-financial",
+    "official_sec_url": "https://www.sec.gov/Archives/edgar/data/1571996/000157199626000039/dell-20260901.htm",
+    "official_verified": true,
+    "security_type": "COMMON_EQUITY",
+    "security_type_source": "Alpaca asset metadata: Dell Technologies Inc.; us_equity; NYSE; active/tradable. SEC 8-K identifies DELL as Class C Common Stock, par value $0.01 per share.",
+    "lineage": {
+      "discovery_class": "postclose_to_next_premarket_source_recall_late_discovery",
+      "source_session_et": "2026-09-01",
+      "target_prediction_date_et": "2026-09-02",
+      "source_family": "ISSUER_IR_PLUS_SEC_8K_EARNINGS"
+    }
+  }
+}
