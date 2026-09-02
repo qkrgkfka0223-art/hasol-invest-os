@@ -42,8 +42,8 @@ def _read_json(path: Path) -> dict[str, Any]:
     return raw
 
 
-def _parse_aware_dt(value: str, *, field: str, path: Path) -> datetime:
-    text = str(value).strip().replace("Z", "+00:00")
+def _parse_aware_dt(value: object, *, field: str, path: Path) -> datetime:
+    text = str(value or "").strip().replace("Z", "+00:00")
     if not text:
         raise ValueError(f"{field} is required in {path}")
     try:
@@ -63,7 +63,9 @@ def _canonical_run_type(value: object, *, field: str, path: Path) -> str:
     return canonical
 
 
-def _json_files(root: Path, prediction_date_et: str) -> list[Path]:
+def _json_files(root: Path | None, prediction_date_et: str) -> list[Path]:
+    if root is None:
+        return []
     target = root / prediction_date_et
     if not target.exists():
         return []
@@ -75,8 +77,6 @@ def _event_files(root: Path, prediction_date_et: str) -> list[Path]:
 
 
 def _decision_files(root: Path | None, prediction_date_et: str) -> list[Path]:
-    if root is None:
-        return []
     return _json_files(root, prediction_date_et)
 
 
@@ -96,7 +96,13 @@ def _load_event(path: Path, *, prediction_date_et: str, run_type: str) -> dict[s
     return raw
 
 
-def _load_decision(path: Path, *, prediction_date_et: str, run_type: str) -> dict[str, Any]:
+def _load_decision(path: Path, *, prediction_date_et: str) -> dict[str, Any]:
+    """Validate one decision record without assuming it belongs to the active run type.
+
+    The decision directory is shared by PREMARKET and INTRADAY_EVENT. A well-formed
+    decision for the other run type is valid audit history and must not break the
+    current snapshot. Malformed records still fail closed.
+    """
     raw = _read_json(path)
     if raw.get("decision_schema") != DECISION_SCHEMA:
         raise ValueError(f"decision_schema must be {DECISION_SCHEMA} in {path}")
@@ -106,16 +112,14 @@ def _load_decision(path: Path, *, prediction_date_et: str, run_type: str) -> dic
     target_date = str(raw.get("prediction_date_et", "")).strip()
     if target_date != prediction_date_et:
         raise ValueError(f"decision target date mismatch in {path}: {target_date}")
-    target_run_type = _canonical_run_type(raw.get("run_type", run_type), field="decision run_type", path=path)
-    if target_run_type != run_type:
-        raise ValueError(f"decision run_type mismatch in {path}: {target_run_type}")
+    target_run_type = _canonical_run_type(raw.get("run_type"), field="decision run_type", path=path)
     event_id = str(raw.get("event_id", "")).strip()
     if not event_id:
         raise ValueError(f"decision event_id is required in {path}")
     action = str(raw.get("action", "")).upper().strip()
     if action not in ALLOWED_DECISIONS:
         raise ValueError(f"unsupported materiality decision in {path}: {action}")
-    decided_at = _parse_aware_dt(str(raw.get("decided_at_utc", "")), field="decided_at_utc", path=path)
+    decided_at = _parse_aware_dt(raw.get("decided_at_utc"), field="decided_at_utc", path=path)
     if action == MATERIALITY_DROP and not str(raw.get("reason", "")).strip():
         raise ValueError(f"MATERIALITY_DROP reason is required in {path}")
     out = dict(raw)
@@ -149,20 +153,21 @@ def build_snapshot(
     root = premarket_root if run_type == "PREMARKET" else intraday_root
 
     prediction_eligible = bool(session.get("eligible_for_prediction", False))
-    session_as_of = _parse_aware_dt(str(session.get("as_of_utc", "")), field="as_of_utc", path=session_path)
+    session_as_of = _parse_aware_dt(session.get("as_of_utc"), field="as_of_utc", path=session_path)
     cutoff_utc: datetime | None = None
     if run_type == "PREMARKET" and prediction_eligible:
-        cutoff_utc = _parse_aware_dt(str(session.get("cutoff_et", "")), field="cutoff_et", path=session_path)
+        cutoff_utc = _parse_aware_dt(session.get("cutoff_et"), field="cutoff_et", path=session_path)
 
     event_paths = _event_files(root, prediction_date_et)
     loaded: list[tuple[Path, dict[str, Any]]] = [
         (path, _load_event(path, prediction_date_et=prediction_date_et, run_type=run_type))
         for path in event_paths
     ]
+
     if run_type == "PREMARKET" and prediction_eligible:
         for path, event in loaded:
             published_at = _parse_aware_dt(
-                str(event.get("event_published_at_utc", "")), field="event_published_at_utc", path=path
+                event.get("event_published_at_utc"), field="event_published_at_utc", path=path
             )
             if published_at > session_as_of:
                 raise ValueError(
@@ -189,19 +194,36 @@ def build_snapshot(
         if str(event.get("event_id", "")).strip()
     }
 
-    decision_paths = _decision_files(decision_root, prediction_date_et)
-    decisions: list[tuple[Path, dict[str, Any]]] = [
-        (path, _load_decision(path, prediction_date_et=prediction_date_et, run_type=run_type))
-        for path in decision_paths
+    all_decision_paths = _decision_files(decision_root, prediction_date_et)
+    all_decisions: list[tuple[Path, dict[str, Any]]] = [
+        (path, _load_decision(path, prediction_date_et=prediction_date_et))
+        for path in all_decision_paths
     ]
+
     seen_decision_ids: set[str] = set()
-    for path, decision in decisions:
+    for _, decision in all_decisions:
         decision_id = str(decision["decision_id"])
         if decision_id in seen_decision_ids:
             raise ValueError(f"duplicate decision_id in materiality ledger: {decision_id}")
         seen_decision_ids.add(decision_id)
+
+    decisions: list[tuple[Path, dict[str, Any]]] = []
+    ignored_cross_run_type_decisions: list[dict[str, str]] = []
+    for path, decision in all_decisions:
+        if str(decision["run_type"]) != run_type:
+            ignored_cross_run_type_decisions.append(
+                {
+                    "decision_id": str(decision["decision_id"]),
+                    "event_id": str(decision["event_id"]),
+                    "run_type": str(decision["run_type"]),
+                    "path": path.as_posix(),
+                    "sha256": _sha256_bytes(path.read_bytes()),
+                }
+            )
+            continue
         if str(decision["event_id"]) not in loaded_event_ids:
             raise ValueError(f"materiality decision references unknown event_id in {path}: {decision['event_id']}")
+        decisions.append((path, decision))
 
     decisions.sort(
         key=lambda pair: (
@@ -261,17 +283,16 @@ def build_snapshot(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    file_rows = []
-    for path, event in loaded:
-        file_rows.append(
-            {
-                "path": path.as_posix(),
-                "sha256": _sha256_bytes(path.read_bytes()),
-                "event_id": str(event.get("event_id", "")),
-                "ticker": str(event.get("ticker", "")).upper(),
-                "active": str(event.get("event_id", "")).strip() not in excluded_event_ids,
-            }
-        )
+    file_rows = [
+        {
+            "path": path.as_posix(),
+            "sha256": _sha256_bytes(path.read_bytes()),
+            "event_id": str(event.get("event_id", "")),
+            "ticker": str(event.get("ticker", "")).upper(),
+            "active": str(event.get("event_id", "")).strip() not in excluded_event_ids,
+        }
+        for path, event in loaded
+    ]
 
     decision_rows = []
     for path, decision in decisions:
@@ -283,6 +304,7 @@ def build_snapshot(
                 "decision_id": str(decision["decision_id"]),
                 "event_id": str(decision["event_id"]),
                 "action": str(decision["action"]),
+                "run_type": str(decision["run_type"]),
                 "decided_at_utc": str(decision["decided_at_utc"]),
                 "applies_to_snapshot": applies,
                 "ignored_reason": None if applies else "AFTER_PREDICTION_CUTOFF",
@@ -317,7 +339,13 @@ def build_snapshot(
         "event_file_count": len(event_paths),
         "active_event_file_count": len(active_loaded),
         "decision_root": (decision_root / prediction_date_et).as_posix() if decision_root is not None else None,
-        "decision_file_count": len(decision_paths),
+        "decision_file_count_total": len(all_decision_paths),
+        "decision_file_count": len(decisions),
+        "ignored_cross_run_type_decision_count": len(ignored_cross_run_type_decisions),
+        "ignored_cross_run_type_decisions": sorted(
+            ignored_cross_run_type_decisions,
+            key=lambda row: (row["run_type"], row["decision_id"], row["path"]),
+        ),
         "applicable_decision_count": len(applicable_decisions),
         "ignored_post_cutoff_decision_ids": sorted(ignored_post_cutoff_decision_ids),
         "excluded_event_ids": sorted(excluded_event_ids),
@@ -335,7 +363,9 @@ def build_snapshot(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build deterministic HASOL live snapshot from append-only event and materiality-decision ledgers")
+    parser = argparse.ArgumentParser(
+        description="Build deterministic HASOL live snapshot from append-only event and run-scoped materiality-decision ledgers"
+    )
     parser.add_argument("--session", default="runtime/web_candidates/session.json")
     parser.add_argument("--premarket-root", default="runtime/web_candidates/events")
     parser.add_argument("--intraday-root", default="runtime/web_candidates/intraday")
