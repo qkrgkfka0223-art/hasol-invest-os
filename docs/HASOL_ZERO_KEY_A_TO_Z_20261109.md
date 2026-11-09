@@ -101,4 +101,4 @@ Nasdaq 공식 목록 `File Creation Time: 1106202621:31`. 본 테스트는 **11/
 - Yahoo yfinance disclaimers: https://ranaroussi.github.io/yfinance/
 - SEC fair-access rules: https://www.sec.gov/about/developer-resources
 - GitHub experiment PR: https://github.com/qkrgkfka0223-art/hasol-invest-os/pull/32
-- Original canonical Brain: https://docs.google.com/spreadsheets/d/1hIThR4DcEQ2nmsVhNdEjTJOuKiHVQQkkGSsDjk2ZonY/edit
+- Original canonical Brain: HASOL_EXTERNAL_BRAIN (referenced privately via the connected Google Drive tool; the public repository does not need its document ID)
