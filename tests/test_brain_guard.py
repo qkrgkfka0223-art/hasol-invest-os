@@ -35,7 +35,7 @@ def _review(rid):
 
 
 def _snapshot():
-    old = "RUN-LEGACY", new = "RUN-NEW"
+    old, new = "RUN-LEGACY", "RUN-NEW"
     return {
         "runs": [
             _run(old, "2026-11-02", "46332", "2026-11-02T12:00:00Z", state="MIGRATED_COMMITTED"),
