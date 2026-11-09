@@ -82,9 +82,13 @@ def audit_brain(snapshot: dict, last_completed_us_session: str) -> dict:
             errors.append(f"{rid}:FROZEN_LOCK_TOP5_FAIL")
         if any(_num(z[7]) is None or _num(z[7]) <= 0 for z in entries):
             errors.append(f"{rid}:INVALID_FROZEN_BASELINE")
-        selected = outcomes.get(rid, [])
-        selected = [z for z in selected if len(z) > 6 and str(z[5]).startswith("SELECTED")]
+        # Migrated 2026-10 legacy rows were marked EVALUATED even when their
+        # exact 20 tickers/baselines match the official Frozen. Scope labels
+        # alone must not erase these immutable historical facts.
+        selected = [z for z in outcomes.get(rid, []) if len(z) > 7]
         frozen_by = {z[4]: z for z in entries if len(z) > 7}
+        if selected and all(str(z[5]) == "EVALUATED" for z in selected):
+            warnings.append(f"{rid}:LEGACY_EVALUATED_SCOPE_RECONCILED_TO_FROZEN")
         if len(selected) != 20 or len(set(z[3] for z in selected)) != 20:
             errors.append(f"{rid}:SELECTED_OUTCOMES_NOT_20")
         for z in selected:
