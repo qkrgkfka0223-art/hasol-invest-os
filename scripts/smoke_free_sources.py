@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -74,12 +75,40 @@ def probe() -> dict:
         "no_api_key_supplied": True,
         "production_suitability": "DETECTION_ONLY_NOT_FROZEN_VALIDATED",
     }
+    coarse_common = {}
     for name, url in SYMBOL_LISTS.items():
         start = time.monotonic()
         try:
             r = requests.get(url, timeout=18, headers={"User-Agent": "HASOL research (https://github.com/qkrgkfka0223-art/hasol-invest-os)"})
             r.raise_for_status()
             parsed = parse_symbols(r.text, name)
+            # Only a provisional textual screen. Does NOT establish SPAC/common
+            # security status; issuer-level type verification is still required.
+            lines = r.text.splitlines()
+            columns = lines[0].split("|")
+            sym_col = columns.index("Symbol" if name == "NASDAQ" else "ACT Symbol")
+            desc_col = columns.index("Security Name")
+            etf_col = columns.index("ETF")
+            test_col = columns.index("Test Issue")
+            exc_col = columns.index("Exchange") if name == "OTHER" else None
+            suspect = re.compile(
+                r"warrant|rights?\\b|units?\\b|preferred|depositary|acquisition corp|"
+                r"exchange.traded|\\bnote\\b|\\bbond\\b|\\btrust\\b|"
+                r"american deposit|senior notes", re.IGNORECASE
+            )
+            picked = []
+            for line in lines[1:]:
+                row = line.split("|")
+                if len(row) <= max(sym_col, desc_col, etf_col, test_col, exc_col or 0):
+                    continue
+                symbol = row[sym_col]
+                if (row[etf_col] == "N" and row[test_col] == "N"
+                    and (exc_col is None or row[exc_col] in ("A", "N"))
+                    and re.fullmatch(r"[A-Z][A-Z0-9]{0,6}", symbol)
+                    and not suspect.search(row[desc_col])):
+                    picked.append(symbol)
+            coarse_common[name] = sorted(set(picked))
+            parsed["provisional_text_screen_n"] = len(coarse_common[name])
             parsed.update({"state": "PASS_REFERENCE_ONLY", "http_status": r.status_code})
             out["provider_tests"]["NASDAQ_DIR_"+name] = parsed
         except Exception as exc:
@@ -124,6 +153,40 @@ def probe() -> dict:
             "requested_n": len(syms),
         }
     out["provider_tests"]["YFINANCE_DAILY_8"]["elapsed_seconds"] = round(time.monotonic()-start, 2)
+    # Single modest batch from both official exchanges, spaced across the
+    # ticker alphabet; no 7,000-symbol Yahoo scraping or aggressive retry.
+    src = [coarse_common.get("NASDAQ", []), coarse_common.get("OTHER", [])]
+    sampled = []
+    for names in src:
+        if names:
+            sampled += [names[round((len(names)-1)*i/39)] for i in range(40)]
+    sampled = sorted(set(sampled))
+    start = time.monotonic()
+    try:
+        if len(sampled) < 40:
+            raise ValueError("Nasdaq/NYSE symbol directories did not yield sufficient candidates")
+        raw = yf.download(sampled, start="2026-10-19", end="2026-11-07", interval="1d",
+                          auto_adjust=False, actions=False, progress=False,
+                          threads=False, timeout=25)
+        from hasol_quant.yahoo_client import _normalize_download
+        normalized = _normalize_download(raw, sampled)
+        valid = normalized.dropna(subset=["timestamp", "high", "close", "volume"])
+        coverage = sorted(set(valid["ticker"].tolist()))
+        mature = [t for t in sampled if int((valid["ticker"] == t).sum()) >= 15]
+        out["provider_tests"]["YFINANCE_SPREAD80"] = {
+            "state": "PASS_SAMPLE_ONLY" if len(mature) == len(sampled) else "PARTIAL",
+            "requested_n": len(sampled), "returned_n": len(coverage),
+            "complete_15_sessions_n": len(mature),
+            "missing_symbols": sorted(set(sampled)-set(coverage))[:20],
+            "sampling": "40 NASDAQ + 40 NYSE/NYSE_AMERICAN alphabet-spaced symbols after PROVISIONAL text filter",
+            "limitations": "SAMPLE ONLY; cannot extrapolate to all US stocks, no SIP provenance, no contemporaneous premarket quote",
+        }
+    except Exception as exc:
+        out["provider_tests"]["YFINANCE_SPREAD80"] = {
+            "state": "FAIL", "error_type": type(exc).__name__,
+            "error": str(exc)[:200], "requested_n": len(sampled),
+        }
+    out["provider_tests"]["YFINANCE_SPREAD80"]["elapsed_seconds"] = round(time.monotonic()-start, 2)
     return out
 
 
