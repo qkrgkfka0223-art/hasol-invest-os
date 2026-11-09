@@ -101,7 +101,7 @@ def test_all_three_methods_same_eligible_pool_cutoff_and_baseline(tmp_path, monk
         assert set(p["ranks"]) == set(data["baseline"])
     assert data["portfolios"]["C_HASOL_AI"]["top5"] == ["T024", "T023", "T022", "T021", "T020"]
     assert trial._blind_read(locked)[1] == manifest
-    with pytest.raises(FileExistsError):
+    with pytest.raises(trial.TrialError, match="immutable"):
         trial.freeze(locked, tmp_path / "market.json", tmp_path / "model.json")
     with pytest.raises(TrialErrorOrFileExists):
         trial.lock_issuer(tmp_path / "issuer.json", locked)
