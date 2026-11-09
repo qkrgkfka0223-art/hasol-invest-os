@@ -39,6 +39,10 @@ class TrialError(ValueError):
     """An experiment cannot safely advance to the next stage."""
 
 
+def _now() -> datetime:
+    return datetime.now(UTC)
+
+
 def _date(value: str) -> datetime:
     try:
         result = datetime.fromisoformat(value.replace("Z", "+00:00"))
@@ -109,7 +113,7 @@ def lock_issuer(issuer_path: Path, output_dir: Path) -> dict:
     raw = _read(issuer_path)
     _keys(raw, {"run_id", "cutoff_utc", "candidates"}, "issuer")
     cutoff = _date(raw["cutoff_utc"])
-    now = datetime.now(UTC)
+    now = _now()
     if cutoff <= now:
         raise TrialError("cutoff has passed: this cannot be a new prospective blind lock")
     candidates = raw["candidates"]
@@ -195,7 +199,12 @@ def freeze(locked: Path, market_path: Path, model_path: Path) -> dict:
     et = cutoff.astimezone(ZoneInfo("America/New_York"))
     if et.strftime("%Y-%m-%d") != market["session1_date"] or (et.hour, et.minute) >= (9, 30):
         raise TrialError("only PREOPEN full-session comparison is safe with daily highs")
+    session_open = et.replace(hour=9, minute=30, second=0, microsecond=0).astimezone(UTC)
+    if _now() >= session_open:
+        raise TrialError("session opened before freeze; daily S1 high unsafe")
     model_asof = _date(model["asof_utc"])
+    if model_asof > _now():
+        raise TrialError("AI model was timestamped in the future")
     if not _date(manifest["locked_at_utc"]) <= model_asof <= cutoff:
         raise TrialError("AI model rank must be after blind lock and no later than cutoff")
     items = market["candidates"]
@@ -207,6 +216,8 @@ def freeze(locked: Path, market_path: Path, model_path: Path) -> dict:
         _keys(item, MARKET_FIELDS, f"market {item.get('ticker')}")
         t = _ticker(item)
         observation = _date(item["observed_at_utc"])
+        if observation > _now():
+            raise TrialError(f"{t} market observation was timestamped in the future")
         if not cutoff - timedelta(minutes=15) <= observation <= cutoff:
             raise TrialError(f"{t} quote aged or after the cutoff")
         if item["source"] != "SIP":
@@ -233,6 +244,9 @@ def freeze(locked: Path, market_path: Path, model_path: Path) -> dict:
     if len(eligible) < 20:
         raise TrialError("fewer than 20 fully verified eligible candidates")
     blind_by = {r["ticker"]: r for r in blind["candidates"]}
+    for t, entry in eligible.items():
+        if entry["security_id"] != blind_by[t]["security_id"]:
+            raise TrialError(f"{t}: security ID changed after the blind lock")
     scores_a = {}
     for t, x in eligible.items():
         scores_a[t] = round(sum((
@@ -294,7 +308,7 @@ def review(frozen_path: Path, outcomes_path: Path, output_path: Path) -> dict:
     last_close = last_close.replace(hour=16, minute=0)
     if _date(raw["asof_utc"]) < last_close.astimezone(UTC):
         raise TrialError("S5 session has not closed")
-    if _date(raw["asof_utc"]) > datetime.now(UTC):
+    if _date(raw["asof_utc"]) > _now():
         raise TrialError("outcome data timestamp is in the future")
     pool = set(frozen["baseline"])
     if _canonical_set(raw["rows"], "outcomes") != pool:
