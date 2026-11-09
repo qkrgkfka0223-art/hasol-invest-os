@@ -43,6 +43,10 @@ jobs:
             exit 1
           fi
           python -m scripts.run_web_candidate_quant --help
+      - name: Probe no-key free US stock data sources
+        run: |
+          python -m scripts.smoke_free_sources --out output_free_source_probe/probe.json
+          test -s output_free_source_probe/probe.json
       - name: Run Web-candidate Quant system smoke
         run: |
           rm -rf output_web_quant
@@ -98,5 +102,6 @@ jobs:
           path: |
             output_web_quant/**
             output_e2e/**
+            output_free_source_probe/**
           if-no-files-found: warn
           retention-days: 90
