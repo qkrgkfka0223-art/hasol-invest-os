@@ -165,21 +165,35 @@ def probe() -> dict:
     try:
         if len(sampled) < 40:
             raise ValueError("Nasdaq/NYSE symbol directories did not yield sufficient candidates")
-        raw = yf.download(sampled, start="2026-10-19", end="2026-11-07", interval="1d",
+        raw = yf.download(sampled, start="2026-09-15", end="2026-11-07", interval="1d",
                           auto_adjust=False, actions=False, progress=False,
                           threads=False, timeout=25)
         from hasol_quant.yahoo_client import _normalize_download
         normalized = _normalize_download(raw, sampled)
         valid = normalized.dropna(subset=["timestamp", "high", "close", "volume"])
         coverage = sorted(set(valid["ticker"].tolist()))
-        mature = [t for t in sampled if int((valid["ticker"] == t).sum()) >= 15]
+        mature = [t for t in sampled if int((valid["ticker"] == t).sum()) >= 20]
+        prelim_eligible = []
+        outdated = []
+        for t in sampled:
+            rows = valid.loc[valid["ticker"] == t].sort_values("timestamp").tail(20)
+            if len(rows) < 20:
+                continue
+            if rows["timestamp"].max().date().isoformat() != "2026-11-06":
+                outdated.append(t)
+                continue
+            avg_dollar_volume = float((rows["close"] * rows["volume"]).mean())
+            if float(rows.iloc[-1]["close"]) >= 3.0 and avg_dollar_volume >= 10_000_000:
+                prelim_eligible.append(t)
         out["provider_tests"]["YFINANCE_SPREAD80"] = {
             "state": "PASS_SAMPLE_ONLY" if len(mature) == len(sampled) else "PARTIAL",
             "requested_n": len(sampled), "returned_n": len(coverage),
-            "complete_15_sessions_n": len(mature),
+            "complete_20_sessions_n": len(mature),
+            "prelim_price_and_adtv20_pass_n": len(prelim_eligible),
+            "stale_asof_nov06_symbols": outdated[:20],
             "missing_symbols": sorted(set(sampled)-set(coverage))[:20],
             "sampling": "40 NASDAQ + 40 NYSE/NYSE_AMERICAN alphabet-spaced symbols after PROVISIONAL text filter",
-            "limitations": "SAMPLE ONLY; cannot extrapolate to all US stocks, no SIP provenance, no contemporaneous premarket quote",
+            "limitations": "SAMPLE ONLY; ADTV uses Yahoo close*volume, security type and SPAC still unverified, not SIP, no premarket quote",
         }
     except Exception as exc:
         out["provider_tests"]["YFINANCE_SPREAD80"] = {
