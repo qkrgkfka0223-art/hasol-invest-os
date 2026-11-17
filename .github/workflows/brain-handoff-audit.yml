@@ -1,0 +1,36 @@
+name: HASOL Brain Handoff Audit Tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/validate_brain_handoff.py"
+      - "tests/test_brain_handoff.py"
+      - "docs/BRAIN_HANDOFF.md"
+      - ".github/workflows/brain-handoff-audit.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/validate_brain_handoff.py"
+      - "tests/test_brain_handoff.py"
+      - ".github/workflows/brain-handoff-audit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  handoff-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install test dependency
+        run: python -m pip install "pytest>=8,<10"
+      - name: Validate fail-closed Brain handoff
+        run: python -m pytest -q tests/test_brain_handoff.py
+      - name: Check audit script CLI
+        run: python -m scripts.validate_brain_handoff --help
