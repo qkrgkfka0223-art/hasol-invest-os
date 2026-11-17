@@ -196,3 +196,27 @@ def test_cli_exit_codes(tmp_path):
     raw.write_text(json.dumps(partial), encoding="utf-8")
     strict = subprocess.run(cmd + ["--require-evidence-ready"], capture_output=True, text=True, check=False)
     assert strict.returncode == 3
+
+
+def test_source_release_after_blind_packet_is_not_price_blind():
+    data = fixture()
+    data["predictions"][0]["ISSUER_RELEASED_AT_UTC"] = "2026-11-17T12:30:10Z"
+    out = validate(data)
+    assert out["decision"] == "OFFICIAL_PARTIAL_NOT_CLEAN"
+    assert any("look-ahead" in x for x in out["degraded"])
+
+
+def test_malformed_rank_cannot_crash_or_pass():
+    data = fixture()
+    data["predictions"][0]["OFFICIAL_MODEL_RANK"] = "UNKNOWN"
+    out = validate(data)
+    assert out["decision"] == "BLOCK"
+    assert any("rank" in x for x in out["errors"])
+
+
+def test_missing_baseline_timestamp_is_degraded_not_invented():
+    data = fixture()
+    data["frozen"][0].pop("BASELINE_OBSERVED_AT_UTC")
+    out = validate(data)
+    assert out["decision"] == "OFFICIAL_PARTIAL_NOT_CLEAN"
+    assert any("timestamp missing" in x for x in out["degraded"])
