@@ -77,14 +77,19 @@ def _is_primary_issuer(row, blind_lock, degraded, ticker):
     ref = str(row.get("SOURCE_REF") or "")
     if not ref.startswith("https://"):
         degraded.append(f"{ticker}: missing HTTPS primary issuer URL")
+    source_times = {}
     for field in ("ISSUER_RELEASED_AT_UTC", "BLIND_PACKET_AT_UTC"):
         try:
             when = _time(row.get(field), field)
         except ValueError:
             degraded.append(f"{ticker}: {field} missing/invalid")
         else:
+            source_times[field] = when
             if when > blind_lock:
                 degraded.append(f"{ticker}: {field} later than blind lock")
+    if (source_times.get("ISSUER_RELEASED_AT_UTC") and source_times.get("BLIND_PACKET_AT_UTC")
+            and source_times["ISSUER_RELEASED_AT_UTC"] > source_times["BLIND_PACKET_AT_UTC"]):
+        degraded.append(f"{ticker}: issuer publication later than supposedly blind packet (look-ahead)")
     if not str(row.get("BLIND_FACTS_SUMMARY") or "").strip():
         degraded.append(f"{ticker}: absent original issuer facts")
     if not str(row.get("BLIND_JUDGMENT") or "").strip():
@@ -158,8 +163,12 @@ def validate(snapshot):
         if ticker not in p or ticker not in o:
             errors.append(f"{ticker}: missing Prediction or Outcome")
             continue
-        if not _flag(p[ticker].get("MODEL_TOP20")) or int(rank) != int(_number(p[ticker].get("OFFICIAL_MODEL_RANK"), "rank")):
-            errors.append(f"{ticker}: prediction rank/flag parity failure")
+        try:
+            original_rank = _number(p[ticker].get("OFFICIAL_MODEL_RANK"), f"{ticker}.OFFICIAL_MODEL_RANK")
+            if not _flag(p[ticker].get("MODEL_TOP20")) or rank != original_rank:
+                errors.append(f"{ticker}: prediction rank/flag parity failure")
+        except ValueError:
+            errors.append(f"{ticker}: malformed prediction rank/flag parity")
         try:
             orank = _number(o[ticker].get("RANK"), f"{ticker}.OUTCOME.RANK")
             oprice = _number(o[ticker].get("BASELINE_PRICE"), f"{ticker}.OUTCOME.BASELINE_PRICE")
