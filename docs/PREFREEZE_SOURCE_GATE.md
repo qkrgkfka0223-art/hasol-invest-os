@@ -22,7 +22,7 @@ discover missing publications itself or prove feeds are complete.
    freeze; do not silently keep yesterday's issuer packet. Record full sweep
    timestamps and whether coverage was independently verified.
 4. Assemble a **private** JSON snapshot from the same run, with
-   `schema: HASOL-PREFREEZE-v1`, target `run_market_date`,
+   `schema: HASOL-PREFREEZE-v1`, exact `run_id`, target `run_market_date`,
    `last_completed_regular_session`, `blind_locked_at_utc`,
    `first_price_exposure_at_utc`, `cutoff_utc`, and arrays:
    `candidate_packets`, `issuer_releases`, `issuer_sweeps`,
@@ -37,11 +37,17 @@ discover missing publications itself or prove feeds are complete.
    PIT coverage or incomplete lagged-shadow intake → NOT CLEAN.
    Exit **0** = internally consistent *only*; independent real-time source
    authentication and persistence still required.
-6. Only then use the *existing* `validate_brain_handoff.py` for same-run
-   eligibility (common listed20/price3/ADTV20 $10m), fresh observed trade,
-   20/5/20 parity, unique ranks, independent ATR20 shadow, and immutable
-   write/readback. Both tests must be used; neither establishes prediction
-   edge or replaces the official S0-S7 run procedure.
+6. Use a *single strict two-gate command* before declaring evidence-ready:
+   `python -m scripts.validate_brain_handoff --input /private/brain.json
+   --source-audit-input /private/run.json --require-evidence-ready`.
+   Source and Brain RUN_ID, issuer candidate membership, physical Blind-lock
+   timestamp and pre-Frozen cutoff MUST reconcile. Omitting the source audit
+   from strict mode yields partial, never evidence-ready. The existing
+   `validate_brain_handoff.py` additionally checks common listed20/price3/
+   ADTV20 $10m, fresh observed trade, 20/5/20 parity, unique ranks,
+   independent ATR20 shadow and immutable write/readback.
+   Neither gate establishes predictive edge or replaces the official S0-S7
+   run procedure.
 
 ## SLS-style blocking condition
 
