@@ -319,6 +319,19 @@ def main(argv=None):
             if str(source.get("run_id") or "") != str(result.get("run_id") or ""):
                 result["errors"].append("source: RUN_ID mismatch")
             try:
+                brain_names = {str(x["TICKER_SNAPSHOT"]).strip().upper() for x in data["predictions"]}
+                source_names = {str(x["ticker"]).strip().upper() for x in source["candidate_packets"]}
+                if not source_names.issubset(brain_names):
+                    result["errors"].append("source: observed issuer candidate absent from Brain predictions")
+                if not source_names:
+                    result["degraded"].append("source: no primary issuer candidates independently audited")
+                source_lock = parse_time(source.get("blind_locked_at_utc"), "source.blind_locked_at_utc")
+                brain_lock = parse_time(data.get("blind_locked_at_utc"), "brain.blind_locked_at_utc")
+                if source_lock != brain_lock:
+                    result["errors"].append("source: source and Brain physical Blind locks differ")
+            except (KeyError, TypeError, ValueError):
+                result["errors"].append("source: cannot reconcile issuer candidates/physical Blind lock")
+            try:
                 freeze = parse_time(data["frozen"][0]["FROZEN_AT_UTC"], "FROZEN_AT_UTC")
                 cutoff = parse_time(source.get("cutoff_utc"), "source.cutoff_utc")
                 if cutoff > freeze:
