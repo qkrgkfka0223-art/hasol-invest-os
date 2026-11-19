@@ -10,6 +10,7 @@ from scripts.audit_discovery_freshness import audit
 def sample():
     return {
         "schema": "HASOL-PREFREEZE-v1",
+        "run_id": "RUN-TEST-HASOL-001",
         "run_market_date": "2026-11-17",
         "last_completed_regular_session": "2026-11-16",
         "blind_locked_at_utc": "2026-11-17T12:50:00Z",
