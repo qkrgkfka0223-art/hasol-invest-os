@@ -39,6 +39,8 @@ def audit(snapshot):
         return {"decision": "BLOCK", "errors": ["root must be an object"], "degraded": []}
     if snapshot.get("schema") != "HASOL-PREFREEZE-v1":
         errors.append("incorrect schema")
+    if not str(snapshot.get("run_id") or "").strip():
+        errors.append("run_id missing")
     try:
         cutoff = parse_time(snapshot.get("cutoff_utc"), "cutoff_utc")
         lock = parse_time(snapshot.get("blind_locked_at_utc"), "blind_locked_at_utc")
