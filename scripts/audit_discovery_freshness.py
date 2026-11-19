@@ -102,11 +102,14 @@ def audit(snapshot):
             degraded.append(f"{rid}: primary issuer URL missing")
         if row.get("source_verified") is not True or row.get("full_original_checked") is not True:
             degraded.append(f"{rid}: original publication not independently verified")
-        if row.get("material") is not True:
+        if not isinstance(row.get("material"), bool):
+            errors.append(f"{rid}: materiality not a verified Boolean")
+            continue
+        if row["material"] is False:
             continue
         if published <= cutoff:
             packet = packets.get(ticker)
-            if not packet or rid not in packet.get("handled_release_ids", []):
+            if not packet or not isinstance(packet.get("handled_release_ids"), list) or rid not in packet["handled_release_ids"]:
                 errors.append(f"{rid}: MATERIAL_ISSUER_RELEASE_NOT_HANDLED for {ticker} before freeze")
             else:
                 handled_material += 1
@@ -132,7 +135,7 @@ def audit(snapshot):
             continue
         if at > cutoff:
             errors.append("issuer sweep performed after cutoff (lookahead)")
-        if row.get("primary_issuer_only") is not True or row.get("price_reaction_preview") is True:
+        if row.get("primary_issuer_only") is not True or row.get("price_reaction_preview") is not False:
             degraded.append("issuer sweep not source-only/price-free")
         if row.get("feed_coverage_verified") is not True:
             degraded.append("issuer source coverage not verified")
@@ -156,6 +159,10 @@ def audit(snapshot):
             if not isinstance(tickers, list) or len(tickers) > 100 or any(not isinstance(x, str) for x in tickers) or len(tickers) != len(set(tickers)):
                 errors.append("lagged Top100 batch malformed")
             else:
+                if batch.get("publisher_data_verified") is not True:
+                    degraded.append("lagged Top100 provider completeness not independently verified")
+                if len(tickers) != 100:
+                    degraded.append("lagged Top100 batch has fewer than 100 verified tickers")
                 lagged_sets.extend(tickers)
         except (ValueError, TypeError, AttributeError) as exc:
             errors.append(f"lagged batch bad: {exc}")
