@@ -303,9 +303,40 @@ def main(argv=None):
     parser.add_argument("--input", required=True, type=Path)
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--require-evidence-ready", action="store_true")
+    parser.add_argument("--source-audit-input", type=Path, default=None,
+                        help="same-run source freshness/discovery JSON; required for strict evidence-ready")
     args = parser.parse_args(argv)
     data = json.loads(args.input.read_text(encoding="utf-8"))
     result = validate(data)
+    if args.source_audit_input:
+        from scripts.audit_discovery_freshness import audit as audit_source, parse_time
+        try:
+            source = json.loads(args.source_audit_input.read_text(encoding="utf-8"))
+            source_result = audit_source(source)
+            result["source_audit"] = source_result
+            if source_result["decision"] == "BLOCK":
+                result["errors"].extend("source: " + e for e in source_result["errors"])
+            if str(source.get("run_id") or "") != str(result.get("run_id") or ""):
+                result["errors"].append("source: RUN_ID mismatch")
+            try:
+                freeze = parse_time(data["frozen"][0]["FROZEN_AT_UTC"], "FROZEN_AT_UTC")
+                cutoff = parse_time(source.get("cutoff_utc"), "source.cutoff_utc")
+                if cutoff > freeze:
+                    result["errors"].append("source: audit cutoff after Frozen (lookahead)")
+            except (KeyError, IndexError, TypeError, ValueError):
+                result["errors"].append("source: cannot verify source-to-Frozen cutoff")
+            result["degraded"].extend("source: " + e for e in source_result["degraded"])
+            if not result["errors"] and source_result["decision"] != "EVIDENCE_READY_REQUIRES_INDEPENDENT_VERIFY":
+                result["degraded"].append("source: freshness/discovery not evidence-ready")
+        except (OSError, ValueError, TypeError) as exc:
+            result["errors"].append("source audit unreadable or invalid: " + str(exc))
+    elif args.require_evidence_ready:
+        result["degraded"].append("source freshness/discovery gate omitted; strict clean impossible")
+    result["errors"] = sorted(set(result["errors"]))
+    result["degraded"] = sorted(set(result["degraded"]))
+    result["decision"] = ("BLOCK" if result["errors"] else
+                          "OFFICIAL_PARTIAL_NOT_CLEAN" if result["degraded"] else
+                          "EVIDENCE_READY_REQUIRES_INDEPENDENT_VERIFY")
     payload = json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
