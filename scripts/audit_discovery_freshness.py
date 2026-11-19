@@ -98,7 +98,7 @@ def audit(snapshot):
         except ValueError as exc:
             errors.append(str(exc))
             continue
-        if not row.get("primary_url", "").startswith("https://"):
+        if not str(row.get("primary_url") or "").startswith("https://"):
             degraded.append(f"{rid}: primary issuer URL missing")
         if row.get("source_verified") is not True or row.get("full_original_checked") is not True:
             degraded.append(f"{rid}: original publication not independently verified")
@@ -153,7 +153,7 @@ def audit(snapshot):
             if session > prior_day or session >= run_date or stamped > cutoff:
                 errors.append("lagged winners contain current-day or future data")
             tickers = batch.get("tickers")
-            if not isinstance(tickers, list) or len(tickers) > 100 or len(tickers) != len(set(tickers)):
+            if not isinstance(tickers, list) or len(tickers) > 100 or any(not isinstance(x, str) for x in tickers) or len(tickers) != len(set(tickers)):
                 errors.append("lagged Top100 batch malformed")
             else:
                 lagged_sets.extend(tickers)
@@ -161,7 +161,7 @@ def audit(snapshot):
             errors.append(f"lagged batch bad: {exc}")
     if not snapshot["lagged_leader_batches"]:
         degraded.append("prior-session Top100 discovery shadow absent")
-    elif not set(lagged_sets).issubset(set(str(x).upper() for x in snapshot.get("shadow_discovery_tickers", []))):
+    elif not isinstance(snapshot.get("shadow_discovery_tickers"), list) or not set(lagged_sets).issubset(set(str(x).upper() for x in snapshot["shadow_discovery_tickers"])):
         degraded.append("lagged Top100 not fully carried into shadow candidate pool")
     notices.append("Lagged Top100 is discovery SHADOW only; never automatic Top20")
 
