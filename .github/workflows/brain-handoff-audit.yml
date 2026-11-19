@@ -11,6 +11,7 @@ on:
       - "tests/test_matured_backlog.py"
       - "scripts/audit_discovery_freshness.py"
       - "tests/test_discovery_freshness.py"
+      - "tests/test_precommit_bundle.py"
       - "docs/BRAIN_HANDOFF.md"
       - "docs/PREFREEZE_SOURCE_GATE.md"
       - ".github/workflows/brain-handoff-audit.yml"
@@ -23,6 +24,7 @@ on:
       - "tests/test_matured_backlog.py"
       - "scripts/audit_discovery_freshness.py"
       - "tests/test_discovery_freshness.py"
+      - "tests/test_precommit_bundle.py"
       - ".github/workflows/brain-handoff-audit.yml"
 
 permissions:
@@ -40,7 +42,7 @@ jobs:
       - name: Install test dependency
         run: python -m pip install "pytest>=8,<10"
       - name: Validate Frozen, backlog, source-freshness and discovery gates
-        run: python -m pytest -q tests/test_brain_handoff.py tests/test_matured_backlog.py tests/test_discovery_freshness.py
+        run: python -m pytest -q tests/test_brain_handoff.py tests/test_matured_backlog.py tests/test_discovery_freshness.py tests/test_precommit_bundle.py
       - name: Check audit script CLIs
         run: |
           python -m scripts.validate_brain_handoff --help
