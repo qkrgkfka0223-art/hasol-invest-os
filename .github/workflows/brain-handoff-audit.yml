@@ -12,6 +12,7 @@ on:
       - "scripts/audit_discovery_freshness.py"
       - "tests/test_discovery_freshness.py"
       - "docs/BRAIN_HANDOFF.md"
+      - "docs/PREFREEZE_SOURCE_GATE.md"
       - ".github/workflows/brain-handoff-audit.yml"
   push:
     branches: [main]
