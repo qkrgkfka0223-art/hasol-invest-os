@@ -138,7 +138,7 @@ def audit(snapshot):
             degraded.append("issuer source coverage not verified")
         if at <= lock:
             before_blind = True
-        if 0 <= (cutoff - at).total_seconds() <= 900:
+        if lock < at <= cutoff and 0 <= (cutoff - at).total_seconds() <= 900:
             recent_precommit = True
     if not before_blind:
         degraded.append("no completed issuer-only sweep before blind lock")
