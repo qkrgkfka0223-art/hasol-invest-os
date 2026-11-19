@@ -167,3 +167,18 @@ def test_cli_decision_codes(tmp_path):
     x["full_pit_eligible_roster_verified"] = False
     fn.write_text(json.dumps(x), encoding="utf-8")
     assert subprocess.run(cmd + ["--require-evidence-ready"], capture_output=True, text=True, check=False).returncode == 3
+
+
+def test_nullable_missing_provenance_does_not_crash_or_certify():
+    x = sample()
+    x["issuer_releases"][0]["primary_url"] = None
+    x["shadow_discovery_tickers"] = None
+    result = audit(x)
+    assert result["decision"] == "OFFICIAL_PARTIAL_NOT_CLEAN"
+    assert any("primary issuer URL" in e for e in result["degraded"])
+
+
+def test_duplicate_lagged_symbols_is_blocked():
+    x = sample()
+    x["lagged_leader_batches"][0]["tickers"] = ["SLS", "SLS"]
+    assert audit(x)["decision"] == "BLOCK"
