@@ -36,9 +36,10 @@ def sample():
         ],
         "lagged_leader_batches": [{
             "session_date": "2026-11-16", "available_at_utc": "2026-11-17T10:00:00Z",
-            "tickers": ["SLS", "CLRO"],
+            "tickers": ["SLS", "CLRO"] + [f"T{i:03d}" for i in range(98)],
+            "publisher_data_verified": True,
         }],
-        "shadow_discovery_tickers": ["SLS", "CLRO"],
+        "shadow_discovery_tickers": ["SLS", "CLRO"] + [f"T{i:03d}" for i in range(98)],
         "live_mover_snapshots": [{
             "asof_utc": "2026-11-17T12:56:00Z",
             "discovery_class": "AFTER_PRICE_DISCOVERY",
@@ -181,4 +182,29 @@ def test_nullable_missing_provenance_does_not_crash_or_certify():
 def test_duplicate_lagged_symbols_is_blocked():
     x = sample()
     x["lagged_leader_batches"][0]["tickers"] = ["SLS", "SLS"]
+    assert audit(x)["decision"] == "BLOCK"
+
+
+def test_ambiguous_materiality_must_not_bypass_latest_release_check():
+    x = sample()
+    x["issuer_releases"][0]["material"] = "FALSE"
+    assert audit(x)["decision"] == "BLOCK"
+
+
+def test_unknown_price_preview_cannot_certify_price_blind():
+    x = sample()
+    x["issuer_sweeps"][0].pop("price_reaction_preview")
+    assert audit(x)["decision"] == "OFFICIAL_PARTIAL_NOT_CLEAN"
+
+
+def test_incomplete_lagged_top100_cannot_be_clean():
+    x = sample()
+    x["lagged_leader_batches"][0]["tickers"] = ["SLS", "CLRO"]
+    x["shadow_discovery_tickers"] = ["SLS", "CLRO"]
+    assert audit(x)["decision"] == "OFFICIAL_PARTIAL_NOT_CLEAN"
+
+
+def test_non_list_handled_release_ids_does_not_crash():
+    x = sample()
+    x["candidate_packets"][0]["handled_release_ids"] = None
     assert audit(x)["decision"] == "BLOCK"
