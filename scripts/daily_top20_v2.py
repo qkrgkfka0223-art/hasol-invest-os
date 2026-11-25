@@ -40,35 +40,44 @@ def predict(s):
         raise ValueError("invalid session cutoff")
     if stamp(s["snapshot_known_at_utc"]) > cutoff:
         raise ValueError("future snapshot")
+    prior_session = dt.date.fromisoformat(s["previous_session_et"])
+    if prior_session >= dt.date.fromisoformat(s["date_et"]):
+        raise ValueError("invalid previous regular session")
     rows = s["rows"]
     unique(rows)
     eligible, rejected, unknown = [], [], []
     for row in rows:
         r = dict(row)
-        if stamp(r["known_at_utc"]) > cutoff:
-            raise ValueError("future candidate evidence")
-        if dt.date.fromisoformat(r["history_end_et"]) >= dt.date.fromisoformat(s["date_et"]):
-            raise ValueError("same-day/future history")
         sid = r["security_id"]
-        if r.get("type") is None or r.get("exchange") is None:
+        if r.get("known_at_utc") and stamp(r["known_at_utc"]) > cutoff:
+            raise ValueError("future candidate evidence")
+        if r.get("history_end_et") and dt.date.fromisoformat(r["history_end_et"]) >= dt.date.fromisoformat(s["date_et"]):
+            raise ValueError("same-day/future history")
+        if not r.get("known_at_utc"):
+            unknown.append((sid, "KNOWN_AT_UNKNOWN"))
+            continue
+        if r.get("type") in (None, "", "UNKNOWN") or r.get("exchange") in (None, "", "UNKNOWN"):
             unknown.append((sid, "TYPE_OR_EXCHANGE_UNKNOWN"))
             continue
         if r["type"] not in COMMON or r["exchange"] not in EXCHANGES or r.get("spac") is True:
             rejected.append((sid, "SECURITY_TYPE"))
+            continue
+        if r.get("history_end_et") != s["previous_session_et"]:
+            unknown.append((sid, "MISSING_OR_STALE_PRIOR_SESSION"))
             continue
         vals = [r.get(k) for k in ("prior_close", "adv20", "listed_sessions", "last_price")]
         if r.get("spac") is not False or not all(map(numeric, vals)) or r.get("ca_verified") is not True:
             unknown.append((sid, "ELIGIBILITY_OR_CA_UNKNOWN"))
             continue
         p, adv, age_days, last = vals
-        if min(p, last) <= 0 or adv < 0 or age_days < 0:
+        if min(p, last) <= 0 or adv < 0 or age_days < 0 or int(age_days) != age_days:
             raise ValueError("invalid numeric data")
         if not r.get("trade_at_utc"):
             unknown.append((sid, "NO_TRADE_TIMESTAMP"))
             continue
         age = (cutoff - stamp(r["trade_at_utc"])).total_seconds()
-        if age < 0:
-            raise ValueError("future trade")
+        if age < 0 or stamp(r["trade_at_utc"]) > stamp(r["known_at_utc"]):
+            raise ValueError("future trade or trade after known_at")
         if age > 180:
             unknown.append((sid, "STALE_TRADE"))
             continue
@@ -81,7 +90,8 @@ def predict(s):
     order = rank(eligible, "gap")
     if len(order) < 20:
         raise ValueError("fewer than 20 defensible eligible scored securities")
-    shadow = {k: rank(eligible, k)[:20] for k in ("rms5", "prev1", "rev3")}
+    shadow = {k: rank(eligible, k)[:20] if all(numeric(r.get(k)) for r in eligible) else None
+              for k in ("rms5", "prev1", "rev3")}
     quality = "EVIDENCE_READY_EXTERNAL_VERIFICATION_REQUIRED" if (
         s.get("full_roster_verified") is True and not unknown
         and s.get("source_verified") is True
@@ -104,17 +114,19 @@ def review(f, o):
         raise ValueError("review cohort mismatch")
     if stamp(o["observed_at_utc"]) < stamp(p["regular_close_utc"]):
         raise ValueError("session not completed")
-    if len(p["top20"]) != 20 or p["top20"] != p["full_rank"][:20] or p["top5"] != p["top20"][:5]:
+    if (len(p["top20"]) != 20 or len(set(p["full_rank"])) != len(p["full_rank"])
+        or p["top20"] != p["full_rank"][:20] or p["top5"] != p["top20"][:5]):
         raise ValueError("rank/selection mismatch")
     unique(o["rows"])
     lookup = {r["security_id"]:r for r in o["rows"]}
     expected = {r["security_id"] for r in p["universe"]}
-    if set(lookup) != expected:
+    if set(p["full_rank"]) != expected or set(lookup) != expected:
         raise ValueError("incomplete or different review universe")
     actual = []
     for r in p["universe"]:
         a = lookup[r["security_id"]]
         if (a["ticker"] != r["ticker"] or a.get("same_share_basis") is not True or
+            a.get("session_date_et") != p["date_et"] or not a.get("source") or
             not numeric(a.get("close")) or a["close"] <= 0):
             raise ValueError("unverified close, identity or corporate action")
         actual.append(dict(security_id=r["security_id"], ticker=r["ticker"],
@@ -127,14 +139,15 @@ def review(f, o):
                   actual_top5=order[:5], overlap20=overlap(p["top20"],winners),
                   top5_in_actual20=overlap(p["top5"],winners),
                   exact_top5_overlap=overlap(p["top5"],order[:5]),
-                  shadow_overlap20={k:overlap(v,winners) if len(v)==20 else None for k,v in p["shadows"].items()},
-                  actual=actual, quality=p["quality"], market_recall=None if p["quality"]!="EVIDENCE_READY_EXTERNAL_VERIFICATION_REQUIRED" else "REQUIRES_INDEPENDENT_SOURCE_QA")
+                  shadow_overlap20={k:overlap(v,winners) if v is not None and len(v)==20 else None for k,v in p["shadows"].items()},
+                  actual=actual, quality=p["quality"], coverage_scope="SAME_SCORED_COHORT_ONLY_PENDING_EXTERNAL_MARKET_QA",
+                  market_recall=None)
     return result
 def write_once(path, value):
     with pathlib.Path(path).open("x", encoding="utf-8") as f:
         json.dump(value,f,ensure_ascii=False,indent=2,allow_nan=False)
 def fixture():
-    return dict(run_id="TEST",date_et="2026-11-24",cutoff_utc="2026-11-24T14:25:00Z",
+    return dict(run_id="TEST",date_et="2026-11-24",previous_session_et="2026-11-23",cutoff_utc="2026-11-24T14:25:00Z",
                 regular_close_utc="2026-11-24T21:00:00Z",snapshot_known_at_utc="2026-11-24T14:25:00Z",
                 expected_universe_n=25,full_roster_verified=True,source_verified=True,
                 rows=[dict(security_id=str(i),ticker=f"T{i:02}",type="CS",exchange="NYSE",spac=False,
@@ -164,12 +177,24 @@ class Tests(unittest.TestCase):
         s=fixture(); s["rows"]=s["rows"][:19]
         with self.assertRaises(ValueError): predict(s)
     def test_review_and_hash(self):
-        f=predict(fixture()); p=f["packet"]; o=dict(run_id="TEST",date_et=p["date_et"],observed_at_utc=p["regular_close_utc"],rows=[dict(security_id=r["security_id"],ticker=r["ticker"],close=r["last_price"],same_share_basis=True) for r in p["universe"]])
+        f=predict(fixture()); p=f["packet"]; o=dict(run_id="TEST",date_et=p["date_et"],observed_at_utc=p["regular_close_utc"],rows=[dict(security_id=r["security_id"],ticker=r["ticker"],close=r["last_price"],same_share_basis=True,session_date_et=p["date_et"],source="SYNTHETIC") for r in p["universe"]])
         self.assertEqual(review(f,o)["overlap20"],20)
         o["rows"].pop()
         with self.assertRaises(ValueError): review(f,o)
         f["packet"]["top20"][0]="tamper"
         with self.assertRaises(ValueError): review(f,o)
+    def test_stale_history(self):
+        s=fixture(); s["rows"][0]["history_end_et"]="2026-11-20"
+        self.assertIn(("0","MISSING_OR_STALE_PRIOR_SESSION"),predict(s)["packet"]["unknown"])
+    def test_missing_shadow(self):
+        s=fixture(); s["rows"][0]["rms5"]=None
+        self.assertIsNone(predict(s)["packet"]["shadows"]["rms5"])
+    def test_unknown_type(self):
+        s=fixture(); s["rows"][0]["type"]="UNKNOWN"
+        self.assertIn(("0","TYPE_OR_EXCHANGE_UNKNOWN"),predict(s)["packet"]["unknown"])
+    def test_missing_history(self):
+        s=fixture(); del s["rows"][0]["history_end_et"]
+        self.assertIn(("0","MISSING_OR_STALE_PRIOR_SESSION"),predict(s)["packet"]["unknown"])
     def test_unfinished(self):
         f=predict(fixture())
         with self.assertRaises(ValueError): review(f,dict(run_id="TEST",date_et="2026-11-24",observed_at_utc="2026-11-24T20:59:00Z",rows=[]))
